@@ -128,41 +128,22 @@ async function generate() {
 
 btnGenerate.onclick = generate;
 
-// --- СКАЧИВАНИЕ (ИСПРАВЛЕНО) ---
-document.getElementById('downloadBtn').onclick = async () => {
+// --- СКАЧИВАНИЕ ЧЕРЕЗ СЕРВЕРНЫЙ ПРОКСИ (ИСПРАВЛЕНО) ---
+document.getElementById('downloadBtn').onclick = () => {
     const imageUrl = resultImg.src;
     
-    // Проверка, что картинка уже сгенерирована
     if (!imageUrl || imageUrl.includes('placeholder') || imageUrl === window.location.href) {
         return alert('No image to download yet');
     }
 
-    try {
-        const btn = document.getElementById('downloadBtn');
-        const originalText = btn.innerHTML; // Сохраняем иконку и текст
-        btn.innerText = 'Downloading...';
-
-        // Запрашиваем файл через fetch, чтобы превратить его в Blob
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        
-        // Создаем временную ссылку для скачивания
-        const link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.download = `avatar-${Date.now()}.png`; // Имя файла
-        
-        document.body.appendChild(link);
-        link.click(); // Симулируем клик
-        
-        // Очистка памяти
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(link);
-        btn.innerHTML = originalText;
-    } catch (e) {
-        console.error('Download error:', e);
-        // Запасной вариант на случай ошибки CORS: открыть в новой вкладке
-        window.open(imageUrl, '_blank');
-    }
+    // Вместо fetch напрямую, используем наш API как посредника, чтобы обойти CORS
+    // Это заставит браузер именно СКАЧАТЬ файл
+    const downloadUrl = `/api/generate?proxyUrl=${encodeURIComponent(imageUrl)}`;
+    
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `avatar-${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 };
