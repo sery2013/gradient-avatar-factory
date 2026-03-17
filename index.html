@@ -318,8 +318,8 @@
       <label class="section-title">Choose Style (18 styles)</label>
       <div class="style-grid" id="styleGrid"></div>
 
-      <label class="section-title">Custom Prompt (REQUIRED for AI generation)</label>
-      <textarea id="promptInput" placeholder="Example: cyberpunk frog character with neon lights, futuristic, digital art"></textarea>
+      <label class="section-title">Custom Prompt (REQUIRED)</label>
+      <textarea id="promptInput" placeholder="Example: cyberpunk frog character with neon lights, futuristic armor, digital art"></textarea>
 
       <div class="options-row" id="watermarkOption">
         <div class="checkbox" id="watermarkCheckbox"></div>
@@ -355,31 +355,31 @@
 
     <footer>
       <p>Powered by <a href="https://pollinations.ai" target="_blank">Pollinations AI</a> • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
-      <p style="margin-top: 8px;">18 Unique Styles • Real AI Image Generation</p>
+      <p style="margin-top: 8px;">18 Unique Styles • Single AI Service • No API Keys Required</p>
     </footer>
   </div>
 
   <script>
-    // === КОНФИГУРАЦИЯ ===
+    // === КОНФИГУРАЦИЯ (ТОЛЬКО 1 СЕРВИС - POLLINATIONS) ===
     var STYLES = [
-      { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk, neon lights, futuristic, high tech' },
-      { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime style, japanese animation, vibrant colors' },
-      { id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art, 8-bit, retro gaming' },
-      { id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist, clean, modern design' },
-      { id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon glow, electric, vibrant' },
-      { id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro, vintage, 80s aesthetic' },
-      { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy, magical, mystical' },
-      { id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction, futuristic, space' },
-      { id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir, black and white, dramatic' },
-      { id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave, pastel, aesthetic' },
-      { id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature, organic, natural elements' },
-      { id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset, warm tones, golden hour' },
-      { id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean, waves, deep blue, aquatic' },
-      { id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire, flames, burning, intense' },
-      { id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy, stars, cosmic, nebula' },
-      { id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest, green, nature, peaceful' },
-      { id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic, ethereal, mystical' },
-      { id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden, luxury, elegant, metallic' }
+      { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk neon futuristic high tech' },
+      { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime japanese animation vibrant' },
+      { id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art 8bit retro gaming' },
+      { id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist clean modern simple' },
+      { id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon glow electric vibrant' },
+      { id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro vintage 80s aesthetic' },
+      { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy magical mystical epic' },
+      { id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction futuristic space' },
+      { id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir black white dramatic' },
+      { id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave pastel retro futuristic' },
+      { id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature organic earthy natural' },
+      { id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset warm golden hour sky' },
+      { id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean waves deep blue aquatic' },
+      { id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire flames burning intense' },
+      { id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy stars cosmic nebula universe' },
+      { id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest green nature trees peaceful' },
+      { id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic ethereal mystical space' },
+      { id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden luxury elegant metallic' }
     ];
 
     var appState = {
@@ -390,11 +390,12 @@
       generatedData: null
     };
 
+    // === ИНИЦИАЛИЗАЦИЯ ===
     document.addEventListener('DOMContentLoaded', function() {
       renderStyleGrid();
       setupEventListeners();
       console.log('✅ GradientAvatar Factory loaded!');
-      console.log('🤖 Using Pollinations AI for real image generation');
+      console.log('🤖 Using Pollinations AI (single service - no conflicts)');
     });
 
     document.getElementById('siteLogo').addEventListener('click', function() {
@@ -464,25 +465,24 @@
       reader.readAsDataURL(file);
     }
 
-    // === 🎨 REAL AI GENERATION VIA POLLINATIONS ===
-    function generateRealAIImage(prompt, style) {
+    // === 🎨 AI GENERATION (POLLINATIONS - SINGLE SERVICE) ===
+    function generateAIImage(prompt, style) {
       return new Promise(function(resolve, reject) {
-        // Pollinations.ai API - БЕСПЛАТНО, без ключа
         var seed = Math.floor(Math.random() * 10000);
         var width = 512;
         var height = 512;
         
-        // Формируем правильный URL
-        var encodedPrompt = encodeURIComponent(prompt + ', ' + style.prompt + ', high quality, detailed, digital art');
-        var imageUrl = 'https://image.pollinations.ai/prompt/' + encodedPrompt + '?width=' + width + '&height=' + height + '&seed=' + seed + '&nologo=true';
+        // Формируем ПРОСТОЙ и ЧИСТЫЙ URL
+        var fullPrompt = prompt + ', ' + style.prompt + ', high quality, detailed, digital art, avatar';
+        var encodedPrompt = encodeURIComponent(fullPrompt);
+        var imageUrl = 'https://image.pollinations.ai/prompt/' + encodedPrompt + '?width=' + width + '&height=' + height + '&seed=' + seed + '&nologo=true&model=flux';
         
         console.log('🎨 Generating AI image...');
+        console.log('Prompt:', fullPrompt);
         console.log('URL:', imageUrl);
-        console.log('Prompt:', prompt);
         
         showStatus('🤖 AI is generating your avatar... (15-30 seconds)', 'info');
         
-        // Создаем Image объект
         var img = new Image();
         img.crossOrigin = 'anonymous';
         
@@ -494,7 +494,6 @@
         img.onload = function() {
           clearTimeout(timeout);
           console.log('✅ Image generated successfully!');
-          console.log('Image size:', img.width, 'x', img.height);
           resolve(imageUrl);
         };
         
@@ -504,7 +503,6 @@
           reject(new Error('Failed to generate image. Please try again.'));
         };
         
-        // Загружаем изображение
         img.src = imageUrl;
       });
     }
@@ -565,7 +563,6 @@
       var originalText = btn.innerHTML;
       btn.disabled = true;
       
-      // Находим стиль
       var selectedStyle = null;
       for (var i = 0; i < STYLES.length; i++) {
         if (STYLES[i].id === appState.selectedStyle) {
@@ -580,8 +577,8 @@
       
       btn.innerHTML = '<span class="loading-spinner"></span> Generating AI Image...';
       
-      // Генерируем реальное AI изображение
-      generateRealAIImage(prompt, selectedStyle)
+      // ТОЛЬКО ОДИН СЕРВИС - НИКАКИХ КОНФЛИКТОВ
+      generateAIImage(prompt, selectedStyle)
         .then(function(imageUrl) {
           btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
           showStatus('💧 Applying watermark...', 'info');
