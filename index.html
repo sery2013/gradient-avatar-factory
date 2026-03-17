@@ -354,42 +354,40 @@
     </div>
 
     <footer>
-      <p>Powered by <a href="https://huggingface.co" target="_blank">Hugging Face</a> & Pollinations AI • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
+      <p>Powered by Pollinations AI + Gemini • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
       <p style="margin-top: 8px;">18 Unique Styles • Base Sepolia Testnet</p>
     </footer>
   </div>
 
   <script>
-    // === Configuration (API Key Obfuscated) ===
-    const CONFIG = Object.freeze({
-      apiKeys: {
-        huggingFace: atob('aGZfWkt6VGh2WWNpVHplSEdmYUNQU1VVTlBTSHVVR3VQaGdy'),
-        deepAI: 'quickstart'
-      },
-      styles: [
-        { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'] },
-        { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'] },
-        { id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'] },
-        { id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'] },
-        { id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'] },
-        { id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'] },
-        { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'] },
-        { id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'] },
-        { id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'] },
-        { id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'] },
-        { id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'] },
-        { id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'] },
-        { id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'] },
-        { id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'] },
-        { id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'] },
-        { id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'] },
-        { id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'] },
-        { id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'] }
-      ]
-    });
+    // === КОНФИГУРАЦИЯ ===
+    var STYLES = [
+      { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'] },
+      { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'] },
+      { id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'] },
+      { id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'] },
+      { id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'] },
+      { id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'] },
+      { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'] },
+      { id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'] },
+      { id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'] },
+      { id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'] },
+      { id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'] },
+      { id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'] },
+      { id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'] },
+      { id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'] },
+      { id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'] },
+      { id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'] },
+      { id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'] },
+      { id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'] }
+    ];
 
-    // === State (Mutable) ===
-    let appState = {
+    // 🔑 API Ключ Gemini (Обфускация Base64)
+    // Замените строку ниже на ваш обфусцированный ключ
+    var GEMINI_API_KEY = atob('QUl6YXN5RHdnazJ3QVJzcXFQb1M1a3ZnLS1zbTdtSGVWQU9OY1ZaMA==');
+    
+    // Состояние приложения
+    var appState = {
       walletConnected: false,
       uploadedImage: null,
       selectedStyle: 'cyberpunk',
@@ -397,55 +395,60 @@
       generatedData: null
     };
 
-    // === Initialize ===
-    document.addEventListener('DOMContentLoaded', () => {
+    // === ИНИЦИАЛИЗАЦИЯ ===
+    document.addEventListener('DOMContentLoaded', function() {
       renderStyleGrid();
       setupEventListeners();
-      console.log('🎨 GradientAvatar Factory loaded!');
-      console.log('🤖 Hugging Face API: Ready');
+      console.log('✅ GradientAvatar Factory loaded!');
+      console.log('🤖 Gemini API: Ready');
     });
 
-    // === Click Logo to Refresh ===
-    document.getElementById('siteLogo').addEventListener('click', () => {
+    document.getElementById('siteLogo').addEventListener('click', function() {
       location.reload();
     });
 
     function renderStyleGrid() {
-      const grid = document.getElementById('styleGrid');
-      grid.innerHTML = CONFIG.styles.map(style => `
-        <button class="style-btn ${style.id === appState.selectedStyle ? 'active' : ''}" data-style="${style.id}">
-          <div class="style-preview" style="background: linear-gradient(135deg, ${style.gradient.join(', ')})"></div>
-          <div>${style.name}</div>
-        </button>
-      `).join('');
+      var grid = document.getElementById('styleGrid');
+      var html = '';
+      for (var i = 0; i < STYLES.length; i++) {
+        var style = STYLES[i];
+        var active = style.id === appState.selectedStyle ? 'active' : '';
+        html += '<button class="style-btn ' + active + '" data-style="' + style.id + '">';
+        html += '<div class="style-preview" style="background: linear-gradient(135deg, ' + style.gradient.join(', ') + ')"></div>';
+        html += '<div>' + style.name + '</div></button>';
+      }
+      grid.innerHTML = html;
     }
 
     function setupEventListeners() {
-      const uploadZone = document.getElementById('uploadZone');
-      const imageInput = document.getElementById('imageInput');
+      var uploadZone = document.getElementById('uploadZone');
+      var imageInput = document.getElementById('imageInput');
       
-      uploadZone.addEventListener('click', () => imageInput.click());
-      uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.style.borderColor = '#51CAD3'; });
-      uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = '#1E2A3A'; });
-      uploadZone.addEventListener('drop', (e) => {
+      uploadZone.addEventListener('click', function() { imageInput.click(); });
+      uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.style.borderColor = '#51CAD3'; });
+      uploadZone.addEventListener('dragleave', function() { uploadZone.style.borderColor = '#1E2A3A'; });
+      uploadZone.addEventListener('drop', function(e) {
         e.preventDefault();
         uploadZone.style.borderColor = '#1E2A3A';
         handleImageUpload(e.dataTransfer.files[0]);
       });
-      imageInput.addEventListener('change', (e) => handleImageUpload(e.target.files[0]));
+      imageInput.addEventListener('change', function(e) { handleImageUpload(e.target.files[0]); });
 
-      document.getElementById('styleGrid').addEventListener('click', (e) => {
-        const btn = e.target.closest('.style-btn');
+      document.getElementById('styleGrid').addEventListener('click', function(e) {
+        var btn = e.target.closest('.style-btn');
         if (btn) {
-          document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+          var buttons = document.querySelectorAll('.style-btn');
+          for (var i = 0; i < buttons.length; i++) { buttons[i].classList.remove('active'); }
           btn.classList.add('active');
           appState.selectedStyle = btn.dataset.style;
         }
       });
 
-      document.getElementById('watermarkOption').addEventListener('click', () => {
+      document.getElementById('watermarkOption').addEventListener('click', function() {
         appState.addWatermark = !appState.addWatermark;
-        document.getElementById('watermarkCheckbox').classList.toggle('checked', appState.addWatermark);
+        var checkbox = document.getElementById('watermarkCheckbox');
+        if (appState.addWatermark) { checkbox.classList.add('checked'); }
+        else { checkbox.classList.remove('checked'); }
       });
 
       document.getElementById('generateBtn').addEventListener('click', handleGenerate);
@@ -458,8 +461,8 @@
       if (!file || !file.type.startsWith('image/')) { showStatus('Please select a valid image', 'error'); return; }
       if (file.size > 10 * 1024 * 1024) { showStatus('Image must be under 10MB', 'error'); return; }
       appState.uploadedImage = file;
-      const reader = new FileReader();
-      reader.onload = (e) => {
+      var reader = new FileReader();
+      reader.onload = function(e) {
         document.getElementById('previewImage').src = e.target.result;
         document.getElementById('uploadZone').classList.add('has-image');
         showStatus('✅ Image loaded!', 'success');
@@ -467,260 +470,314 @@
       reader.readAsDataURL(file);
     }
 
-    function buildPrompt(styleId, customPrompt) {
-      const prompts = {
-        cyberpunk: 'cyberpunk, neon lights, futuristic, digital art, high tech',
-        anime: 'anime style, japanese animation, vibrant colors, detailed character',
-        pixel: 'pixel art, 8-bit, retro gaming, pixelated',
-        minimal: 'minimalist, clean lines, modern, simple',
-        neon: 'neon colors, glowing effects, electric, vibrant',
-        retro: 'retro, vintage, 80s aesthetic, nostalgic',
-        fantasy: 'fantasy, magical, mystical, epic',
-        scifi: 'science fiction, futuristic, space, advanced technology',
-        noir: 'film noir, black and white, dramatic lighting, moody',
-        vaporwave: 'vaporwave, pastel colors, retro futuristic, glitch art',
-        nature: 'nature, organic, earthy tones, natural elements',
-        sunset: 'sunset, warm tones, golden hour, vibrant sky',
-        ocean: 'ocean, waves, deep blue, aquatic, marine',
-        fire: 'fire, flames, burning, hot, intense',
-        galaxy: 'galaxy, stars, cosmic, nebula, universe',
-        forest: 'forest, green, nature, trees, peaceful',
-        cosmic: 'cosmic, purple, ethereal, mystical, space',
-        gold: 'golden, luxury, elegant, metallic, premium'
-      };
-      const base = prompts[styleId] || 'digital art';
-      return encodeURIComponent(customPrompt ? `${base}, ${customPrompt}, high quality, detailed` : `${base}, high quality, avatar portrait`);
-    }
-
-    // === Pollinations API ===
-    async function generatePollinations(prompt) {
-      const seed = Math.floor(Math.random() * 10000);
-      const url = `https://image.pollinations.ai/prompt/${prompt}?width=512&height=512&seed=${seed}&nologo=true`;
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 25000);
-      try {
-        const res = await fetch(url, { signal: controller.signal });
-        clearTimeout(timeout);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const blob = await res.blob();
-        return URL.createObjectURL(blob);
-      } catch (e) { clearTimeout(timeout); throw e; }
-    }
-
-    // === DeepAI API ===
-    async function generateDeepAI(prompt) {
-      const res = await fetch('https://api.deepai.org/api/text2img', {
-        method: 'POST',
-        headers: { 'api-key': CONFIG.apiKeys.deepAI, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: decodeURIComponent(prompt) })
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      return data.output_url || data.image_url;
-    }
-
-    // === Hugging Face API ===
-    async function generateHuggingFace(prompt) {
-      const res = await fetch('https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0', {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${CONFIG.apiKeys.huggingFace}`, 
-          'Content-Type': 'application/json',
-          'x-use-cache': 'false'
-        },
-        body: JSON.stringify({ 
-          inputs: decodeURIComponent(prompt), 
-          options: { wait_for_model: true } 
-        })
-      });
-      if (!res.ok) {
-        const error = await res.text();
-        throw new Error(`HF ${res.status}: ${error}`);
-      }
-      const blob = await res.blob();
-      return URL.createObjectURL(blob);
-    }
-
-    // === Multi-API Generator ===
-    async function generateWithFallback(prompt, style) {
-      const services = [
-        { name: 'HuggingFace', fn: () => generateHuggingFace(prompt) },
-        { name: 'Pollinations', fn: () => generatePollinations(prompt) },
-        { name: 'DeepAI', fn: () => generateDeepAI(prompt) }
-      ];
-      
-      for (const svc of services) {
-        try {
-          showStatus(`🤖 Using ${svc.name}...`, 'info');
-          const url = await svc.fn();
-          console.log(`✅ Success with ${svc.name}!`);
-          return { url, service: svc.name };
-        } catch (e) { 
-          console.log(`❌ ${svc.name} failed:`, e.message); 
-        }
-      }
-      
-      showStatus('⚠️ Using local generation...', 'warning');
-      return { url: await generateFallbackAvatar(style, decodeURIComponent(prompt)), service: 'Local' };
-    }
-
-    // === Fallback Generation ===
-    async function generateFallbackAvatar(style, prompt) {
-      return new Promise(resolve => {
-        const c = document.createElement('canvas'); c.width = c.height = 512;
-        const ctx = c.getContext('2d');
-        const g = ctx.createLinearGradient(0,0,512,512);
-        style.gradient.forEach((col,i) => g.addColorStop(i/(style.gradient.length-1), col));
-        ctx.fillStyle = g; ctx.fillRect(0,0,512,512);
-        for(let i=0;i<3000;i++) { ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.15})`; ctx.fillRect(Math.random()*512,Math.random()*512,2,2); }
-        ctx.fillStyle='#fff'; ctx.font='bold 36px Inter'; ctx.textAlign='center'; ctx.textBaseline='middle';
-        const words=(prompt||style.name).split(' '), lines=[], cur='';
-        words.forEach(w=>{ if(cur.length+w.length<22){cur+=' '+w}else{if(cur)lines.push(cur.trim());cur=w} });
-        if(cur)lines.push(cur.trim());
-        const startY=256-((lines.length-1)*28);
-        lines.forEach((l,i)=>ctx.fillText(l,256,startY+i*45));
-        ctx.font='20px Inter'; ctx.fillStyle='rgba(255,255,255,0.7)';
-        ctx.fillText(`Style: ${style.name}`,256,420);
-        ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=6; ctx.strokeRect(8,8,496,496);
-        resolve(c.toDataURL('image/png'));
-      });
-    }
-
-    // === Process Image (Watermark) ===
-    async function processImage(url, addWatermark) {
-      return new Promise(resolve => {
-        const img = new Image(); img.crossOrigin='anonymous';
-        img.onload = () => {
-          const c = document.createElement('canvas'); c.width=img.width; c.height=img.height;
-          const ctx = c.getContext('2d'); ctx.drawImage(img,0,0);
-          if(addWatermark) {
-            ctx.save(); ctx.globalAlpha=0.35; ctx.fillStyle='#51CAD3';
-            ctx.font='bold 44px Inter'; ctx.textAlign='right'; ctx.textBaseline='bottom';
-            ctx.fillText('OPG', c.width-18, c.height-18); ctx.restore();
-          }
-          resolve(c.toDataURL('image/png'));
+    // === 🤖 GEMINI: Улучшение промпта ===
+    function enhancePromptWithGemini(basePrompt, style) {
+      return new Promise(function(resolve, reject) {
+        var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + GEMINI_API_KEY;
+        
+        var data = {
+          contents: [{
+            parts: [{
+              text: 'Enhance this image generation prompt for better AI art results. Style: ' + style + '. Original prompt: "' + basePrompt + '". Return ONLY the enhanced prompt, no explanations. Make it detailed and vivid for image generation.'
+            }]
+          }]
         };
-        img.onerror = () => resolve(url);
+        
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          if (data.candidates && data.candidates[0].content) {
+            var enhanced = data.candidates[0].content.parts[0].text;
+            console.log('✨ Gemini enhanced prompt:', enhanced);
+            resolve(enhanced);
+          } else {
+            resolve(basePrompt);
+          }
+        })
+        .catch(function(err) {
+          console.log('⚠️ Gemini failed, using original prompt');
+          resolve(basePrompt);
+        });
+      });
+    }
+
+    function buildPrompt(styleId, customPrompt) {
+      var prompts = {
+        cyberpunk: 'cyberpunk, neon lights, futuristic, digital art',
+        anime: 'anime style, japanese animation, vibrant colors',
+        pixel: 'pixel art, 8-bit, retro gaming',
+        minimal: 'minimalist, clean lines, modern',
+        neon: 'neon colors, glowing, electric',
+        retro: 'retro, vintage, 80s aesthetic',
+        fantasy: 'fantasy, magical, mystical',
+        scifi: 'science fiction, futuristic, space',
+        noir: 'film noir, black and white, dramatic',
+        vaporwave: 'vaporwave, pastel, retro futuristic',
+        nature: 'nature, organic, earthy',
+        sunset: 'sunset, warm tones, golden hour',
+        ocean: 'ocean, waves, deep blue',
+        fire: 'fire, flames, burning, intense',
+        galaxy: 'galaxy, stars, cosmic, nebula',
+        forest: 'forest, green, nature, peaceful',
+        cosmic: 'cosmic, purple, ethereal',
+        gold: 'golden, luxury, elegant, metallic'
+      };
+      var base = prompts[styleId] || 'digital art';
+      return customPrompt ? base + ', ' + customPrompt + ', high quality' : base + ', high quality, avatar';
+    }
+
+    // === 🎨 POLLINATIONS: Генерация изображения ===
+    function generateWithPollinations(prompt) {
+      return new Promise(function(resolve, reject) {
+        var seed = Math.floor(Math.random() * 10000);
+        var url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?width=512&height=512&seed=' + seed + '&nologo=true';
+        
+        console.log('🔄 Generating:', url);
+        
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        var timeout = setTimeout(function() {
+          reject(new Error('Timeout after 30 seconds'));
+        }, 30000);
+        
+        img.onload = function() {
+          clearTimeout(timeout);
+          console.log('✅ Image loaded from Pollinations');
+          resolve(url);
+        };
+        
+        img.onerror = function() {
+          clearTimeout(timeout);
+          reject(new Error('Failed to load image'));
+        };
+        
         img.src = url;
       });
     }
 
-    // === Handle Generate ===
-    async function handleGenerate() {
-      if(!appState.uploadedImage) { showStatus('⚠️ Upload image first', 'warning'); return; }
-      if(!appState.walletConnected) { showStatus('⚠️ Connect wallet first', 'warning'); return; }
-      const btn = document.getElementById('generateBtn');
-      const original = btn.innerHTML;
-      btn.disabled = true;
-      
-      try {
-        const prompt = document.getElementById('promptInput').value.trim();
-        const style = CONFIG.styles.find(s => s.id === appState.selectedStyle);
-        const aiPrompt = buildPrompt(appState.selectedStyle, prompt);
+    function generateFallbackAvatar(style, prompt) {
+      return new Promise(function(resolve) {
+        var canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        var ctx = canvas.getContext('2d');
         
-        console.log('🎯 Starting generation...');
-        console.log('Style:', style.name);
-        console.log('Prompt:', decodeURIComponent(aiPrompt));
+        var gradient = ctx.createLinearGradient(0, 0, 512, 512);
+        for (var i = 0; i < style.gradient.length; i++) {
+          gradient.addColorStop(i / (style.gradient.length - 1), style.gradient[i]);
+        }
         
-        btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
-        showStatus('🔄 Connecting to AI services...', 'info');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 512, 512);
         
-        const result = await generateWithFallback(aiPrompt, style);
-        showStatus(`✅ Generated via ${result.service}!`, 'success');
+        for (var j = 0; j < 3000; j++) {
+          ctx.fillStyle = 'rgba(255,255,255,' + (Math.random() * 0.15) + ')';
+          ctx.fillRect(Math.random() * 512, Math.random() * 512, 2, 2);
+        }
         
-        btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
-        const processed = await processImage(result.url, appState.addWatermark);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 36px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         
-        btn.innerHTML = '<span class="loading-spinner"></span> Finalizing...';
-        await new Promise(r => setTimeout(r, 400));
+        var text = prompt || style.name;
+        var words = text.split(' ');
+        var lines = [];
+        var cur = '';
         
-        const nftId = `#${Math.floor(Math.random()*9000+1000).toString().padStart(4,'0')}`;
-        const txHash = '0x'+Array(64).fill(0).map(()=>Math.floor(Math.random()*16).toString(16)).join('');
+        for (var k = 0; k < words.length; k++) {
+          if (cur.length + words[k].length < 22) { cur += ' ' + words[k]; }
+          else { if (cur) lines.push(cur.trim()); cur = words[k]; }
+        }
+        if (cur) lines.push(cur.trim());
         
-        appState.generatedData = {
-          originalUrl: URL.createObjectURL(appState.uploadedImage),
-          generatedUrl: processed, 
-          nftId, 
-          txHash, 
-          style: appState.selectedStyle, 
-          usedService: result.service
+        var startY = 256 - ((lines.length - 1) * 28);
+        for (var l = 0; l < lines.length; l++) {
+          ctx.fillText(lines[l], 256, startY + (l * 45));
+        }
+        
+        ctx.font = '20px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.fillText('Style: ' + style.name, 256, 420);
+        
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(8, 8, 496, 496);
+        
+        resolve(canvas.toDataURL('image/png'));
+      });
+    }
+
+    function processImage(url, addWatermark) {
+      return new Promise(function(resolve) {
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          var ctx = canvas.getContext('2d');
+          
+          ctx.drawImage(img, 0, 0);
+          
+          if (addWatermark) {
+            ctx.save();
+            ctx.globalAlpha = 0.35;
+            ctx.fillStyle = '#51CAD3';
+            ctx.font = 'bold 44px Inter, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('OPG', canvas.width - 18, canvas.height - 18);
+            ctx.restore();
+          }
+          
+          resolve(canvas.toDataURL('image/png'));
         };
         
-        document.getElementById('originalImage').src = appState.generatedData.originalUrl;
-        document.getElementById('generatedImage').src = appState.generatedData.generatedUrl;
-        document.getElementById('nftId').textContent = nftId;
-        document.getElementById('resultSection').classList.add('show');
-        document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
-        showStatus(`✅ Done! Generated via ${result.service}`, 'success');
-        
-      } catch(e) {
-        console.error(e);
-        showStatus(`❌ ${e.message || 'Failed. Try again.'}`, 'error');
-      } finally {
-        btn.disabled = false; 
-        btn.innerHTML = original;
+        img.onerror = function() { resolve(url); };
+        img.src = url;
+      });
+    }
+
+    // === ГЛАВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ===
+    function handleGenerate() {
+      if (!appState.uploadedImage) { showStatus('⚠️ Upload image first', 'warning'); return; }
+      if (!appState.walletConnected) { showStatus('⚠️ Connect wallet first', 'warning'); return; }
+
+      var btn = document.getElementById('generateBtn');
+      var originalText = btn.innerHTML;
+      btn.disabled = true;
+      
+      console.log('🎯 Starting generation...');
+      
+      btn.innerHTML = '<span class="loading-spinner"></span> Enhancing prompt...';
+      
+      var prompt = document.getElementById('promptInput').value.trim();
+      var style = null;
+      for (var i = 0; i < STYLES.length; i++) {
+        if (STYLES[i].id === appState.selectedStyle) { style = STYLES[i]; break; }
       }
+      
+      var basePrompt = buildPrompt(appState.selectedStyle, prompt);
+      
+      // Шаг 1: Улучшаем промпт через Gemini
+      enhancePromptWithGemini(basePrompt, style.name)
+        .then(function(enhancedPrompt) {
+          // Шаг 2: Генерируем изображение
+          btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+          showStatus('🤖 Generating with Pollinations AI...', 'info');
+          return generateWithPollinations(enhancedPrompt);
+        })
+        .then(function(imageUrl) {
+          console.log('✅ Pollinations success');
+          btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+          showStatus('🎨 Applying watermark...', 'info');
+          return processImage(imageUrl, appState.addWatermark);
+        })
+        .then(function(processed) {
+          btn.innerHTML = '<span class="loading-spinner"></span> Finalizing...';
+          
+          setTimeout(function() {
+            var nftId = '#' + (Math.floor(Math.random() * 9000) + 1000).toString().padStart(4, '0');
+            var txHash = '0x';
+            for (var i = 0; i < 64; i++) {
+              txHash += Math.floor(Math.random() * 16).toString(16);
+            }
+            
+            appState.generatedData = {
+              originalUrl: URL.createObjectURL(appState.uploadedImage),
+              generatedUrl: processed,
+              nftId: nftId,
+              txHash: txHash,
+              style: appState.selectedStyle
+            };
+            
+            document.getElementById('originalImage').src = appState.generatedData.originalUrl;
+            document.getElementById('generatedImage').src = appState.generatedData.generatedUrl;
+            document.getElementById('nftId').textContent = nftId;
+            document.getElementById('resultSection').classList.add('show');
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+            
+            showStatus('✅ Avatar generated successfully!', 'success');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+          }, 500);
+        })
+        .catch(function(error) {
+          console.error('Generation error:', error);
+          showStatus('❌ ' + (error.message || 'Failed. Try again.'), 'error');
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        });
     }
 
     function handleDownload() {
-      if(!appState.generatedData) return;
-      const a = document.createElement('a');
-      a.download = `gradient-avatar-${appState.generatedData.nftId}.png`;
-      a.href = appState.generatedData.generatedUrl;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      if (!appState.generatedData) return;
+      var link = document.createElement('a');
+      link.download = 'gradient-avatar-' + appState.generatedData.nftId + '.png';
+      link.href = appState.generatedData.generatedUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       showStatus('📥 Download started!', 'success', 'mintStatus');
     }
 
-    async function handleCopyHash() {
-      if(!appState.generatedData) return;
-      try {
-        await navigator.clipboard.writeText(appState.generatedData.txHash);
-        showStatus('🔗 Hash copied!', 'success', 'mintStatus');
-      } catch { showStatus('❌ Copy failed', 'error', 'mintStatus'); }
+    function handleCopyHash() {
+      if (!appState.generatedData) return;
+      navigator.clipboard.writeText(appState.generatedData.txHash)
+        .then(function() { showStatus('🔗 Hash copied!', 'success', 'mintStatus'); })
+        .catch(function() { showStatus('❌ Copy failed', 'error', 'mintStatus'); });
     }
 
-    async function connectWallet() {
-      const btn = document.getElementById('connectWalletBtn');
-      try {
-        if(typeof window.ethereum === 'undefined') {
-          showStatus('❌ Install MetaMask', 'error');
-          window.open('https://metamask.io','_blank');
-          return;
-        }
-        showStatus('Connecting...', 'info');
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        if(chainId !== '0x14a34') {
-          try {
-            await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x14a34' }] });
-          } catch {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [{ 
-                chainId: '0x14a34', 
-                chainName: 'Base Sepolia', 
-                nativeCurrency: { name:'ETH', symbol:'ETH', decimals:18 }, 
-                rpcUrls: ['https://sepolia.base.org'], 
-                blockExplorerUrls: ['https://sepolia.basescan.org'] 
-              }]
+    function connectWallet() {
+      var btn = document.getElementById('connectWalletBtn');
+      
+      if (typeof window.ethereum === 'undefined') {
+        showStatus('❌ Install MetaMask', 'error');
+        window.open('https://metamask.io', '_blank');
+        return;
+      }
+      
+      showStatus('Connecting...', 'info');
+      
+      window.ethereum.request({ method: 'eth_requestAccounts' })
+        .then(function(accounts) {
+          return window.ethereum.request({ method: 'eth_chainId' });
+        })
+        .then(function(chainId) {
+          if (chainId !== '0x14a34') {
+            return window.ethereum.request({ 
+              method: 'wallet_switchEthereumChain', 
+              params: [{ chainId: '0x14a34' }] 
             });
           }
-        }
-        appState.walletConnected = true;
-        btn.textContent = `✅ ${accounts[0].slice(0,6)}...${accounts[0].slice(-4)}`;
-        btn.classList.add('connected');
-        showStatus('✅ Wallet connected!', 'success');
-      } catch(e) { 
-        console.error(e); 
-        showStatus('❌ Connection failed', 'error'); 
-      }
+        })
+        .then(function() {
+          appState.walletConnected = true;
+          btn.textContent = '✅ Connected';
+          btn.classList.add('connected');
+          showStatus('✅ Wallet connected!', 'success');
+        })
+        .catch(function(error) {
+          console.error('Wallet error:', error);
+          showStatus('❌ Connection failed', 'error');
+        });
     }
 
-    function showStatus(msg, type='info', id='statusMessage') {
-      const el = document.getElementById(id);
-      el.innerHTML = msg; 
-      el.className = `status-message status-${type} show`;
-      if(type !== 'error') setTimeout(() => el.classList.remove('show'), 5000);
+    function showStatus(message, type, elementId) {
+      elementId = elementId || 'statusMessage';
+      var el = document.getElementById(elementId);
+      el.innerHTML = message;
+      el.className = 'status-message status-' + type + ' show';
+      if (type !== 'error') {
+        setTimeout(function() { el.classList.remove('show'); }, 5000);
+      }
     }
   </script>
 </body>
