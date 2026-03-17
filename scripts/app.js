@@ -47,7 +47,7 @@ document.getElementById('imageInput').onchange = (e) => {
     reader.readAsDataURL(e.target.files[0]);
 };
 
-// Опрос сервера (ждем картинку)
+// Опрос сервера
 async function pollStatus(generationId) {
     let attempts = 0;
     const maxAttempts = 30;
@@ -71,11 +71,13 @@ async function pollStatus(generationId) {
                 resultPlaceholder.hidden = true;
                 resultContent.hidden = false;
                 resetButton();
+                // Очищаем ввод после успеха (опционально)
+                promptInput.value = '';
             } else if (data.status === 'FAILED') {
                 alert('Generation failed');
                 resetButton();
             } else if (attempts >= maxAttempts) {
-                alert('Timeout. Image might still be generating, check later.');
+                alert('Timeout. Image might still be generating.');
                 resetButton();
             } else {
                 setTimeout(check, 3000);
@@ -128,22 +130,19 @@ async function generate() {
 
 btnGenerate.onclick = generate;
 
-// --- СКАЧИВАНИЕ ЧЕРЕЗ СЕРВЕРНЫЙ ПРОКСИ (ИСПРАВЛЕНО) ---
-document.getElementById('downloadBtn').onclick = () => {
+// --- ПРИНУДИТЕЛЬНОЕ СКАЧИВАНИЕ ЧЕРЕЗ location.assign ---
+document.getElementById('downloadBtn').onclick = (e) => {
+    e.preventDefault();
     const imageUrl = resultImg.src;
     
     if (!imageUrl || imageUrl.includes('placeholder') || imageUrl === window.location.href) {
         return alert('No image to download yet');
     }
 
-    // Вместо fetch напрямую, используем наш API как посредника, чтобы обойти CORS
-    // Это заставит браузер именно СКАЧАТЬ файл
+    // Формируем ссылку на наш прокси в api/generate.js
     const downloadUrl = `/api/generate?proxyUrl=${encodeURIComponent(imageUrl)}`;
     
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `avatar-${Date.now()}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Этот метод заставляет браузер обработать ссылку как прямую команду на загрузку,
+    // если сервер пришлет правильные заголовки Content-Disposition.
+    window.location.assign(downloadUrl);
 };
