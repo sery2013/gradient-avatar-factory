@@ -1,7 +1,6 @@
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
-  // Настройка CORS для работы браузера
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -9,12 +8,10 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const { prompt, style, checkId, imageUrl, mode } = req.body;
-    
-    // Используем переменную окружения или вставь ключ строкой для теста
+    const { prompt, style, checkId } = req.body;
     const apiKey = process.env.LEONARDO_API_KEY; 
 
-    // ШАГ 2: ПРОВЕРКА СТАТУСА ГЕНЕРАЦИИ
+    // ШАГ 2: ПРОВЕРКА СТАТУСА
     if (checkId) {
       const checkRes = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${checkId}`, {
         headers: { 'Authorization': `Bearer ${apiKey}` }
@@ -28,8 +25,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // ШАГ 1: СОЗДАНИЕ ЗАДАЧИ
-    // Используем модель Leonardo Kino XL, которая гарантированно работает через API
+    // ШАГ 1: СОЗДАНИЕ (Используем Leonardo Phoenix)
     const response = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
       method: 'POST',
       headers: {
@@ -37,13 +33,15 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        prompt: `${prompt}, ${style} style, high quality, highly detailed`,
-        modelId: "aa77f04e-3e3d-429c-8292-692348545892", 
+        prompt: `${prompt}, ${style} style, high quality`,
+        // Phoenix — это самая новая и стабильная модель для API
+        modelId: "6b77c30e-2049-43a3-baad-d647efc4644a", 
         width: 512,
         height: 512,
         num_images: 1,
+        // Phoenix требует эти параметры для работы в режиме V2
         alchemy: true,
-        highResolution: true
+        presetStyle: "DYNAMIC"
       })
     });
 
@@ -55,9 +53,10 @@ export default async function handler(req, res) {
         generationId: data.sdGenerationJob.generationId 
       });
     } else {
+      // Выводим детальную ошибку от Leonardo, чтобы понять, в чем дело
       return res.status(400).json({ 
         success: false, 
-        error: data.error || 'Leonardo API Rejected Request' 
+        error: data.error || 'API Error: ' + JSON.stringify(data)
       });
     }
 
