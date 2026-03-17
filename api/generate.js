@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
+  // CORS заголовки
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -9,7 +10,9 @@ export default async function handler(req, res) {
 
   try {
     const { prompt, style, checkId } = req.body;
-    const apiKey = process.env.LEONARDO_API_KEY; 
+    
+    // === ВСТАВЬТЕ ВАШ КЛЮЧ МЕЖДУ КАВЫЧКАМИ ===
+    const apiKey = "f5174bf5-a782-4460-a04e-586b1d048fc3"; 
 
     // ШАГ 2: ПРОВЕРКА СТАТУСА
     if (checkId) {
@@ -17,15 +20,17 @@ export default async function handler(req, res) {
         headers: { 'Authorization': `Bearer ${apiKey}` }
       });
       const data = await checkRes.json();
-      const gen = data.generations_by_pk;
       
+      // Логируем ответ в консоль Vercel для отладки
+      console.log('Polling Status:', data.generations_by_pk?.status);
+
       return res.status(200).json({ 
-        status: gen?.status || 'PENDING', 
-        imageUrl: gen?.generated_images?.[0]?.url || null 
+        status: data.generations_by_pk?.status || 'PENDING', 
+        imageUrl: data.generations_by_pk?.generated_images?.[0]?.url || null 
       });
     }
 
-    // ШАГ 1: СОЗДАНИЕ (Используем Leonardo Phoenix)
+    // ШАГ 1: СОЗДАНИЕ (Используем самую стабильную модель v1.5)
     const response = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
       method: 'POST',
       headers: {
@@ -34,14 +39,12 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         prompt: `${prompt}, ${style} style, high quality`,
-        // Phoenix — это самая новая и стабильная модель для API
-        modelId: "6b77c30e-2049-43a3-baad-d647efc4644a", 
+        // Это ID модели Leonardo Diffusion (v1.5) — самая совместимая модель
+        modelId: "6bef9f1b-29cb-40c7-b75d-327233fb5f55", 
         width: 512,
         height: 512,
         num_images: 1,
-        // Phoenix требует эти параметры для работы в режиме V2
-        alchemy: true,
-        presetStyle: "DYNAMIC"
+        promptMagic: true // Улучшает понимание промпта на старых моделях
       })
     });
 
@@ -53,10 +56,11 @@ export default async function handler(req, res) {
         generationId: data.sdGenerationJob.generationId 
       });
     } else {
-      // Выводим детальную ошибку от Leonardo, чтобы понять, в чем дело
+      // Если снова ошибка, мы увидим её текст прямо на сайте
+      const errorDetail = data.error || JSON.stringify(data);
       return res.status(400).json({ 
         success: false, 
-        error: data.error || 'API Error: ' + JSON.stringify(data)
+        error: `Leonardo Error: ${errorDetail}`
       });
     }
 
