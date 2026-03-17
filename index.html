@@ -1,115 +1,270 @@
-<script>
-var STYLES = [
-    { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'] },
-    { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'] },
-    { id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'] },
-    { id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff'] },
-    { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'] },
-    { id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'] }
-];
-
-var state = { mode: 'text2img', selectedStyle: 'cyberpunk', imageBase64: null };
-
-document.addEventListener('DOMContentLoaded', function() {
-    const grid = document.getElementById('styleGrid');
-    STYLES.forEach(s => {
-        const active = s.id === state.selectedStyle ? 'active' : '';
-        grid.innerHTML += `
-            <button class="style-btn ${active}" onclick="selectStyle('${s.id}')" id="btn-${s.id}">
-                <div class="style-preview" style="background: linear-gradient(135deg, ${s.gradient.join(',')})"></div>
-                ${s.name}
-            </button>`;
-    });
-});
-
-function selectStyle(id) {
-    document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('btn-' + id).classList.add('active');
-    state.selectedStyle = id;
-}
-
-document.querySelectorAll('.mode-tab').forEach(tab => {
-    tab.onclick = function() {
-        document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-        state.mode = this.dataset.mode;
-        document.getElementById('uploadZone').classList.toggle('show', state.mode === 'img2img');
-    };
-});
-
-const imageInput = document.getElementById('imageInput');
-document.getElementById('uploadZone').onclick = () => imageInput.click();
-imageInput.onchange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-        state.imageBase64 = ev.target.result;
-        document.getElementById('previewImage').src = ev.target.result;
-        document.getElementById('uploadZone').classList.add('has-image');
-    };
-    reader.readAsDataURL(file);
-};
-
-// ГЛАВНАЯ ФУНКЦИЯ
-document.getElementById('generateBtn').onclick = async function() {
-    const prompt = document.getElementById('promptInput').value.trim();
-    if (!prompt) return showStatus('⚠️ Введите промпт!', 'error');
-
-    const btn = this;
-    const originalText = btn.innerHTML;
-    
-    btn.disabled = true;
-    btn.innerHTML = '<span class="loading-spinner"></span> Leonardo AI думает... (до 1 мин)';
-    document.getElementById('resultSection').classList.remove('show');
-
-    try {
-        console.log("Sending request to /api/generate...");
-        const response = await fetch('/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                prompt: prompt,
-                style: state.selectedStyle,
-                mode: state.mode,
-                imageUrl: state.imageBase64
-            })
-        });
-
-        const data = await response.json();
-        console.log("Server response:", data);
-
-        if (data.success && data.imageUrl) {
-            const imgElement = document.getElementById('generatedImage');
-            imgElement.onload = () => {
-                document.getElementById('resultSection').classList.add('show');
-                document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
-                showStatus('✅ Готово!', 'success');
-            };
-            imgElement.src = data.imageUrl;
-        } else {
-            // Если сервер вернул ошибку, выводим её текст
-            showStatus('❌ Ошибка API: ' + (data.error || 'Неизвестная ошибка'), 'error');
-        }
-    } catch (e) {
-        console.error("Fetch error:", e);
-        showStatus('❌ Ошибка соединения или таймаут Vercel', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GradientAvatar Factory | OpenGradient</title>
+<style>
+    /* === СТИЛИ === */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: #0A0F19; color: #FFFFFF; min-height: 100vh; padding: 20px;
     }
-};
+    .container { max-width: 1000px; margin: 0 auto; }
+    header {
+        background: rgba(18, 26, 38, 0.9); border: 1px solid #1E2A3A;
+        border-radius: 12px; padding: 20px; margin-bottom: 30px;
+    }
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 24px; font-weight: 700; cursor: pointer; }
+    .logo span { color: #51CAD3; }
 
-async function downloadImg() {
-    const img = document.getElementById('generatedImage');
-    if (!img.src) return;
-    window.open(img.src, '_blank');
-}
+    .main-card {
+        background: #121A26; border: 1px solid #1E2A3A;
+        border-radius: 16px; padding: 30px; margin-bottom: 20px;
+    }
+    .main-card h2 { font-size: 22px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+    
+    .mode-tabs { display: flex; gap: 10px; margin-bottom: 24px; }
+    .mode-tab {
+        flex: 1; padding: 12px; background: #0A0F19; border: 2px solid #1E2A3A;
+        border-radius: 8px; color: #A0B3C6; cursor: pointer; font-weight: 600;
+        transition: all 0.2s; text-align: center;
+    }
+    .mode-tab.active { border-color: #51CAD3; background: rgba(81, 202, 211, 0.1); color: #51CAD3; }
 
-function showStatus(msg, type) {
-    const el = document.getElementById('statusMessage');
-    el.innerHTML = msg;
-    el.className = `status-message status-${type} show`;
-    // Увеличил время показа ошибки, чтобы успеть прочитать
-    setTimeout(() => el.classList.remove('show'), 6000);
-}
+    .upload-zone {
+        border: 2px dashed #1E2A3A; border-radius: 12px; padding: 40px 20px;
+        text-align: center; cursor: pointer; transition: all 0.3s;
+        background: rgba(151, 222, 237, 0.03); margin-bottom: 24px; display: none;
+    }
+    .upload-zone.show { display: block; }
+    .upload-zone.has-image { border-color: #51CAD3; padding: 10px; }
+    .upload-icon { font-size: 48px; margin-bottom: 12px; }
+    .preview-image { max-width: 100%; max-height: 250px; border-radius: 8px; display: none; margin: 0 auto; }
+    .upload-zone.has-image .upload-icon, .upload-zone.has-image p { display: none; }
+    .upload-zone.has-image .preview-image { display: block; }
+
+    .section-title { font-size: 14px; color: #6B7F94; margin-bottom: 12px; display: block; }
+    .style-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .style-btn {
+        padding: 10px; background: #0A0F19; border: 2px solid #1E2A3A;
+        border-radius: 8px; cursor: pointer; transition: all 0.2s;
+        text-align: center; font-size: 12px; color: white;
+    }
+    .style-btn.active { border-color: #51CAD3; background: rgba(81, 202, 211, 0.1); }
+    .style-preview { width: 100%; height: 40px; border-radius: 4px; margin-bottom: 6px; }
+
+    textarea {
+        width: 100%; padding: 14px; background: #0A0F19; border: 1px solid #1E2A3A;
+        border-radius: 8px; color: #FFFFFF; font-family: inherit; min-height: 80px; margin-bottom: 20px;
+    }
+
+    .btn-generate {
+        width: 100%; padding: 16px; background: linear-gradient(135deg, #51CAD3, #97DEED);
+        border: none; border-radius: 10px; color: #0A0F19; font-weight: 700; font-size: 16px; cursor: pointer;
+    }
+    .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .result-section { display: none; margin-top: 20px; }
+    .result-section.show { display: block; }
+    .result-card { background: #0A0F19; border: 2px solid #1E2A3A; border-radius: 12px; padding: 16px; text-align: center; }
+    .result-card img { max-width: 100%; border-radius: 8px; margin-bottom: 15px; }
+
+    .status-message { padding: 14px; border-radius: 8px; margin-top: 16px; display: none; text-align: center; }
+    .status-message.show { display: block; }
+    .status-success { background: rgba(0, 255, 157, 0.1); border: 1px solid #00ff9d; color: #00ff9d; }
+    .status-error { background: rgba(255, 107, 107, 0.1); border: 1px solid #ff6b6b; color: #ff6b6b; }
+
+    .loading-spinner {
+        display: inline-block; width: 18px; height: 18px;
+        border: 2px solid rgba(255,255,255,0.3); border-radius: 50%;
+        border-top-color: #0A0F19; animation: spin 1s linear infinite; margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    footer { margin-top: 40px; text-align: center; color: #6B7F94; padding: 20px; border-top: 1px solid #1E2A3A; }
+</style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="header-top">
+            <div class="logo" onclick="location.reload()">🎨 Gradient<span>Avatar</span> Factory</div>
+            <div style="color: #51CAD3; font-size: 12px; border: 1px solid #1E2A3A; padding: 5px 10px; border-radius: 20px;">Leonardo AI Mode</div>
+        </div>
+    </header>
+
+    <div class="main-card">
+        <h2>🚀 AI Image Generator</h2>
+        <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="text2img">📝 Text to Image</button>
+            <button class="mode-tab" data-mode="img2img">🖼️ Image to Image</button>
+        </div>
+
+        <div class="upload-zone" id="uploadZone">
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <div class="upload-icon">📁</div>
+            <p><strong>Upload reference photo</strong></p>
+            <img id="previewImage" class="preview-image">
+        </div>
+
+        <label class="section-title">Select Style</label>
+        <div class="style-grid" id="styleGrid"></div>
+
+        <label class="section-title">Prompt</label>
+        <textarea id="promptInput" placeholder="Describe what you want to see..."></textarea>
+
+        <button class="btn-generate" id="generateBtn">✨ Generate Now</button>
+        <div id="statusMessage" class="status-message"></div>
+    </div>
+
+    <div class="main-card result-section" id="resultSection">
+        <div class="result-card">
+            <img id="generatedImage" alt="Result">
+            <div>
+                <button class="btn-generate" style="width: auto; padding: 10px 30px;" onclick="downloadImg()">📥 Download PNG</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by OpenGradient & Leonardo AI</p>
+    </footer>
+</div>
+
+<script>
+    // 1. Данные
+    const STYLES = [
+        { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'] },
+        { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'] },
+        { id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'] },
+        { id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff'] },
+        { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'] },
+        { id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'] }
+    ];
+
+    let state = { mode: 'text2img', selectedStyle: 'cyberpunk', imageBase64: null };
+
+    // 2. Инициализация стилей
+    function initStyles() {
+        const grid = document.getElementById('styleGrid');
+        grid.innerHTML = ''; 
+        STYLES.forEach(s => {
+            const active = s.id === state.selectedStyle ? 'active' : '';
+            grid.innerHTML += `
+                <button class="style-btn ${active}" onclick="selectStyle('${s.id}')" id="btn-${s.id}">
+                    <div class="style-preview" style="background: linear-gradient(135deg, ${s.gradient.join(',')})"></div>
+                    ${s.name}
+                </button>`;
+        });
+    }
+
+    function selectStyle(id) {
+        state.selectedStyle = id;
+        document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + id).classList.add('active');
+    }
+
+    // 3. Табы режимов
+    document.querySelectorAll('.mode-tab').forEach(tab => {
+        tab.onclick = function() {
+            document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            state.mode = this.dataset.mode;
+            document.getElementById('uploadZone').classList.toggle('show', state.mode === 'img2img');
+        };
+    });
+
+    // 4. Загрузка фото
+    const imageInput = document.getElementById('imageInput');
+    const uploadZone = document.getElementById('uploadZone');
+    uploadZone.onclick = () => imageInput.click();
+
+    imageInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            state.imageBase64 = ev.target.result;
+            document.getElementById('previewImage').src = ev.target.result;
+            uploadZone.classList.add('has-image');
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // 5. Генерация
+    document.getElementById('generateBtn').onclick = async function() {
+        const prompt = document.getElementById('promptInput').value.trim();
+        if (!prompt) return showStatus('Enter prompt!', 'error');
+
+        const btn = this;
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+        document.getElementById('resultSection').classList.remove('show');
+
+        try {
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    style: state.selectedStyle,
+                    mode: state.mode,
+                    imageUrl: state.imageBase64
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.imageUrl) {
+                const img = document.getElementById('generatedImage');
+                img.onload = () => {
+                    document.getElementById('resultSection').classList.add('show');
+                    showStatus('Success!', 'success');
+                };
+                img.src = data.imageUrl;
+            } else {
+                showStatus('Error: ' + (data.error || 'Server error'), 'error');
+            }
+        } catch (e) {
+            showStatus('Connection failed', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    };
+
+    // 6. Скачивание
+    async function downloadImg() {
+        const img = document.getElementById('generatedImage');
+        if (!img.src) return;
+        try {
+            const res = await fetch(img.src);
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `avatar-${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (e) {
+            window.open(img.src, '_blank');
+        }
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('statusMessage');
+        el.innerHTML = msg;
+        el.className = `status-message status-${type} show`;
+        setTimeout(() => el.classList.remove('show'), 5000);
+    }
+
+    // Старт
+    initStyles();
 </script>
+</body>
+</html>
