@@ -28,16 +28,8 @@ align-items: center;
 flex-wrap: wrap;
 gap: 15px;
 }
-.logo {
-font-size: 24px;
-font-weight: 700;
-cursor: pointer;
-transition: all 0.2s;
-}
-.logo:hover {
-transform: scale(1.02);
-text-shadow: 0 0 20px rgba(81, 202, 211, 0.5);
-}
+.logo { font-size: 24px; font-weight: 700; cursor: pointer; }
+.logo:hover { transform: scale(1.02); }
 .logo span { color: #51CAD3; }
 .btn-connect {
 padding: 10px 20px;
@@ -47,7 +39,6 @@ color: #51CAD3;
 border-radius: 8px;
 cursor: pointer;
 font-weight: 600;
-transition: all 0.2s;
 }
 .btn-connect:hover { background: rgba(81, 202, 211, 0.1); }
 .btn-connect.connected {
@@ -69,6 +60,27 @@ display: flex;
 align-items: center;
 gap: 10px;
 }
+.mode-tabs {
+display: flex;
+gap: 10px;
+margin-bottom: 24px;
+}
+.mode-tab {
+flex: 1;
+padding: 12px;
+background: #0A0F19;
+border: 2px solid #1E2A3A;
+border-radius: 8px;
+color: #A0B3C6;
+cursor: pointer;
+font-weight: 600;
+transition: all 0.2s;
+}
+.mode-tab.active {
+border-color: #51CAD3;
+background: rgba(81, 202, 211, 0.1);
+color: #51CAD3;
+}
 .upload-zone {
 border: 2px dashed #1E2A3A;
 border-radius: 12px;
@@ -78,7 +90,9 @@ cursor: pointer;
 transition: all 0.3s;
 background: rgba(151, 222, 237, 0.03);
 margin-bottom: 24px;
+display: none;
 }
+.upload-zone.show { display: block; }
 .upload-zone:hover {
 border-color: #51CAD3;
 background: rgba(81, 202, 211, 0.08);
@@ -163,7 +177,6 @@ display: flex;
 align-items: center;
 justify-content: center;
 cursor: pointer;
-flex-shrink: 0;
 }
 .checkbox.checked {
 background: #51CAD3;
@@ -255,11 +268,6 @@ background: rgba(255, 107, 107, 0.1);
 border: 1px solid #ff6b6b;
 color: #ff6b6b;
 }
-.status-warning {
-background: rgba(255, 193, 7, 0.1);
-border: 1px solid #ffc107;
-color: #ffc107;
-}
 .status-info {
 background: rgba(81, 202, 211, 0.1);
 border: 1px solid #51CAD3;
@@ -288,48 +296,59 @@ footer a { color: #97DEED; text-decoration: none; }
 .result-grid { grid-template-columns: 1fr; }
 .style-grid { grid-template-columns: repeat(3, 1fr); }
 }
-@media (max-width: 480px) {
-.style-grid { grid-template-columns: repeat(2, 1fr); }
-}
 </style>
 </head>
 <body>
 <div class="container">
 <header>
 <div class="header-top">
-<div class="logo" id="siteLogo" title="Click to refresh">
+<div class="logo" id="siteLogo" onclick="location.reload()">
 🎨 Gradient<span>Avatar</span> Factory
 </div>
 <button class="btn-connect" id="connectWalletBtn">🔗 Connect Wallet</button>
 </div>
 </header>
+
 <div class="main-card">
 <h2>🎨 Create Your AI Avatar</h2>
+
+<!-- Mode Selection -->
+<div class="mode-tabs">
+<button class="mode-tab active" data-mode="text2img">📝 Text to Image</button>
+<button class="mode-tab" data-mode="img2img">🖼️ Image to Image</button>
+</div>
+
+<!-- Upload Zone (for img2img) -->
 <div class="upload-zone" id="uploadZone">
 <input type="file" id="imageInput" accept="image/*" style="display: none;">
 <div class="upload-icon">📁</div>
 <p><strong>Upload your character photo</strong></p>
-<p style="color: #6B7F94; font-size: 14px; margin-top: 8px;">PNG, JPG up to 10MB</p>
+<p style="color: #6B7F94; font-size: 14px;">PNG, JPG up to 10MB</p>
 <img id="previewImage" class="preview-image" alt="Preview">
 </div>
-<label class="section-title">Choose Style (18 styles)</label>
+
+<label class="section-title">Choose Style</label>
 <div class="style-grid" id="styleGrid"></div>
-<label class="section-title">Custom Prompt (optional)</label>
-<textarea id="promptInput" placeholder="Additional details: cyberpunk armor, neon lights, futuristic..."></textarea>
+
+<label class="section-title">Custom Prompt (REQUIRED)</label>
+<textarea id="promptInput" placeholder="Example: cyberpunk frog character with neon lights, futuristic armor"></textarea>
+
 <div class="options-row" id="watermarkOption">
 <div class="checkbox" id="watermarkCheckbox"></div>
 <div class="checkbox-label">
 <strong>Add OpenGradient Watermark</strong>
-<div style="color: #6B7F94; font-size: 13px;">Overlay "OPG" logo on generated avatar</div>
+<div style="color: #6B7F94; font-size: 13px;">Overlay "OPG" logo</div>
 </div>
 </div>
-<button class="btn-generate" id="generateBtn">✨ Generate AI Avatar</button>
+
+<button class="btn-generate" id="generateBtn">✨ Generate Avatar</button>
 <div id="statusMessage" class="status-message"></div>
 </div>
+
 <div class="main-card result-section" id="resultSection">
 <h2>✅ Generation Complete!</h2>
 <div class="result-grid">
-<div class="result-card">
+<div class="result-card" id="originalCard" style="display:none;">
 <div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Original</div>
 <img id="originalImage" alt="Original">
 </div>
@@ -343,37 +362,27 @@ footer a { color: #97DEED; text-decoration: none; }
 <button class="btn-action" id="downloadBtn">📥 Download PNG</button>
 <button class="btn-action" id="copyHashBtn">🔗 Copy Hash</button>
 </div>
-<div id="mintStatus" class="status-message"></div>
 </div>
+
 <footer>
-<p>Powered by <a href="https://leonardo.ai" target="_blank">Leonardo.ai</a> • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
-<p style="margin-top: 8px;">18 Unique Styles • Base Sepolia Testnet</p>
+<p>Powered by Pollinations AI & Leonardo.ai • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
 </footer>
 </div>
+
 <script>
-// === 18 СТИЛЕЙ ===
 var STYLES = [
-{ id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk neon futuristic high tech' },
-{ id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime japanese animation vibrant' },
-{ id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art 8bit retro gaming' },
-{ id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist clean modern simple' },
-{ id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon glow electric vibrant' },
-{ id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro vintage 80s aesthetic' },
-{ id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy magical mystical epic' },
-{ id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction futuristic space' },
-{ id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir black white dramatic' },
-{ id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave pastel retro futuristic' },
-{ id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature organic earthy natural' },
-{ id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset warm golden hour sky' },
-{ id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean waves deep blue aquatic' },
-{ id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire flames burning intense' },
-{ id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy stars cosmic nebula universe' },
-{ id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest green nature trees peaceful' },
-{ id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic ethereal mystical space' },
-{ id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden luxury elegant metallic' }
+{ id: 'cyberpunk', name: 'Cyberpunk', prompt: 'cyberpunk neon futuristic' },
+{ id: 'anime', name: 'Anime', prompt: 'anime japanese animation' },
+{ id: 'pixel', name: 'Pixel Art', prompt: 'pixel art 8bit retro' },
+{ id: 'minimal', name: 'Minimal', prompt: 'minimalist clean modern' },
+{ id: 'neon', name: 'Neon', prompt: 'neon glow electric' },
+{ id: 'fantasy', name: 'Fantasy', prompt: 'fantasy magical mystical' },
+{ id: 'scifi', name: 'Sci-Fi', prompt: 'science fiction futuristic' },
+{ id: 'nature', name: 'Nature', prompt: 'nature organic earthy' }
 ];
 
 var appState = {
+mode: 'text2img',
 walletConnected: false,
 uploadedImage: null,
 selectedStyle: 'cyberpunk',
@@ -384,54 +393,62 @@ generatedData: null
 document.addEventListener('DOMContentLoaded', function() {
 renderStyleGrid();
 setupEventListeners();
-console.log('✅ GradientAvatar Factory loaded!');
-console.log('🎨 Using Leonardo.ai via Vercel API');
-});
-
-document.getElementById('siteLogo').addEventListener('click', function() {
-location.reload();
 });
 
 function renderStyleGrid() {
 var grid = document.getElementById('styleGrid');
 var html = '';
 for (var i = 0; i < STYLES.length; i++) {
-var style = STYLES[i];
-var active = style.id === appState.selectedStyle ? 'active' : '';
-html += '<button class="style-btn ' + active + '" data-style="' + style.id + '">';
-html += '<div class="style-preview" style="background: linear-gradient(135deg, ' + style.gradient.join(', ') + ')"></div>';
-html += '<div>' + style.name + '</div></button>';
+var s = STYLES[i];
+var active = s.id === appState.selectedStyle ? 'active' : '';
+html += '<button class="style-btn ' + active + '" data-style="' + s.id + '">';
+html += '<div class="style-preview" style="background: linear-gradient(135deg, ' + s.gradient.join(', ') + ')"></div>';
+html += '<div>' + s.name + '</div></button>';
 }
 grid.innerHTML = html;
 }
 
 function setupEventListeners() {
+// Mode tabs
+document.querySelectorAll('.mode-tab').forEach(function(tab) {
+tab.addEventListener('click', function() {
+document.querySelectorAll('.mode-tab').forEach(function(t) { t.classList.remove('active'); });
+this.classList.add('active');
+appState.mode = this.dataset.mode;
+document.getElementById('uploadZone').classList.toggle('show', appState.mode === 'img2img');
+});
+});
+
+// Upload
 var uploadZone = document.getElementById('uploadZone');
 var imageInput = document.getElementById('imageInput');
 uploadZone.addEventListener('click', function() { imageInput.click(); });
-uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.style.borderColor = '#51CAD3'; });
-uploadZone.addEventListener('dragleave', function() { uploadZone.style.borderColor = '#1E2A3A'; });
+uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); this.style.borderColor = '#51CAD3'; });
+uploadZone.addEventListener('dragleave', function() { this.style.borderColor = '#1E2A3A'; });
 uploadZone.addEventListener('drop', function(e) {
 e.preventDefault();
-uploadZone.style.borderColor = '#1E2A3A';
+this.style.borderColor = '#1E2A3A';
 handleImageUpload(e.dataTransfer.files[0]);
 });
 imageInput.addEventListener('change', function(e) { handleImageUpload(e.target.files[0]); });
+
+// Style selection
 document.getElementById('styleGrid').addEventListener('click', function(e) {
 var btn = e.target.closest('.style-btn');
 if (btn) {
-var buttons = document.querySelectorAll('.style-btn');
-for (var i = 0; i < buttons.length; i++) { buttons[i].classList.remove('active'); }
+document.querySelectorAll('.style-btn').forEach(function(b) { b.classList.remove('active'); });
 btn.classList.add('active');
 appState.selectedStyle = btn.dataset.style;
 }
 });
+
+// Watermark
 document.getElementById('watermarkOption').addEventListener('click', function() {
 appState.addWatermark = !appState.addWatermark;
-var checkbox = document.getElementById('watermarkCheckbox');
-if (appState.addWatermark) { checkbox.classList.add('checked'); }
-else { checkbox.classList.remove('checked'); }
+document.getElementById('watermarkCheckbox').classList.toggle('checked', appState.addWatermark);
 });
+
+// Generate
 document.getElementById('generateBtn').addEventListener('click', handleGenerate);
 document.getElementById('downloadBtn').addEventListener('click', handleDownload);
 document.getElementById('copyHashBtn').addEventListener('click', handleCopyHash);
@@ -439,53 +456,89 @@ document.getElementById('connectWalletBtn').addEventListener('click', connectWal
 }
 
 function handleImageUpload(file) {
-if (!file || !file.type.startsWith('image/')) { showStatus('Please select a valid image', 'error'); return; }
-if (file.size > 10 * 1024 * 1024) { showStatus('Image must be under 10MB', 'error'); return; }
+if (!file || !file.type.startsWith('image/')) { showStatus('Invalid image', 'error'); return; }
+if (file.size > 10 * 1024 * 1024) { showStatus('Image too large (max 10MB)', 'error'); return; }
 appState.uploadedImage = file;
 var reader = new FileReader();
 reader.onload = function(e) {
 document.getElementById('previewImage').src = e.target.result;
 document.getElementById('uploadZone').classList.add('has-image');
-showStatus('✅ Image loaded! Ready to generate', 'success');
+showStatus('✅ Image loaded!', 'success');
 };
 reader.readAsDataURL(file);
 }
 
-// === 🎨 AI GENERATION VIA VERCEL API ===
-function generateViaAPI(prompt, style) {
-return new Promise(function(resolve, reject) {
-console.log('🎨 Calling Vercel API...');
-showStatus('🤖 AI is generating your avatar... (30-60 seconds)', 'info');
+function handleGenerate() {
+var prompt = document.getElementById('promptInput').value.trim();
+if (!prompt) { showStatus('⚠️ Please enter a prompt', 'warning'); return; }
+if (!appState.walletConnected) { showStatus('⚠️ Connect wallet first', 'warning'); return; }
+if (appState.mode === 'img2img' && !appState.uploadedImage) {
+showStatus('⚠️ Upload image first', 'warning'); return;
+}
+
+var btn = document.getElementById('generateBtn');
+var originalText = btn.innerHTML;
+btn.disabled = true;
+btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+
+var style = null;
+for (var i = 0; i < STYLES.length; i++) {
+if (STYLES[i].id === appState.selectedStyle) { style = STYLES[i]; break; }
+}
+
+showStatus('🤖 AI is generating... (15-30 seconds)', 'info');
 
 fetch('/api/generate', {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({
-prompt: prompt + ', ' + style.prompt + ', high quality, detailed, digital art',
-style: style.name,
-width: 512,
-height: 512
+prompt: prompt,
+style: style.prompt,
+mode: appState.mode,
+imageUrl: appState.uploadedImage ? null : ''
 })
 })
 .then(function(res) { return res.json(); })
 .then(function(data) {
-if (data.error) {
-reject(new Error(data.error));
-return;
+if (data.error) throw new Error(data.error);
+return addWatermark(data.imageUrl);
+})
+.then(function(processedUrl) {
+var nftId = '#' + (Math.floor(Math.random() * 9000) + 1000).toString().padStart(4, '0');
+var txHash = '0x' + Array(64).fill(0).map(function() { return Math.floor(Math.random() * 16).toString(16); }).join('');
+
+appState.generatedData = {
+originalUrl: appState.uploadedImage ? URL.createObjectURL(appState.uploadedImage) : null,
+generatedUrl: processedUrl,
+nftId: nftId,
+txHash: txHash
+};
+
+if (appState.mode === 'img2img') {
+document.getElementById('originalCard').style.display = 'block';
+document.getElementById('originalImage').src = appState.generatedData.originalUrl;
 }
-console.log('✅ Image generated via API!');
-resolve(data.imageUrl);
+
+document.getElementById('generatedImage').src = processedUrl;
+document.getElementById('nftId').textContent = nftId;
+document.getElementById('resultSection').classList.add('show');
+document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+
+showStatus('✅ Generated successfully!', 'success');
+btn.innerHTML = originalText;
+btn.disabled = false;
 })
 .catch(function(error) {
-console.error('API error:', error);
-reject(new Error('Failed to generate. Please try again.'));
-});
+console.error('Error:', error);
+showStatus('❌ ' + error.message, 'error');
+btn.innerHTML = originalText;
+btn.disabled = false;
 });
 }
 
-// === 💧 ADD WATERMARK ===
 function addWatermark(imageUrl) {
 return new Promise(function(resolve) {
+if (!appState.addWatermark) { resolve(imageUrl); return; }
 var img = new Image();
 img.crossOrigin = 'anonymous';
 img.onload = function() {
@@ -494,7 +547,6 @@ canvas.width = img.width;
 canvas.height = img.height;
 var ctx = canvas.getContext('2d');
 ctx.drawImage(img, 0, 0);
-if (appState.addWatermark) {
 ctx.save();
 ctx.globalAlpha = 0.35;
 ctx.fillStyle = '#51CAD3';
@@ -503,81 +555,10 @@ ctx.textAlign = 'right';
 ctx.textBaseline = 'bottom';
 ctx.fillText('OPG', canvas.width - 20, canvas.height - 20);
 ctx.restore();
-}
 resolve(canvas.toDataURL('image/png'));
 };
 img.onerror = function() { resolve(imageUrl); };
 img.src = imageUrl;
-});
-}
-
-// === ГЛАВНАЯ ФУНКЦИЯ ===
-function handleGenerate() {
-if (!appState.uploadedImage) {
-showStatus('⚠️ Upload image first', 'warning');
-return;
-}
-var prompt = document.getElementById('promptInput').value.trim();
-if (!prompt) {
-showStatus('⚠️ Please enter a prompt', 'warning');
-document.getElementById('promptInput').focus();
-return;
-}
-if (!appState.walletConnected) {
-showStatus('⚠️ Connect wallet first', 'warning');
-return;
-}
-var btn = document.getElementById('generateBtn');
-var originalText = btn.innerHTML;
-btn.disabled = true;
-var selectedStyle = null;
-for (var i = 0; i < STYLES.length; i++) {
-if (STYLES[i].id === appState.selectedStyle) {
-selectedStyle = STYLES[i];
-break;
-}
-}
-console.log('🎯 Starting generation via Vercel API...');
-console.log('Style:', selectedStyle.name);
-console.log('Prompt:', prompt);
-btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
-generateViaAPI(prompt, selectedStyle)
-.then(function(imageUrl) {
-btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
-showStatus('💧 Applying watermark...', 'info');
-return addWatermark(imageUrl);
-})
-.then(function(processedUrl) {
-btn.innerHTML = '<span class="loading-spinner"></span> Finalizing...';
-setTimeout(function() {
-var nftId = '#' + (Math.floor(Math.random() * 9000) + 1000).toString().padStart(4, '0');
-var txHash = '0x';
-for (var i = 0; i < 64; i++) {
-txHash += Math.floor(Math.random() * 16).toString(16);
-}
-appState.generatedData = {
-originalUrl: URL.createObjectURL(appState.uploadedImage),
-generatedUrl: processedUrl,
-nftId: nftId,
-txHash: txHash,
-style: appState.selectedStyle,
-prompt: prompt
-};
-document.getElementById('originalImage').src = appState.generatedData.originalUrl;
-document.getElementById('generatedImage').src = appState.generatedData.generatedUrl;
-document.getElementById('nftId').textContent = nftId;
-document.getElementById('resultSection').classList.add('show');
-document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
-showStatus('✅ Avatar generated successfully!', 'success');
-btn.innerHTML = originalText;
-btn.disabled = false;
-}, 500);
-})
-.catch(function(error) {
-console.error('Generation error:', error);
-showStatus('❌ ' + error.message, 'error');
-btn.innerHTML = originalText;
-btn.disabled = false;
 });
 }
 
@@ -589,14 +570,14 @@ link.href = appState.generatedData.generatedUrl;
 document.body.appendChild(link);
 link.click();
 document.body.removeChild(link);
-showStatus('📥 Download started!', 'success', 'mintStatus');
+showStatus('📥 Download started!', 'success');
 }
 
 function handleCopyHash() {
 if (!appState.generatedData) return;
 navigator.clipboard.writeText(appState.generatedData.txHash)
-.then(function() { showStatus('🔗 Hash copied!', 'success', 'mintStatus'); })
-.catch(function() { showStatus('❌ Copy failed', 'error', 'mintStatus'); });
+.then(function() { showStatus('🔗 Hash copied!', 'success'); })
+.catch(function() { showStatus('❌ Copy failed', 'error'); });
 }
 
 function connectWallet() {
@@ -608,9 +589,7 @@ return;
 }
 showStatus('Connecting...', 'info');
 window.ethereum.request({ method: 'eth_requestAccounts' })
-.then(function(accounts) {
-return window.ethereum.request({ method: 'eth_chainId' });
-})
+.then(function(accounts) { return window.ethereum.request({ method: 'eth_chainId' }); })
 .then(function(chainId) {
 if (chainId !== '0x14a34') {
 return window.ethereum.request({
@@ -626,19 +605,16 @@ btn.classList.add('connected');
 showStatus('✅ Wallet connected!', 'success');
 })
 .catch(function(error) {
-console.error('Wallet error:', error);
+console.error(error);
 showStatus('❌ Connection failed', 'error');
 });
 }
 
-function showStatus(message, type, elementId) {
-elementId = elementId || 'statusMessage';
-var el = document.getElementById(elementId);
-el.innerHTML = message;
+function showStatus(msg, type) {
+var el = document.getElementById('statusMessage');
+el.innerHTML = msg;
 el.className = 'status-message status-' + type + ' show';
-if (type !== 'error') {
-setTimeout(function() { el.classList.remove('show'); }, 6000);
-}
+if (type !== 'error') setTimeout(function() { el.classList.remove('show'); }, 6000);
 }
 </script>
 </body>
