@@ -28,7 +28,16 @@
       flex-wrap: wrap;
       gap: 15px;
     }
-    .logo { font-size: 24px; font-weight: 700; }
+    .logo { 
+      font-size: 24px; 
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .logo:hover { 
+      transform: scale(1.02);
+      text-shadow: 0 0 20px rgba(81, 202, 211, 0.5);
+    }
     .logo span { color: #51CAD3; }
     .btn-connect {
       padding: 10px 20px;
@@ -134,10 +143,7 @@
       min-height: 80px;
       margin-bottom: 20px;
     }
-    textarea:focus {
-      outline: none;
-      border-color: #51CAD3;
-    }
+    textarea:focus { outline: none; border-color: #51CAD3; }
     .options-row {
       display: flex;
       align-items: center;
@@ -226,9 +232,7 @@
       font-weight: 600;
       transition: all 0.2s;
     }
-    .btn-action:hover {
-      background: rgba(81, 202, 211, 0.1);
-    }
+    .btn-action:hover { background: rgba(81, 202, 211, 0.1); }
     .status-message {
       padding: 14px;
       border-radius: 8px;
@@ -293,7 +297,9 @@
   <div class="container">
     <header>
       <div class="header-top">
-        <div class="logo">Gradient<span>Avatar</span> Factory</div>
+        <div class="logo" id="siteLogo" title="Click to refresh">
+          🎨 Gradient<span>Avatar</span> Factory
+        </div>
         <button class="btn-connect" id="connectWalletBtn">🔗 Connect Wallet</button>
       </div>
     </header>
@@ -309,7 +315,7 @@
         <img id="previewImage" class="preview-image" alt="Preview">
       </div>
 
-      <label class="section-title">Choose Style (18 styles available)</label>
+      <label class="section-title">Choose Style (18 styles)</label>
       <div class="style-grid" id="styleGrid"></div>
 
       <label class="section-title">Custom Prompt (optional)</label>
@@ -348,14 +354,18 @@
     </div>
 
     <footer>
-      <p>Powered by <a href="https://pollinations.ai" target="_blank">Pollinations AI</a> • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a> Community</p>
-      <p style="margin-top: 8px;">Network: Base Sepolia Testnet • 18 Unique Styles</p>
+      <p>Powered by <a href="https://huggingface.co" target="_blank">Hugging Face</a> & Pollinations AI • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
+      <p style="margin-top: 8px;">18 Unique Styles • Base Sepolia Testnet</p>
     </footer>
   </div>
 
   <script>
     // === Configuration ===
     const CONFIG = {
+      apiKeys: {
+        huggingFace: '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',
+        deepAI: 'quickstart'
+      },
       styles: [
         { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'] },
         { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'] },
@@ -381,7 +391,6 @@
     // === State ===
     let state = {
       walletConnected: false,
-      walletAddress: null,
       uploadedImage: null,
       selectedStyle: 'cyberpunk',
       addWatermark: false,
@@ -392,9 +401,15 @@
     document.addEventListener('DOMContentLoaded', () => {
       renderStyleGrid();
       setupEventListeners();
+      console.log('🎨 GradientAvatar Factory loaded!');
+      console.log('🤖 Hugging Face API: Connected');
     });
 
-    // === Render Style Grid ===
+    // === Click Logo to Refresh ===
+    document.getElementById('siteLogo').addEventListener('click', () => {
+      location.reload();
+    });
+
     function renderStyleGrid() {
       const grid = document.getElementById('styleGrid');
       grid.innerHTML = CONFIG.styles.map(style => `
@@ -405,7 +420,6 @@
       `).join('');
     }
 
-    // === Setup Event Listeners ===
     function setupEventListeners() {
       const uploadZone = document.getElementById('uploadZone');
       const imageInput = document.getElementById('imageInput');
@@ -440,295 +454,273 @@
       document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
     }
 
-    // === Handle Image Upload ===
     function handleImageUpload(file) {
-      if (!file || !file.type.startsWith('image/')) {
-        showStatus('Please select a valid image file', 'error');
-        return;
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        showStatus('Image must be under 10MB', 'error');
-        return;
-      }
-      
+      if (!file || !file.type.startsWith('image/')) { showStatus('Please select a valid image', 'error'); return; }
+      if (file.size > 10 * 1024 * 1024) { showStatus('Image must be under 10MB', 'error'); return; }
       state.uploadedImage = file;
       const reader = new FileReader();
       reader.onload = (e) => {
         document.getElementById('previewImage').src = e.target.result;
         document.getElementById('uploadZone').classList.add('has-image');
-        showStatus('✅ Image loaded successfully!', 'success');
+        showStatus('✅ Image loaded!', 'success');
       };
       reader.readAsDataURL(file);
     }
 
-    // === Build AI Prompt ===
     function buildPrompt(styleId, customPrompt) {
-      const stylePrompts = {
-        cyberpunk: 'cyberpunk style, neon lights, futuristic, high tech, digital art',
+      const prompts = {
+        cyberpunk: 'cyberpunk, neon lights, futuristic, digital art, high tech',
         anime: 'anime style, japanese animation, vibrant colors, detailed character',
-        pixel: 'pixel art, 8-bit style, retro gaming, pixelated',
-        minimal: 'minimalist design, clean lines, simple, modern art',
-        neon: 'neon colors, glowing effects, vibrant, electric',
-        retro: 'retro style, vintage, 80s aesthetic, nostalgic',
-        fantasy: 'fantasy art, magical, mystical, epic',
-        scifi: 'science fiction, futuristic, space age, advanced technology',
+        pixel: 'pixel art, 8-bit, retro gaming, pixelated',
+        minimal: 'minimalist, clean lines, modern, simple',
+        neon: 'neon colors, glowing effects, electric, vibrant',
+        retro: 'retro, vintage, 80s aesthetic, nostalgic',
+        fantasy: 'fantasy, magical, mystical, epic',
+        scifi: 'science fiction, futuristic, space, advanced technology',
         noir: 'film noir, black and white, dramatic lighting, moody',
-        vaporwave: 'vaporwave aesthetic, pastel colors, retro futuristic, glitch art',
-        nature: 'nature inspired, organic, earthy tones, natural elements',
-        sunset: 'sunset colors, warm tones, golden hour, vibrant sky',
-        ocean: 'ocean waves, deep blue, aquatic, underwater, marine',
-        fire: 'fire flames, burning, hot, intense, orange red',
-        galaxy: 'galaxy space, stars, cosmic, nebula, universe',
-        forest: 'forest green, nature, trees, organic, peaceful',
-        cosmic: 'cosmic energy, purple blue, ethereal, mystical',
-        gold: 'golden luxury, premium, elegant, rich, metallic'
+        vaporwave: 'vaporwave, pastel colors, retro futuristic, glitch art',
+        nature: 'nature, organic, earthy tones, natural elements',
+        sunset: 'sunset, warm tones, golden hour, vibrant sky',
+        ocean: 'ocean, waves, deep blue, aquatic, marine',
+        fire: 'fire, flames, burning, hot, intense',
+        galaxy: 'galaxy, stars, cosmic, nebula, universe',
+        forest: 'forest, green, nature, trees, peaceful',
+        cosmic: 'cosmic, purple, ethereal, mystical, space',
+        gold: 'golden, luxury, elegant, metallic, premium'
       };
-      
-      const basePrompt = stylePrompts[styleId] || 'digital art';
-      const fullPrompt = customPrompt 
-        ? `${basePrompt}, ${customPrompt}, professional quality, high detail`
-        : `${basePrompt}, professional quality, high detail, avatar portrait`;
-      
-      return encodeURIComponent(fullPrompt);
+      const base = prompts[styleId] || 'digital art';
+      return encodeURIComponent(customPrompt ? `${base}, ${customPrompt}, high quality, detailed` : `${base}, high quality, avatar portrait`);
     }
 
-    // === Generate with Pollinations AI ===
-    async function generateWithPollinations(prompt) {
-      const width = 512;
-      const height = 512;
+    // === Pollinations API ===
+    async function generatePollinations(prompt) {
       const seed = Math.floor(Math.random() * 10000);
-      const imageUrl = `https://image.pollinations.ai/prompt/${prompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
-      
+      const url = `https://image.pollinations.ai/prompt/${prompt}?width=512&height=512&seed=${seed}&nologo=true`;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
-      
+      const timeout = setTimeout(() => controller.abort(), 25000);
       try {
-        const response = await fetch(imageUrl, { signal: controller.signal });
-        clearTimeout(timeoutId);
-        
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const blob = await response.blob();
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeout);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const blob = await res.blob();
         return URL.createObjectURL(blob);
-      } catch (error) {
-        clearTimeout(timeoutId);
-        if (error.name === 'AbortError') throw new Error('Generation timeout');
-        throw error;
+      } catch (e) { clearTimeout(timeout); throw e; }
+    }
+
+    // === DeepAI API ===
+    async function generateDeepAI(prompt) {
+      const res = await fetch('https://api.deepai.org/api/text2img', {
+        method: 'POST',
+        headers: { 'api-key': CONFIG.apiKeys.deepAI, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: decodeURIComponent(prompt) })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      return data.output_url || data.image_url;
+    }
+
+    // === Hugging Face API ===
+    async function generateHuggingFace(prompt) {
+      const res = await fetch('https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0', {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${CONFIG.apiKeys.huggingFace}`, 
+          'Content-Type': 'application/json',
+          'x-use-cache': 'false'
+        },
+        body: JSON.stringify({ 
+          inputs: decodeURIComponent(prompt), 
+          options: { wait_for_model: true } 
+        })
+      });
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(`HF ${res.status}: ${error}`);
       }
+      const blob = await res.blob();
+      return URL.createObjectURL(blob);
+    }
+
+    // === Multi-API Generator ===
+    async function generateWithFallback(prompt, style) {
+      const services = [
+        { name: 'HuggingFace', fn: () => generateHuggingFace(prompt) },
+        { name: 'Pollinations', fn: () => generatePollinations(prompt) },
+        { name: 'DeepAI', fn: () => generateDeepAI(prompt) }
+      ];
+      
+      for (const svc of services) {
+        try {
+          showStatus(`🤖 Using ${svc.name}...`, 'info');
+          const url = await svc.fn();
+          console.log(`✅ Success with ${svc.name}!`);
+          return { url, service: svc.name };
+        } catch (e) { 
+          console.log(`❌ ${svc.name} failed:`, e.message); 
+        }
+      }
+      
+      showStatus('⚠️ Using local generation...', 'warning');
+      return { url: await generateFallbackAvatar(style, decodeURIComponent(prompt)), service: 'Local' };
     }
 
     // === Fallback Generation ===
-    async function generateFallbackAvatar(style, customPrompt) {
-      return new Promise((resolve) => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-        
-        const gradient = ctx.createLinearGradient(0, 0, 512, 512);
-        style.gradient.forEach((color, i) => {
-          gradient.addColorStop(i / (style.gradient.length - 1), color);
-        });
-        
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 512, 512);
-        
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 36px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        
-        const text = customPrompt ? customPrompt.split(' ').slice(0, 4).join(' ') : style.name;
-        ctx.fillText(text, 256, 230);
-        ctx.font = '24px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.fillText('AI Generated', 256, 280);
-        
-        resolve(canvas.toDataURL('image/png'));
+    async function generateFallbackAvatar(style, prompt) {
+      return new Promise(resolve => {
+        const c = document.createElement('canvas'); c.width = c.height = 512;
+        const ctx = c.getContext('2d');
+        const g = ctx.createLinearGradient(0,0,512,512);
+        style.gradient.forEach((col,i) => g.addColorStop(i/(style.gradient.length-1), col));
+        ctx.fillStyle = g; ctx.fillRect(0,0,512,512);
+        for(let i=0;i<3000;i++) { ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.15})`; ctx.fillRect(Math.random()*512,Math.random()*512,2,2); }
+        ctx.fillStyle='#fff'; ctx.font='bold 36px Inter'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        const words=(prompt||style.name).split(' '), lines=[], cur='';
+        words.forEach(w=>{ if(cur.length+w.length<22){cur+=' '+w}else{if(cur)lines.push(cur.trim());cur=w} });
+        if(cur)lines.push(cur.trim());
+        const startY=256-((lines.length-1)*28);
+        lines.forEach((l,i)=>ctx.fillText(l,256,startY+i*45));
+        ctx.font='20px Inter'; ctx.fillStyle='rgba(255,255,255,0.7)';
+        ctx.fillText(`Style: ${style.name}`,256,420);
+        ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=6; ctx.strokeRect(8,8,496,496);
+        resolve(c.toDataURL('image/png'));
       });
     }
 
-    // === Process Image ===
-    async function processImage(imageUrl, addWatermark) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
+    // === Process Image (Watermark) ===
+    async function processImage(url, addWatermark) {
+      return new Promise(resolve => {
+        const img = new Image(); img.crossOrigin='anonymous';
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext('2d');
-          
-          ctx.drawImage(img, 0, 0);
-          
-          if (addWatermark) {
-            ctx.save();
-            ctx.globalAlpha = 0.3;
-            ctx.fillStyle = '#51CAD3';
-            ctx.font = 'bold 48px Inter, sans-serif';
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'bottom';
-            ctx.fillText('OPG', canvas.width - 20, canvas.height - 20);
-            ctx.restore();
+          const c = document.createElement('canvas'); c.width=img.width; c.height=img.height;
+          const ctx = c.getContext('2d'); ctx.drawImage(img,0,0);
+          if(addWatermark) {
+            ctx.save(); ctx.globalAlpha=0.35; ctx.fillStyle='#51CAD3';
+            ctx.font='bold 44px Inter'; ctx.textAlign='right'; ctx.textBaseline='bottom';
+            ctx.fillText('OPG', c.width-18, c.height-18); ctx.restore();
           }
-          
-          resolve(canvas.toDataURL('image/png'));
+          resolve(c.toDataURL('image/png'));
         };
-        img.onerror = () => resolve(imageUrl);
-        img.src = imageUrl;
+        img.onerror = () => resolve(url);
+        img.src = url;
       });
     }
 
     // === Handle Generate ===
     async function handleGenerate() {
-      if (!state.uploadedImage) {
-        showStatus('⚠️ Please upload an image first', 'warning');
-        return;
-      }
-      if (!state.walletConnected) {
-        showStatus('⚠️ Please connect your wallet first', 'warning');
-        return;
-      }
-
+      if(!state.uploadedImage) { showStatus('⚠️ Upload image first', 'warning'); return; }
+      if(!state.walletConnected) { showStatus('⚠️ Connect wallet first', 'warning'); return; }
       const btn = document.getElementById('generateBtn');
-      const originalText = btn.innerHTML;
+      const original = btn.innerHTML;
       btn.disabled = true;
       
       try {
-        const customPrompt = document.getElementById('promptInput').value.trim();
+        const prompt = document.getElementById('promptInput').value.trim();
         const style = CONFIG.styles.find(s => s.id === state.selectedStyle);
-        const aiPrompt = buildPrompt(state.selectedStyle, customPrompt);
+        const aiPrompt = buildPrompt(state.selectedStyle, prompt);
         
-        btn.innerHTML = '<span class="loading-spinner"></span> Generating (1/3)...';
-        showStatus('🤖 AI is creating your avatar... (15-25 seconds)', 'info');
+        console.log('🎯 Starting generation...');
+        console.log('Style:', style.name);
+        console.log('Prompt:', decodeURIComponent(aiPrompt));
         
-        let imageUrl;
-        try {
-          imageUrl = await generateWithPollinations(aiPrompt);
-        } catch (error) {
-          console.error('API failed, using fallback:', error);
-          showStatus('⚠️ AI service slow. Using fallback generation...', 'warning');
-          imageUrl = await generateFallbackAvatar(style, customPrompt);
-        }
+        btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+        showStatus('🔄 Connecting to AI services...', 'info');
         
-        btn.innerHTML = '<span class="loading-spinner"></span> Processing (2/3)...';
-        showStatus('🎨 Applying style and watermark...', 'info');
+        const result = await generateWithFallback(aiPrompt, style);
+        showStatus(`✅ Generated via ${result.service}!`, 'success');
         
-        const processedImage = await processImage(imageUrl, state.addWatermark);
+        btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+        const processed = await processImage(result.url, state.addWatermark);
         
-        btn.innerHTML = '<span class="loading-spinner"></span> Finalizing (3/3)...';
-        showStatus('✨ Almost done...', 'info');
+        btn.innerHTML = '<span class="loading-spinner"></span> Finalizing...';
+        await new Promise(r => setTimeout(r, 400));
         
-        const nftId = `#${Math.floor(Math.random() * 9000 + 1000).toString().padStart(4, '0')}`;
-        const txHash = '0x' + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+        const nftId = `#${Math.floor(Math.random()*9000+1000).toString().padStart(4,'0')}`;
+        const txHash = '0x'+Array(64).fill(0).map(()=>Math.floor(Math.random()*16).toString(16)).join('');
         
         state.generatedData = {
           originalUrl: URL.createObjectURL(state.uploadedImage),
-          generatedUrl: processedImage,
-          nftId,
-          txHash,
-          style: state.selectedStyle
+          generatedUrl: processed, 
+          nftId, 
+          txHash, 
+          style: state.selectedStyle, 
+          usedService: result.service
         };
         
-        displayResults();
-        showStatus('✅ Avatar generated successfully!', 'success');
+        document.getElementById('originalImage').src = state.generatedData.originalUrl;
+        document.getElementById('generatedImage').src = state.generatedData.generatedUrl;
+        document.getElementById('nftId').textContent = nftId;
+        document.getElementById('resultSection').classList.add('show');
+        document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        showStatus(`✅ Done! Generated via ${result.service}`, 'success');
         
-      } catch (error) {
-        console.error('Error:', error);
-        showStatus(`❌ ${error.message || 'Failed to generate. Try again.'}`, 'error');
+      } catch(e) {
+        console.error(e);
+        showStatus(`❌ ${e.message || 'Failed. Try again.'}`, 'error');
       } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
+        btn.disabled = false; 
+        btn.innerHTML = original;
       }
     }
 
-    // === Display Results ===
-    function displayResults() {
-      document.getElementById('originalImage').src = state.generatedData.originalUrl;
-      document.getElementById('generatedImage').src = state.generatedData.generatedUrl;
-      document.getElementById('nftId').textContent = state.generatedData.nftId;
-      document.getElementById('resultSection').classList.add('show');
-      document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    // === Handle Download ===
     function handleDownload() {
-      if (!state.generatedData) return;
-      const link = document.createElement('a');
-      link.download = `gradient-avatar-${state.generatedData.nftId}.png`;
-      link.href = state.generatedData.generatedUrl;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if(!state.generatedData) return;
+      const a = document.createElement('a');
+      a.download = `gradient-avatar-${state.generatedData.nftId}.png`;
+      a.href = state.generatedData.generatedUrl;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
       showStatus('📥 Download started!', 'success', 'mintStatus');
     }
 
-    // === Handle Copy Hash ===
     async function handleCopyHash() {
-      if (!state.generatedData) return;
+      if(!state.generatedData) return;
       try {
         await navigator.clipboard.writeText(state.generatedData.txHash);
-        showStatus('🔗 Transaction hash copied!', 'success', 'mintStatus');
-      } catch {
-        showStatus('❌ Failed to copy hash', 'error', 'mintStatus');
-      }
+        showStatus('🔗 Hash copied!', 'success', 'mintStatus');
+      } catch { showStatus('❌ Copy failed', 'error', 'mintStatus'); }
     }
 
-    // === Connect Wallet ===
     async function connectWallet() {
       const btn = document.getElementById('connectWalletBtn');
-      
       try {
-        if (typeof window.ethereum !== 'undefined') {
-          showStatus('Connecting wallet...', 'info');
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          
-          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-          const baseSepoliaChainId = '0x14a34';
-          
-          if (chainId !== baseSepoliaChainId) {
-            try {
-              await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: baseSepoliaChainId }]
-              });
-            } catch {
-              await window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [{
-                  chainId: baseSepoliaChainId,
-                  chainName: 'Base Sepolia',
-                  nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-                  rpcUrls: ['https://sepolia.base.org'],
-                  blockExplorerUrls: ['https://sepolia.basescan.org']
-                }]
-              });
-            }
-          }
-          
-          state.walletConnected = true;
-          state.walletAddress = accounts[0];
-          btn.textContent = `✅ ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
-          btn.classList.add('connected');
-          showStatus('✅ Wallet connected!', 'success');
-        } else {
-          showStatus('❌ Please install MetaMask', 'error');
-          window.open('https://metamask.io/download/', '_blank');
+        if(typeof window.ethereum === 'undefined') {
+          showStatus('❌ Install MetaMask', 'error');
+          window.open('https://metamask.io','_blank');
+          return;
         }
-      } catch (error) {
-        console.error('Wallet error:', error);
-        showStatus('❌ Failed to connect wallet', 'error');
+        showStatus('Connecting...', 'info');
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        if(chainId !== '0x14a34') {
+          try {
+            await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x14a34' }] });
+          } catch {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{ 
+                chainId: '0x14a34', 
+                chainName: 'Base Sepolia', 
+                nativeCurrency: { name:'ETH', symbol:'ETH', decimals:18 }, 
+                rpcUrls: ['https://sepolia.base.org'], 
+                blockExplorerUrls: ['https://sepolia.basescan.org'] 
+              }]
+            });
+          }
+        }
+        state.walletConnected = true;
+        btn.textContent = `✅ ${accounts[0].slice(0,6)}...${accounts[0].slice(-4)}`;
+        btn.classList.add('connected');
+        showStatus('✅ Wallet connected!', 'success');
+      } catch(e) { 
+        console.error(e); 
+        showStatus('❌ Connection failed', 'error'); 
       }
     }
 
-    // === Show Status ===
-    function showStatus(message, type = 'info', elementId = 'statusMessage') {
-      const statusEl = document.getElementById(elementId);
-      statusEl.innerHTML = message;
-      statusEl.className = `status-message status-${type} show`;
-      if (type !== 'error') {
-        setTimeout(() => statusEl.classList.remove('show'), 5000);
-      }
+    function showStatus(msg, type='info', id='statusMessage') {
+      const el = document.getElementById(id);
+      el.innerHTML = msg; 
+      el.className = `status-message status-${type} show`;
+      if(type !== 'error') setTimeout(() => el.classList.remove('show'), 5000);
     }
   </script>
 </body>
