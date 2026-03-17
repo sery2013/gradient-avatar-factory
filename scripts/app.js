@@ -47,13 +47,59 @@ document.getElementById('imageInput').onchange = (e) => {
     reader.readAsDataURL(e.target.files[0]);
 };
 
-// Главная функция генерации
+// Опрос сервера (ждем картинку)
+async function pollStatus(generationId) {
+    let attempts = 0;
+    const maxAttempts = 30;
+
+    const check = async () => {
+        attempts++;
+        btnGenerate.textContent = `Processing... (${attempts * 3}s)`;
+
+        try {
+            const res = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ checkId: generationId })
+            });
+
+            const data = await res.json();
+
+            if (data.status === 'COMPLETE' && data.imageUrl) {
+                resultImg.src = data.imageUrl;
+                document.getElementById('nftId').textContent = generateNFTId();
+                resultPlaceholder.hidden = true;
+                resultContent.hidden = false;
+                resetButton();
+            } else if (data.status === 'FAILED') {
+                alert('Generation failed');
+                resetButton();
+            } else if (attempts >= maxAttempts) {
+                alert('Timeout. Image might still be generating, check later.');
+                resetButton();
+            } else {
+                setTimeout(check, 3000);
+            }
+        } catch (e) {
+            console.error(e);
+            setTimeout(check, 3000);
+        }
+    };
+    check();
+}
+
+function resetButton() {
+    btnGenerate.disabled = false;
+    btnGenerate.textContent = 'Generate Avatar';
+}
+
+// Генерация
 async function generate() {
     const prompt = promptInput.value.trim();
     if (!prompt) return alert('Please enter a description');
 
     btnGenerate.disabled = true;
-    btnGenerate.textContent = 'Generating...';
+    btnGenerate.textContent = 'Starting...';
 
     try {
         const res = await fetch('/api/generate', {
@@ -68,28 +114,55 @@ async function generate() {
         });
 
         const data = await res.json();
-        if (data.success) {
-            resultImg.src = data.imageUrl;
-            document.getElementById('nftId').textContent = generateNFTId();
-            resultPlaceholder.hidden = true;
-            resultContent.hidden = false;
+        if (data.success && data.generationId) {
+            pollStatus(data.generationId);
         } else {
-            alert('Error: ' + data.error);
+            alert('Error: ' + (data.error || 'Check API key'));
+            resetButton();
         }
     } catch (e) {
-        alert('Failed to connect to server');
-    } finally {
-        btnGenerate.disabled = false;
-        btnGenerate.textContent = 'Generate Avatar';
+        alert('Server connection failed');
+        resetButton();
     }
 }
 
 btnGenerate.onclick = generate;
 
-// Скачивание
-document.getElementById('downloadBtn').onclick = () => {
-    const a = document.createElement('a');
-    a.href = resultImg.src;
-    a.download = 'my-avatar.png';
-    a.click();
+// --- СКАЧИВАНИЕ (ИСПРАВЛЕНО) ---
+document.getElementById('downloadBtn').onclick = async () => {
+    const imageUrl = resultImg.src;
+    
+    // Проверка, что картинка уже сгенерирована
+    if (!imageUrl || imageUrl.includes('placeholder') || imageUrl === window.location.href) {
+        return alert('No image to download yet');
+    }
+
+    try {
+        const btn = document.getElementById('downloadBtn');
+        const originalText = btn.innerHTML; // Сохраняем иконку и текст
+        btn.innerText = 'Downloading...';
+
+        // Запрашиваем файл через fetch, чтобы превратить его в Blob
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        // Создаем временную ссылку для скачивания
+        const link = document.createElement('a');
+        link.style.display = 'none';
+        link.href = url;
+        link.download = `avatar-${Date.now()}.png`; // Имя файла
+        
+        document.body.appendChild(link);
+        link.click(); // Симулируем клик
+        
+        // Очистка памяти
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+        btn.innerHTML = originalText;
+    } catch (e) {
+        console.error('Download error:', e);
+        // Запасной вариант на случай ошибки CORS: открыть в новой вкладке
+        window.open(imageUrl, '_blank');
+    }
 };
