@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GradientAvatar Factory | OpenGradient</title>
+  <meta name="description" content="Create verifiable AI-generated avatars with OpenGradient's multimodal models"/>
+  
+  <!-- Шрифты -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Стили -->
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <link rel="stylesheet" href="styles/animations.css" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+</head>
+<body>
+  <!-- Хедер -->
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">
+        <img src="assets/logo.svg" alt="GradientAvatar" class="logo-icon" />
+        <span class="logo-text">Gradient<span class="logo-accent">Avatar</span></span>
+      </div>
+      
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="create">✨ Create</button>
+        <button class="nav-btn" data-tab="gallery">🖼️ Gallery</button>
+        <button class="nav-btn" data-tab="verify">🔐 Verify</button>
+        <button class="nav-btn" data-tab="settings">⚙️ Settings</button>
+      </nav>
+      
+      <div class="header-actions">
+        <button class="btn btn-outline btn-sm" id="connectWallet">
+          <span class="btn-icon">🔗</span>
+          <span class="btn-text">Connect</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Основной контент -->
+  <main class="container">
+    
+    <!-- TAB: CREATE -->
+    <section id="tab-create" class="tab-panel active">
+      <div class="grid-2">
+        
+        <!-- Левая панель: Настройки -->
+        <div class="card card-glow">
+          <h2 class="card-title">🎨 Avatar Settings</h2>
+          
+          <!-- Загрузка изображения -->
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="imageInput" accept="image/*" hidden />
+            <div class="upload-content">
+              <span class="upload-icon">📁</span>
+              <p class="upload-text">Drop your photo or <strong>browse</strong></p>
+              <p class="upload-hint">PNG, JPG up to 10MB</p>
+            </div>
+            <img id="previewImage" class="upload-preview" alt="Preview" />
+          </div>
+          
+          <!-- Выбор стиля -->
+          <div class="style-selector">
+            <label class="input-label">Style Preset</label>
+            <div class="style-grid">
+              <button class="style-btn active" data-style="cyberpunk">
+                <span class="style-preview cyberpunk"></span>
+                <span class="style-name">Cyberpunk</span>
+              </button>
+              <button class="style-btn" data-style="anime">
+                <span class="style-preview anime"></span>
+                <span class="-name">Anime</span>
+              </button>
+              <button class="style-btn" data-style="pixel">
+                <span class="style-preview pixel"></span>
+                <span class="name">Pixel Art</span>
+              </button>
+              <button class="style-btn" data-style="minimal">
+                <span class="style-preview minimal"></span>
+                <span class="name">Minimal</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Кастомный промпт -->
+          <div class="form-group">
+            <label class="input-label" for="promptInput">Custom Prompt (optional)</label>
+            <textarea 
+              id="promptInput" 
+              class="input-field" 
+              placeholder="e.g., neon lights, futuristic armor, holographic effects..."
+              rows="3"
+            ></textarea>
+          </div>
+          
+          <!-- Кнопка генерации -->
+          <button class="btn btn-primary btn-lg btn-glow" id="generateBtn">
+            <span class="btn-spinner" hidden>⚙️</span>
+            <span class="btn-text">✨ Generate Avatar</span>
+            <span class="btn-cost">~0.001 OPG</span>
+          </button>
+          
+          <!-- Статус -->
+          <div id="statusMessage" class="status-message" hidden></div>
+        </div>
+        
+        <!-- Правая панель: Результат -->
+        <div class="card card-glow">
+          <h2 class="card-title">🖼️ Result</h2>
+          
+          <div class="result-placeholder" id="resultPlaceholder">
+            <span class="placeholder-icon">🎭</span>
+            <p>Your generated avatar will appear here</p>
+          </div>
+          
+          <div class="result-content" id="resultContent" hidden>
+            <div class="avatar-frame">
+              <img id="generatedAvatar" src="" alt="Generated Avatar" />
+              <div class="avatar-badge">
+                <span class="nft-id" id="nftId">#0000</span>
+                <span class="verified-badge">✓ TEE</span>
+              </div>
+            </div>
+            
+            <div class="result-actions">
+              <button class="btn btn-outline" id="downloadBtn">
+                📥 Download PNG
+              </button>
+              <button class="btn btn-outline" id="copyProofBtn">
+                🔗 Copy Proof
+              </button>
+              <button class="btn btn-primary" id="mintBtn">
+                🪙 Mint NFT
+              </button>
+            </div>
+            
+            <!-- Proof details -->
+            <details class="proof-details">
+              <summary>🔐 Verification Details</summary>
+              <div class="proof-content">
+                <div class="proof-row">
+                  <span class="proof-label">Model:</span>
+                  <span class="proof-value" id="proofModel">IDM-VTON</span>
+                </div>
+                <div class="proof-row">
+                  <span class="proof-label">TEE Hash:</span>
+                  <span class="proof-value mono" id="proofHash">0x...</span>
+                </div>
+                <div class="proof-row">
+                  <span class="proof-label">Explorer:</span>
+                  <a href="#" class="proof-link" id="proofLink" target="_blank">View on-chain ↗</a>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+    
+    <!-- TAB: GALLERY -->
+    <section id="tab-gallery" class="tab-panel">
+      <div class="gallery-header">
+        <h2>🖼️ Community Gallery</h2>
+        <div class="gallery-filters">
+          <button class="filter-btn active">All</button>
+          <button class="filter-btn">Cyberpunk</button>
+          <button class="filter-btn">Anime</button>
+          <button class="filter-btn">Pixel</button>
+        </div>
+      </div>
+      <div class="gallery-grid" id="galleryGrid">
+        <!-- Галерея заполняется динамически -->
+        <div class="gallery-item placeholder">
+          <span>🎨 Load more avatars...</span>
+        </div>
+      </div>
+    </section>
+    
+    <!-- TAB: VERIFY -->
+    <section id="tab-verify" class="tab-panel">
+      <div class="card card-glow verify-card">
+        <h2>🔐 Verify Avatar</h2>
+        <p class="text-muted">Enter a TEE hash or NFT ID to verify authenticity</p>
+        
+        <div class="verify-form">
+          <input 
+            type="text" 
+            class="input-field" 
+            placeholder="0x... or #1234"
+            id="verifyInput"
+          />
+          <button class="btn btn-primary" id="verifyBtn">🔍 Verify</button>
+        </div>
+        
+        <div id="verifyResult" class="verify-result" hidden>
+          <!-- Результат проверки -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- TAB: SETTINGS -->
+    <section id="tab-settings" class="tab-panel">
+      <div class="card card-glow">
+        <h2>⚙️ Settings</h2>
+        
+        <div class="settings-group">
+          <label class="setting-label">
+            <span>Network</span>
+            <select class="input-select" id="networkSelect">
+              <option value="base-sepolia">Base Sepolia (Testnet)</option>
+              <option value="base-mainnet">Base Mainnet</option>
+            </select>
+          </label>
+          
+          <label class="setting-label">
+            <span>Auto-save to IPFS</span>
+            <label class="toggle">
+              <input type="checkbox" id="autoSaveToggle" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </label>
+          
+          <label class="setting-label">
+            <span>Language</span>
+            <div class="lang-selector">
+              <button class="lang-btn active" data-lang="en">
+                <img src="https://flagcdn.com/w20/us.svg" alt="EN" />
+              </button>
+              <button class="lang-btn" data-lang="ru">
+                <img src="https://flagcdn.com/w20/ru.svg" alt="RU" />
+              </button>
+              <button class="lang-btn" data-lang="cn">
+                <img src="https://flagcdn.com/w20/cn.svg" alt="CN" />
+              </button>
+            </div>
+          </label>
+        </div>
+        
+        <button class="btn btn-outline btn-danger" id="clearDataBtn">
+          🗑️ Clear Local Data
+        </button>
+      </div>
+    </section>
+    
+  </main>
+
+  <!-- Футер -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo.svg" alt="GradientAvatar" class="footer-logo" />
+        <p>Built on <a href="https://opengradient.ai" target="_blank" class="footer-link">OpenGradient</a></p>
+      </div>
+      <div class="footer-links">
+        <a href="https://docs.opengradient.ai" target="_blank" class="footer-link">Docs</a>
+        <a href="https://github.com/OpenGradient" target="_blank" class="footer-link">GitHub</a>
+        <a href="https://discord.gg/opengradient" target="_blank" class="footer-link">Discord</a>
+        <a href="https://twitter.com/opengradient" target="_blank" class="footer-link">Twitter</a>
+      </div>
+      <div class="footer-status">
+        <span class="status-dot online"></span>
+        <span>Network: <strong>Operational</strong></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Скрипты -->
+  <script src="scripts/utils.js"></script>
+  <script src="scripts/opengradient.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>
