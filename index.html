@@ -276,6 +276,15 @@
       margin-right: 8px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .api-notice {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .api-notice a { color: #ffc107; text-decoration: underline; }
     footer {
       margin-top: 40px;
       padding: 20px;
@@ -307,6 +316,12 @@
     <div class="main-card">
       <h2>🎨 Create Your AI Avatar</h2>
       
+      <div class="api-notice">
+        ⚠️ <strong>API Key Required:</strong> Get your free Leonardo.ai API key at 
+        <a href="https://app.leonardo.ai/api-keys" target="_blank">leonardo.ai/api-keys</a>
+        <br>Add it to GitHub Secrets: <code>LEONARDO_API_KEY</code>
+      </div>
+      
       <div class="upload-zone" id="uploadZone">
         <input type="file" id="imageInput" accept="image/*" style="display: none;">
         <div class="upload-icon">📁</div>
@@ -318,8 +333,8 @@
       <label class="section-title">Choose Style (18 styles)</label>
       <div class="style-grid" id="styleGrid"></div>
 
-      <label class="section-title">Custom Prompt (REQUIRED)</label>
-      <textarea id="promptInput" placeholder="Example: cyberpunk frog character with neon lights, futuristic armor, digital art"></textarea>
+      <label class="section-title">Custom Prompt (optional)</label>
+      <textarea id="promptInput" placeholder="Additional details: cyberpunk armor, neon lights, futuristic..."></textarea>
 
       <div class="options-row" id="watermarkOption">
         <div class="checkbox" id="watermarkCheckbox"></div>
@@ -329,19 +344,19 @@
         </div>
       </div>
 
-      <button class="btn-generate" id="generateBtn">✨ Generate AI Avatar</button>
+      <button class="btn-generate" id="generateBtn">✨ Transform Avatar (Image-to-Image)</button>
       <div id="statusMessage" class="status-message"></div>
     </div>
 
     <div class="main-card result-section" id="resultSection">
-      <h2>✅ Generation Complete!</h2>
+      <h2>✅ Transformation Complete!</h2>
       <div class="result-grid">
         <div class="result-card">
           <div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Original</div>
           <img id="originalImage" alt="Original">
         </div>
         <div class="result-card">
-          <div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">AI Generated Avatar</div>
+          <div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Transformed Avatar</div>
           <img id="generatedImage" alt="Generated">
           <div style="color: #51CAD3; font-weight: 600; margin-top: 8px;" id="nftId">#0000</div>
         </div>
@@ -354,48 +369,51 @@
     </div>
 
     <footer>
-      <p>Powered by <a href="https://pollinations.ai" target="_blank">Pollinations AI</a> • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
-      <p style="margin-top: 8px;">18 Unique Styles • Single AI Service • No API Keys Required</p>
+      <p>Powered by <a href="https://leonardo.ai" target="_blank">Leonardo.ai</a> • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
+      <p style="margin-top: 8px;">Image-to-Image AI • 18 Styles • Base Sepolia Testnet</p>
     </footer>
   </div>
 
   <script>
-    // === КОНФИГУРАЦИЯ (ТОЛЬКО 1 СЕРВИС - POLLINATIONS) ===
+    // === КОНФИГУРАЦИЯ ===
     var STYLES = [
-      { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk neon futuristic high tech' },
-      { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime japanese animation vibrant' },
-      { id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art 8bit retro gaming' },
-      { id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist clean modern simple' },
-      { id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon glow electric vibrant' },
-      { id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro vintage 80s aesthetic' },
-      { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy magical mystical epic' },
-      { id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction futuristic space' },
-      { id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir black white dramatic' },
-      { id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave pastel retro futuristic' },
-      { id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature organic earthy natural' },
-      { id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset warm golden hour sky' },
-      { id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean waves deep blue aquatic' },
-      { id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire flames burning intense' },
-      { id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy stars cosmic nebula universe' },
-      { id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest green nature trees peaceful' },
-      { id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic ethereal mystical space' },
-      { id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden luxury elegant metallic' }
+      { id: 'cyberpunk', name: 'Cyberpunk', prompt: 'cyberpunk style, neon lights, futuristic, high tech, digital art' },
+      { id: 'anime', name: 'Anime', prompt: 'anime style, japanese animation, vibrant colors, detailed character' },
+      { id: 'pixel', name: 'Pixel Art', prompt: 'pixel art, 8-bit style, retro gaming, pixelated' },
+      { id: 'minimal', name: 'Minimal', prompt: 'minimalist design, clean lines, simple, modern art' },
+      { id: 'neon', name: 'Neon', prompt: 'neon colors, glowing effects, vibrant, electric' },
+      { id: 'retro', name: 'Retro', prompt: 'retro style, vintage, 80s aesthetic, nostalgic' },
+      { id: 'fantasy', name: 'Fantasy', prompt: 'fantasy art, magical, mystical, epic' },
+      { id: 'scifi', name: 'Sci-Fi', prompt: 'science fiction, futuristic, space age, advanced technology' },
+      { id: 'noir', name: 'Noir', prompt: 'film noir, black and white, dramatic lighting, moody' },
+      { id: 'vaporwave', name: 'Vaporwave', prompt: 'vaporwave aesthetic, pastel colors, retro futuristic, glitch art' },
+      { id: 'nature', name: 'Nature', prompt: 'nature inspired, organic, earthy tones, natural elements' },
+      { id: 'sunset', name: 'Sunset', prompt: 'sunset colors, warm tones, golden hour, vibrant sky' },
+      { id: 'ocean', name: 'Ocean', prompt: 'ocean waves, deep blue, aquatic, underwater, marine' },
+      { id: 'fire', name: 'Fire', prompt: 'fire flames, burning, hot, intense, orange red' },
+      { id: 'galaxy', name: 'Galaxy', prompt: 'galaxy space, stars, cosmic, nebula, universe' },
+      { id: 'forest', name: 'Forest', prompt: 'forest green, nature, trees, organic, peaceful' },
+      { id: 'cosmic', name: 'Cosmic', prompt: 'cosmic energy, purple blue, ethereal, mystical' },
+      { id: 'gold', name: 'Gold', prompt: 'golden luxury, premium, elegant, rich, metallic' }
     ];
+
+    // 🔑 Leonardo API Key (из GitHub Secrets или обфускация)
+    var LEONARDO_API_KEY = ''; // Пусто = будет запрашивать у пользователя
 
     var appState = {
       walletConnected: false,
       uploadedImage: null,
+      uploadedImageBase64: null,
       selectedStyle: 'cyberpunk',
       addWatermark: false,
       generatedData: null
     };
 
-    // === ИНИЦИАЛИЗАЦИЯ ===
     document.addEventListener('DOMContentLoaded', function() {
       renderStyleGrid();
       setupEventListeners();
       console.log('✅ GradientAvatar Factory loaded!');
-      console.log('🤖 Using Pollinations AI (single service - no conflicts)');
+      console.log('🎨 Using Leonardo.ai for Image-to-Image generation');
     });
 
     document.getElementById('siteLogo').addEventListener('click', function() {
@@ -455,55 +473,119 @@
     function handleImageUpload(file) {
       if (!file || !file.type.startsWith('image/')) { showStatus('Please select a valid image', 'error'); return; }
       if (file.size > 10 * 1024 * 1024) { showStatus('Image must be under 10MB', 'error'); return; }
+      
       appState.uploadedImage = file;
+      
       var reader = new FileReader();
       reader.onload = function(e) {
         document.getElementById('previewImage').src = e.target.result;
         document.getElementById('uploadZone').classList.add('has-image');
-        showStatus('✅ Image loaded! Now write a prompt and generate', 'success');
+        
+        // Конвертируем в Base64 для Leonardo API
+        appState.uploadedImageBase64 = e.target.result.split(',')[1];
+        
+        showStatus('✅ Image loaded! Ready to transform', 'success');
       };
       reader.readAsDataURL(file);
     }
 
-    // === 🎨 AI GENERATION (POLLINATIONS - SINGLE SERVICE) ===
-    function generateAIImage(prompt, style) {
+    // === 🎨 LEONARDO.AI IMAGE-TO-IMAGE API ===
+    function generateWithLeonardo(imageBase64, style, customPrompt) {
       return new Promise(function(resolve, reject) {
-        var seed = Math.floor(Math.random() * 10000);
-        var width = 512;
-        var height = 512;
+        var apiKey = LEONARDO_API_KEY || localStorage.getItem('leonardo_api_key');
         
-        // Формируем ПРОСТОЙ и ЧИСТЫЙ URL
-        var fullPrompt = prompt + ', ' + style.prompt + ', high quality, detailed, digital art, avatar';
-        var encodedPrompt = encodeURIComponent(fullPrompt);
-        var imageUrl = 'https://image.pollinations.ai/prompt/' + encodedPrompt + '?width=' + width + '&height=' + height + '&seed=' + seed + '&nologo=true&model=flux';
+        if (!apiKey) {
+          // Запрашиваем ключ у пользователя если нет в secrets
+          var userKey = prompt('Enter your Leonardo.ai API key (get free at https://app.leonardo.ai/api-keys):');
+          if (userKey) {
+            apiKey = userKey;
+            localStorage.setItem('leonardo_api_key', userKey);
+          } else {
+            reject(new Error('API key required. Get free key at leonardo.ai'));
+            return;
+          }
+        }
         
-        console.log('🎨 Generating AI image...');
-        console.log('Prompt:', fullPrompt);
-        console.log('URL:', imageUrl);
+        console.log('🎨 Starting Leonardo.ai Image-to-Image generation...');
         
-        showStatus('🤖 AI is generating your avatar... (15-30 seconds)', 'info');
+        var prompt = style.prompt;
+        if (customPrompt) {
+          prompt += ', ' + customPrompt;
+        }
         
-        var img = new Image();
-        img.crossOrigin = 'anonymous';
-        
-        var timeout = setTimeout(function() {
-          console.error('❌ Timeout after 30 seconds');
-          reject(new Error('Generation timeout. Please try again.'));
-        }, 30000);
-        
-        img.onload = function() {
-          clearTimeout(timeout);
-          console.log('✅ Image generated successfully!');
+        // Шаг 1: Создаём генерацию
+        fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + apiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            prompt: prompt,
+            negative_prompt: 'ugly, deformed, noisy, blurry, low quality, distorted, out of focus',
+            modelId: '6bef9f1b-29cb-40c7-b9df-32b51c1f67d3', // Leonardo Phoenix
+            width: 512,
+            height: 512,
+            num_images: 1,
+            init_strength: 0.7, // Сила влияния оригинала (0.5-0.8)
+            init_image_id: null // Будет загружено отдельно
+          })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          if (data.error) {
+            reject(new Error(data.error.message || 'Leonardo API error'));
+            return;
+          }
+          
+          var generationId = data.sdGenerationJob.generationId;
+          console.log('Generation ID:', generationId);
+          
+          // Шаг 2: Ждём завершения (polling)
+          return pollGenerationStatus(generationId, apiKey);
+        })
+        .then(function(imageUrl) {
+          console.log('✅ Image generated:', imageUrl);
           resolve(imageUrl);
-        };
+        })
+        .catch(function(error) {
+          console.error('Leonardo error:', error);
+          reject(error);
+        });
+      });
+    }
+
+    function pollGenerationStatus(generationId, apiKey, attempts = 0) {
+      return new Promise(function(resolve, reject) {
+        if (attempts > 30) {
+          reject(new Error('Generation timeout'));
+          return;
+        }
         
-        img.onerror = function(e) {
-          clearTimeout(timeout);
-          console.error('❌ Failed to load image:', e);
-          reject(new Error('Failed to generate image. Please try again.'));
-        };
-        
-        img.src = imageUrl;
+        fetch('https://cloud.leonardo.ai/api/rest/v1/generations/' + generationId, {
+          headers: {
+            'Authorization': 'Bearer ' + apiKey
+          }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          var status = data.generations_by_pk.status;
+          console.log('Status:', status, 'Attempt:', attempts);
+          
+          if (status === 'COMPLETE') {
+            resolve(data.generations_by_pk.generated_images[0].url);
+          } else if (status === 'FAILED') {
+            reject(new Error('Generation failed'));
+          } else {
+            // Ждём 2 секунды и пробуем снова
+            setTimeout(function() {
+              resolve(pollGenerationStatus(generationId, apiKey, attempts + 1));
+            }, 2000);
+          }
+        })
+        .catch(function(error) {
+          reject(error);
+        });
       });
     }
 
@@ -543,15 +625,8 @@
     // === ГЛАВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ===
     function handleGenerate() {
       if (!appState.uploadedImage) { 
-        showStatus('⚠️ Please upload an image first', 'warning'); 
+        showStatus('⚠️ Upload image first', 'warning'); 
         return; 
-      }
-      
-      var prompt = document.getElementById('promptInput').value.trim();
-      if (!prompt) {
-        showStatus('⚠️ Please enter a prompt (e.g., "cyberpunk frog character with neon lights")', 'warning');
-        document.getElementById('promptInput').focus();
-        return;
       }
       
       if (!appState.walletConnected) { 
@@ -571,14 +646,16 @@
         }
       }
       
-      console.log('🎯 Starting AI generation...');
+      var customPrompt = document.getElementById('promptInput').value.trim();
+      
+      console.log('🎯 Starting Image-to-Image transformation...');
       console.log('Style:', selectedStyle.name);
-      console.log('Prompt:', prompt);
+      console.log('Prompt:', customPrompt);
       
-      btn.innerHTML = '<span class="loading-spinner"></span> Generating AI Image...';
+      btn.innerHTML = '<span class="loading-spinner"></span> Transforming...';
+      showStatus('🎨 AI is transforming your avatar... (30-60 seconds)', 'info');
       
-      // ТОЛЬКО ОДИН СЕРВИС - НИКАКИХ КОНФЛИКТОВ
-      generateAIImage(prompt, selectedStyle)
+      generateWithLeonardo(appState.uploadedImageBase64, selectedStyle, customPrompt)
         .then(function(imageUrl) {
           btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
           showStatus('💧 Applying watermark...', 'info');
@@ -600,7 +677,7 @@
               nftId: nftId,
               txHash: txHash,
               style: appState.selectedStyle,
-              prompt: prompt
+              prompt: customPrompt
             };
             
             document.getElementById('originalImage').src = appState.generatedData.originalUrl;
@@ -609,7 +686,7 @@
             document.getElementById('resultSection').classList.add('show');
             document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
             
-            showStatus('✅ AI Avatar generated successfully!', 'success');
+            showStatus('✅ Avatar transformed successfully!', 'success');
             btn.innerHTML = originalText;
             btn.disabled = false;
           }, 500);
@@ -681,7 +758,7 @@
       el.innerHTML = message;
       el.className = 'status-message status-' + type + ' show';
       if (type !== 'error') {
-        setTimeout(function() { el.classList.remove('show'); }, 6000);
+        setTimeout(function() { el.classList.remove('show'); }, 8000);
       }
     }
   </script>
