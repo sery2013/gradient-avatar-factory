@@ -5,137 +5,182 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GradientAvatar Factory | OpenGradient</title>
 <style>
-    /* === СТИЛИ (Дизайн сохранен) === */
+    /* === ВСЕ ТВОИ ОРИГИНАЛЬНЫЕ СТИЛИ === */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-        font-family: 'Inter', -apple-system, system-ui, sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         background: #0A0F19; color: #FFFFFF; min-height: 100vh; padding: 20px;
     }
     .container { max-width: 1000px; margin: 0 auto; }
     header {
         background: rgba(18, 26, 38, 0.9); border: 1px solid #1E2A3A;
         border-radius: 12px; padding: 20px; margin-bottom: 30px;
-        display: flex; justify-content: space-between; align-items: center;
     }
-    .logo { font-size: 24px; font-weight: 700; cursor: pointer; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 24px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .logo:hover { opacity: 0.8; }
     .logo span { color: #51CAD3; }
-    .engine-badge { color: #51CAD3; font-size: 11px; font-weight: 700; border: 1px solid rgba(81, 202, 211, 0.3); padding: 6px 14px; border-radius: 20px; background: rgba(81, 202, 211, 0.05); }
 
-    .main-card { background: #121A26; border: 1px solid #1E2A3A; border-radius: 16px; padding: 30px; margin-bottom: 20px; }
+    .main-card {
+        background: #121A26; border: 1px solid #1E2A3A;
+        border-radius: 16px; padding: 30px; margin-bottom: 20px;
+    }
+    .main-card h2 { font-size: 22px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+    
     .mode-tabs { display: flex; gap: 10px; margin-bottom: 24px; }
     .mode-tab {
         flex: 1; padding: 12px; background: #0A0F19; border: 2px solid #1E2A3A;
-        border-radius: 8px; color: #A0B3C6; cursor: pointer; font-weight: 600; text-align: center;
+        border-radius: 8px; color: #A0B3C6; cursor: pointer; font-weight: 600;
+        transition: all 0.2s; text-align: center;
     }
     .mode-tab.active { border-color: #51CAD3; background: rgba(81, 202, 211, 0.1); color: #51CAD3; }
 
     .upload-zone {
-        border: 2px dashed #1E2A3A; border-radius: 12px; padding: 40px;
-        text-align: center; cursor: pointer; margin-bottom: 24px; display: none;
+        border: 2px dashed #1E2A3A; border-radius: 12px; padding: 50px 20px;
+        text-align: center; cursor: pointer; transition: all 0.3s;
+        background: rgba(151, 222, 237, 0.03); margin-bottom: 24px; display: none;
     }
     .upload-zone.show { display: block; }
-    .preview-image { max-width: 100%; max-height: 250px; border-radius: 8px; display: none; margin: 10px auto; }
+    .upload-zone.has-image { border-color: #51CAD3; padding: 10px; }
+    .upload-icon { font-size: 56px; margin-bottom: 12px; }
+    .preview-image { max-width: 100%; max-height: 250px; border-radius: 8px; display: none; margin: 0 auto; }
+    .upload-zone.has-image .upload-icon, .upload-zone.has-image p { display: none; }
     .upload-zone.has-image .preview-image { display: block; }
-    .upload-zone.has-image p, .upload-zone.has-image .upload-icon { display: none; }
 
-    .style-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin: 15px 0 25px; }
+    .section-title { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #6B7F94; margin-bottom: 12px; display: block; }
+    
+    .style-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px; }
     .style-btn {
         padding: 10px; background: #0A0F19; border: 2px solid #1E2A3A;
-        border-radius: 8px; cursor: pointer; color: white; font-size: 12px;
+        border-radius: 8px; cursor: pointer; transition: all 0.2s;
+        text-align: center; font-size: 12px; color: white;
     }
     .style-btn.active { border-color: #51CAD3; background: rgba(81, 202, 211, 0.1); }
     .style-preview { width: 100%; height: 40px; border-radius: 4px; margin-bottom: 8px; }
 
     textarea {
         width: 100%; padding: 16px; background: #0A0F19; border: 1px solid #1E2A3A;
-        border-radius: 12px; color: #FFFFFF; min-height: 100px; margin-bottom: 20px; resize: none;
+        border-radius: 12px; color: #FFFFFF; font-family: inherit; min-height: 100px;
+        margin-bottom: 20px; resize: none; outline: none; transition: 0.2s;
     }
+    textarea:focus { border-color: #51CAD3; }
+
     .btn-generate {
         width: 100%; padding: 18px; background: linear-gradient(135deg, #51CAD3, #97DEED);
-        border: none; border-radius: 12px; color: #0A0F19; font-weight: 800; cursor: pointer;
+        border: none; border-radius: 12px; color: #0A0F19; font-weight: 800;
+        font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase;
     }
-    .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .result-section { display: none; margin-top: 20px; text-align: center; }
+    .result-section { display: none; margin-top: 20px; animation: fadeIn 0.5s ease; }
     .result-section.show { display: block; }
-    .result-card img { max-width: 100%; border-radius: 12px; margin-bottom: 20px; border: 2px solid #1E2A3A; }
+    .result-card { background: #0A0F19; border: 2px solid #1E2A3A; border-radius: 16px; padding: 20px; text-align: center; }
+    .result-card img { max-width: 100%; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
     .status-message { padding: 16px; border-radius: 10px; margin-top: 20px; display: none; text-align: center; font-weight: 600; }
     .status-message.show { display: block; }
     .status-success { background: rgba(0, 255, 157, 0.1); border: 1px solid #00ff9d; color: #00ff9d; }
     .status-error { background: rgba(255, 107, 107, 0.1); border: 1px solid #ff6b6b; color: #ff6b6b; }
 
-    .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(0,0,0,0.1); border-top-color: #0A0F19; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px; vertical-align: middle; }
+    .loading-spinner {
+        display: inline-block; width: 20px; height: 20px;
+        border: 3px solid rgba(10,15,25,0.2); border-radius: 50%;
+        border-top-color: #0A0F19; animation: spin 1s linear infinite; margin-right: 10px;
+        vertical-align: middle;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
-
 <div class="container">
     <header>
-        <div class="logo" onclick="location.reload()">🎨 Gradient<span>Avatar</span></div>
-        <div class="engine-badge">LEONARDO AI ASYNC</div>
+        <div class="header-top">
+            <div class="logo" onclick="location.reload()">🎨 Gradient<span>Avatar</span> Factory</div>
+            <div style="color: #51CAD3; font-size: 11px; font-weight: 700; border: 1px solid rgba(81, 202, 211, 0.3); padding: 6px 14px; border-radius: 20px; background: rgba(81, 202, 211, 0.05);">
+                LEONARDO AI ENGINE
+            </div>
+        </div>
     </header>
 
     <div class="main-card">
+        <h2>🚀 AI Image Generator</h2>
+        
         <div class="mode-tabs">
-            <button class="mode-tab active" data-mode="text2img">📝 Text</button>
-            <button class="mode-tab" data-mode="img2img">🖼️ Image</button>
+            <button class="mode-tab active" data-mode="text2img">📝 Text to Image</button>
+            <button class="mode-tab" data-mode="img2img">🖼️ Image to Image</button>
         </div>
 
         <div class="upload-zone" id="uploadZone">
             <input type="file" id="imageInput" accept="image/*" style="display: none;">
-            <div class="upload-icon" style="font-size: 40px;">📁</div>
-            <p>Upload Reference</p>
+            <div class="upload-icon">📁</div>
+            <p><strong>Click to upload reference photo</strong></p>
             <img id="previewImage" class="preview-image">
         </div>
 
-        <p style="color: #6B7F94; font-size: 14px;">Style Selection</p>
+        <label class="section-title">Step 1: Select Style</label>
         <div class="style-grid" id="styleGrid"></div>
 
-        <textarea id="promptInput" placeholder="Describe your avatar..."></textarea>
+        <label class="section-title">Step 2: Describe your avatar</label>
+        <textarea id="promptInput" placeholder="A futuristic robot cat with glowing eyes..."></textarea>
 
-        <button class="btn-generate" id="generateBtn">✨ Start Generation</button>
+        <button class="btn-generate" id="generateBtn">✨ Generate Now</button>
         <div id="statusMessage" class="status-message"></div>
     </div>
 
     <div class="main-card result-section" id="resultSection">
         <div class="result-card">
-            <img id="generatedImage">
-            <button class="btn-generate" style="width: auto; padding: 12px 30px;" onclick="downloadImg()">📥 Download</button>
+            <img id="generatedImage" alt="Result">
+            <div>
+                <button class="btn-generate" style="width: auto; padding: 12px 40px;" onclick="downloadImg()">📥 Download PNG</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+// === ВОЗВРАЩАЕМ ВСЕ 18 СТИЛЕЙ ===
 const STYLES = [
     { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'] },
     { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'] },
     { id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'] },
     { id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff'] },
-    { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'] }
+    { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'] },
+    { id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'] },
+    { id: '3d-render', name: '3D Render', gradient: ['#ff9f43', '#ee5253'] },
+    { id: 'oil-painting', name: 'Oil Painting', gradient: ['#f368e0', '#ff9f43'] },
+    { id: 'sketch', name: 'Sketch', gradient: ['#8395a7', '#222f3e'] },
+    { id: 'watercolor', name: 'Watercolor', gradient: ['#48dbfb', '#54a0ff'] },
+    { id: 'steampunk', name: 'Steampunk', gradient: ['#9d6b51', '#3e2723'] },
+    { id: 'pop-art', name: 'Pop Art', gradient: ['#ffeb3b', '#f44336'] },
+    { id: 'dark-fantasy', name: 'Dark Fantasy', gradient: ['#2c3e50', '#000000'] },
+    { id: 'glitch', name: 'Glitch Art', gradient: ['#00ff00', '#ff00ff'] },
+    { id: 'minimalist', name: 'Minimalist', gradient: ['#ffffff', '#dcdde1'] },
+    { id: 'retro', name: 'Retro 80s', gradient: ['#ef5777', '#575fcf'] },
+    { id: 'gothic', name: 'Gothic', gradient: ['#4b4b4b', '#1e272e'] },
+    { id: 'comic', name: 'Comic Book', gradient: ['#ffdd59', '#3c40c6'] }
 ];
 
 let state = { mode: 'text2img', style: 'cyberpunk', image: null };
 
-// Инициализация
+// Отрисовка стилей
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('styleGrid');
     STYLES.forEach(s => {
         grid.innerHTML += `
-            <button class="style-btn ${s.id === state.style ? 'active' : ''}" onclick="state.style='${s.id}'; updateStyleUI()" id="btn-${s.id}">
+            <button class="style-btn ${s.id === state.style ? 'active' : ''}" onclick="selectStyle('${s.id}')" id="btn-${s.id}">
                 <div class="style-preview" style="background: linear-gradient(135deg, ${s.gradient.join(',')})"></div>
                 ${s.name}
             </button>`;
     });
 });
 
-function updateStyleUI() {
+function selectStyle(id) {
+    state.style = id;
     document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('btn-' + state.style).classList.add('active');
+    document.getElementById('btn-' + id).classList.add('active');
 }
 
-// Режимы
+// Переключение вкладок
 document.querySelectorAll('.mode-tab').forEach(tab => {
     tab.onclick = function() {
         document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
@@ -145,7 +190,7 @@ document.querySelectorAll('.mode-tab').forEach(tab => {
     };
 });
 
-// Загрузка фото
+// Загрузка изображения
 const imgInput = document.getElementById('imageInput');
 document.getElementById('uploadZone').onclick = () => imgInput.click();
 imgInput.onchange = (e) => {
@@ -159,17 +204,17 @@ imgInput.onchange = (e) => {
     reader.readAsDataURL(file);
 };
 
-// --- ГЛАВНАЯ ЛОГИКА ---
+// === ЛОГИКА ГЕНЕРАЦИИ ===
 document.getElementById('generateBtn').onclick = async function() {
     const prompt = document.getElementById('promptInput').value.trim();
-    if (!prompt) return showStatus('Enter prompt!', 'error');
+    if (!prompt) return showStatus('⚠️ Enter prompt!', 'error');
 
     const btn = this;
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Task Sent...';
+    btn.innerHTML = '<span class="loading-spinner"></span> Creating Magic...';
 
     try {
-        // 1. Отправляем запрос на создание (это быстро)
+        // 1. Создаем задачу (Step 1)
         const res = await fetch('/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -181,10 +226,10 @@ document.getElementById('generateBtn').onclick = async function() {
         const genId = startData.generationId;
         let attempts = 0;
 
-        // 2. Опрашиваем сервер о готовности (Polling)
+        // 2. Опрос статуса (Polling)
         const poll = async () => {
             attempts++;
-            btn.innerHTML = `<span class="spinner"></span> AI Working... (${attempts*3}s)`;
+            btn.innerHTML = `<span class="loading-spinner"></span> AI Working... (${attempts*3}s)`;
             
             const check = await fetch('/api/generate', {
                 method: 'POST',
@@ -193,27 +238,27 @@ document.getElementById('generateBtn').onclick = async function() {
             });
             const data = await check.json();
 
-            if (data.status === 'COMPLETE') {
+            if (data.status === 'COMPLETE' && data.imageUrl) {
                 document.getElementById('generatedImage').src = data.imageUrl;
                 document.getElementById('resultSection').classList.add('show');
-                showStatus('Success!', 'success');
+                showStatus('✅ Success!', 'success');
                 btn.disabled = false;
-                btn.innerHTML = '✨ Start Generation';
+                btn.innerHTML = '✨ Generate Now';
             } else if (data.status === 'FAILED') {
                 throw new Error('Leonardo failed generation');
             } else if (attempts > 30) {
                 throw new Error('Timeout');
             } else {
-                setTimeout(poll, 3000); // Ждем 3 секунды и снова
+                setTimeout(poll, 3000); 
             }
         };
 
         poll();
 
     } catch (e) {
-        showStatus('Error: ' + e.message, 'error');
+        showStatus('❌ Error: ' + e.message, 'error');
         btn.disabled = false;
-        btn.innerHTML = '✨ Start Generation';
+        btn.innerHTML = '✨ Generate Now';
     }
 };
 
@@ -225,10 +270,11 @@ function showStatus(msg, type) {
 }
 
 function downloadImg() {
-    const link = document.createElement('a');
-    link.href = document.getElementById('generatedImage').src;
-    link.download = 'avatar.png';
-    link.click();
+    const img = document.getElementById('generatedImage').src;
+    const a = document.createElement('a');
+    a.href = img;
+    a.download = 'avatar.png';
+    a.click();
 }
 </script>
 </body>
