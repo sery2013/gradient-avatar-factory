@@ -303,10 +303,8 @@ footer a { color: #97DEED; text-decoration: none; }
 <button class="btn-connect" id="connectWalletBtn">🔗 Connect Wallet</button>
 </div>
 </header>
-
 <div class="main-card">
 <h2>🎨 Create Your AI Avatar</h2>
-
 <div class="upload-zone" id="uploadZone">
 <input type="file" id="imageInput" accept="image/*" style="display: none;">
 <div class="upload-icon">📁</div>
@@ -314,13 +312,10 @@ footer a { color: #97DEED; text-decoration: none; }
 <p style="color: #6B7F94; font-size: 14px; margin-top: 8px;">PNG, JPG up to 10MB</p>
 <img id="previewImage" class="preview-image" alt="Preview">
 </div>
-
 <label class="section-title">Choose Style (18 styles)</label>
 <div class="style-grid" id="styleGrid"></div>
-
-<label class="section-title">Custom Prompt (optional)</label>
-<textarea id="promptInput" placeholder="Additional details: cyberpunk armor, neon lights..."></textarea>
-
+<label class="section-title">Custom Prompt (REQUIRED)</label>
+<textarea id="promptInput" placeholder="Example: cyberpunk frog character with neon lights, futuristic armor"></textarea>
 <div class="options-row" id="watermarkOption">
 <div class="checkbox" id="watermarkCheckbox"></div>
 <div class="checkbox-label">
@@ -328,20 +323,18 @@ footer a { color: #97DEED; text-decoration: none; }
 <div style="color: #6B7F94; font-size: 13px;">Overlay "OPG" logo on generated avatar</div>
 </div>
 </div>
-
-<button class="btn-generate" id="generateBtn">✨ Transform with Leonardo.ai</button>
+<button class="btn-generate" id="generateBtn">✨ Generate AI Avatar</button>
 <div id="statusMessage" class="status-message"></div>
 </div>
-
 <div class="main-card result-section" id="resultSection">
-<h2>✅ Transformation Complete!</h2>
+<h2>✅ Generation Complete!</h2>
 <div class="result-grid">
 <div class="result-card">
 <div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Original</div>
 <img id="originalImage" alt="Original">
 </div>
 <div class="result-card">
-<div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">AI Transformed</div>
+<div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">AI Generated Avatar</div>
 <img id="generatedImage" alt="Generated">
 <div style="color: #51CAD3; font-weight: 600; margin-top: 8px;" id="nftId">#0000</div>
 </div>
@@ -352,59 +345,52 @@ footer a { color: #97DEED; text-decoration: none; }
 </div>
 <div id="mintStatus" class="status-message"></div>
 </div>
-
 <footer>
-<p>Powered by <a href="https://leonardo.ai" target="_blank">Leonardo.ai</a> • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
-<p style="margin-top: 8px;">Image-to-Image AI • Professional Quality</p>
+<p>Powered by <a href="https://pollinations.ai" target="_blank">Pollinations AI</a> via Vercel Edge Functions • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
+<p style="margin-top: 8px;">18 Unique Styles • Secure Serverless API</p>
 </footer>
 </div>
-
 <script>
-// === КОНФИГУРАЦИЯ ===
 var STYLES = [
-{ id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk style, neon lights, futuristic, high tech, digital art' },
-{ id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime style, japanese animation, vibrant colors, detailed character' },
-{ id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art, 8-bit style, retro gaming, pixelated' },
-{ id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist design, clean lines, simple, modern art' },
-{ id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon colors, glowing effects, vibrant, electric' },
-{ id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro style, vintage, 80s aesthetic, nostalgic' },
-{ id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy art, magical, mystical, epic' },
-{ id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction, futuristic, space age, advanced technology' },
-{ id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir, black and white, dramatic lighting, moody' },
-{ id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave aesthetic, pastel colors, retro futuristic' },
-{ id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature inspired, organic, earthy tones, natural elements' },
-{ id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset colors, warm tones, golden hour, vibrant sky' },
-{ id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean waves, deep blue, aquatic, underwater, marine' },
-{ id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire flames, burning, hot, intense, orange red' },
-{ id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy space, stars, cosmic, nebula, universe' },
-{ id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest green, nature, trees, organic, peaceful' },
-{ id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic energy, purple blue, ethereal, mystical' },
-{ id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden luxury, premium, elegant, rich, metallic' }
+{ id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk neon futuristic high tech' },
+{ id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime japanese animation vibrant' },
+{ id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art 8bit retro gaming' },
+{ id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist clean modern simple' },
+{ id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon glow electric vibrant' },
+{ id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro vintage 80s aesthetic' },
+{ id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy magical mystical epic' },
+{ id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction futuristic space' },
+{ id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir black white dramatic' },
+{ id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave pastel retro futuristic' },
+{ id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature organic earthy natural' },
+{ id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset warm golden hour sky' },
+{ id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean waves deep blue aquatic' },
+{ id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire flames burning intense' },
+{ id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy stars cosmic nebula universe' },
+{ id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest green nature trees peaceful' },
+{ id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic ethereal mystical space' },
+{ id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden luxury elegant metallic' }
 ];
 
 var appState = {
 walletConnected: false,
 uploadedImage: null,
-uploadedImageBase64: null,
 selectedStyle: 'cyberpunk',
 addWatermark: false,
 generatedData: null
 };
 
-// === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', function() {
 renderStyleGrid();
 setupEventListeners();
 console.log('✅ GradientAvatar Factory loaded!');
-console.log('🎨 Using Leonardo.ai API');
+console.log('🔐 Using Vercel Serverless API');
 });
 
-// Клик по логотипу - обновление страницы
 document.getElementById('siteLogo').addEventListener('click', function() {
 location.reload();
 });
 
-// === РЕНДЕР СТИЛЕЙ ===
 function renderStyleGrid() {
 var grid = document.getElementById('styleGrid');
 var html = '';
@@ -418,187 +404,95 @@ html += '<div>' + style.name + '</div></button>';
 grid.innerHTML = html;
 }
 
-// === СОБЫТИЯ ===
 function setupEventListeners() {
 var uploadZone = document.getElementById('uploadZone');
 var imageInput = document.getElementById('imageInput');
-
 uploadZone.addEventListener('click', function() { imageInput.click(); });
-
-uploadZone.addEventListener('dragover', function(e) {
-e.preventDefault();
-uploadZone.style.borderColor = '#51CAD3';
-});
-
-uploadZone.addEventListener('dragleave', function() {
-uploadZone.style.borderColor = '#1E2A3A';
-});
-
+uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.style.borderColor = '#51CAD3'; });
+uploadZone.addEventListener('dragleave', function() { uploadZone.style.borderColor = '#1E2A3A'; });
 uploadZone.addEventListener('drop', function(e) {
 e.preventDefault();
 uploadZone.style.borderColor = '#1E2A3A';
 handleImageUpload(e.dataTransfer.files[0]);
 });
-
-imageInput.addEventListener('change', function(e) {
-handleImageUpload(e.target.files[0]);
-});
-
+imageInput.addEventListener('change', function(e) { handleImageUpload(e.target.files[0]); });
 document.getElementById('styleGrid').addEventListener('click', function(e) {
 var btn = e.target.closest('.style-btn');
 if (btn) {
 var buttons = document.querySelectorAll('.style-btn');
-for (var i = 0; i < buttons.length; i++) {
-buttons[i].classList.remove('active');
-}
+for (var i = 0; i < buttons.length; i++) { buttons[i].classList.remove('active'); }
 btn.classList.add('active');
 appState.selectedStyle = btn.dataset.style;
-console.log('Style selected:', appState.selectedStyle);
 }
 });
-
 document.getElementById('watermarkOption').addEventListener('click', function() {
 appState.addWatermark = !appState.addWatermark;
 var checkbox = document.getElementById('watermarkCheckbox');
-if (appState.addWatermark) {
-checkbox.classList.add('checked');
-} else {
-checkbox.classList.remove('checked');
-}
+if (appState.addWatermark) { checkbox.classList.add('checked'); }
+else { checkbox.classList.remove('checked'); }
 });
-
 document.getElementById('generateBtn').addEventListener('click', handleGenerate);
 document.getElementById('downloadBtn').addEventListener('click', handleDownload);
 document.getElementById('copyHashBtn').addEventListener('click', handleCopyHash);
 document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
 }
 
-// === ЗАГРУЗКА ИЗОБРАЖЕНИЯ ===
 function handleImageUpload(file) {
-if (!file || !file.type.startsWith('image/')) {
-showStatus('Please select a valid image', 'error');
-return;
-}
-if (file.size > 10 * 1024 * 1024) {
-showStatus('Image must be under 10MB', 'error');
-return;
-}
-
+if (!file || !file.type.startsWith('image/')) { showStatus('Please select a valid image', 'error'); return; }
+if (file.size > 10 * 1024 * 1024) { showStatus('Image must be under 10MB', 'error'); return; }
 appState.uploadedImage = file;
 var reader = new FileReader();
 reader.onload = function(e) {
 document.getElementById('previewImage').src = e.target.result;
 document.getElementById('uploadZone').classList.add('has-image');
-// Сохраняем Base64 для Leonardo API
-appState.uploadedImageBase64 = e.target.result.split(',')[1];
-showStatus('✅ Image loaded! Ready to transform', 'success');
+showStatus('✅ Image loaded! Ready to generate', 'success');
 };
 reader.readAsDataURL(file);
 }
 
-// === 🎨 LEONARDO.AI IMAGE-TO-IMAGE ===
-function generateWithLeonardo(imageBase64, style, customPrompt) {
+// === 🎨 AI GENERATION VIA VERCEL API ===
+function generateViaAPI(prompt, style) {
 return new Promise(function(resolve, reject) {
-var apiKey = '386dcdcc-2067-4728-843c-422e0a615fe7'; // Замените на ваш ключ или используйте GitHub Secrets
+console.log('🎨 Calling Vercel API...');
+showStatus('🤖 AI is generating your avatar... (15-30 seconds)', 'info');
 
-console.log('🎨 Starting Leonardo.ai generation...');
-console.log('Style:', style.name);
-
-var prompt = style.prompt;
-if (customPrompt) {
-prompt += ', ' + customPrompt;
-}
-
-// Шаг 1: Создаём генерацию
-fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
+fetch('/api/generate', {
 method: 'POST',
-headers: {
-'Authorization': 'Bearer ' + apiKey,
-'Content-Type': 'application/json'
-},
+headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({
 prompt: prompt,
-negative_prompt: 'ugly, deformed, noisy, blurry, low quality, distorted',
-modelId: '6bef9f1b-29cb-40c7-b9df-32b51c1f67d3', // Leonardo Phoenix
+style: style.prompt,
 width: 512,
-height: 512,
-num_images: 1,
-init_strength: 0.65
+height: 512
 })
 })
 .then(function(res) { return res.json(); })
 .then(function(data) {
 if (data.error) {
-reject(new Error(data.error.message || 'Leonardo API error'));
+reject(new Error(data.error));
 return;
 }
-
-var generationId = data.sdGenerationJob.generationId;
-console.log('Generation ID:', generationId);
-
-// Шаг 2: Ждём завершения
-return pollGenerationStatus(generationId, apiKey);
-})
-.then(function(imageUrl) {
-console.log('✅ Generated:', imageUrl);
-resolve(imageUrl);
+console.log('✅ Image generated via API!');
+resolve(data.image);
 })
 .catch(function(error) {
-console.error('Leonardo error:', error);
-reject(error);
+console.error('API error:', error);
+reject(new Error('Failed to generate. Please try again.'));
 });
 });
 }
 
-function pollGenerationStatus(generationId, apiKey, attempts) {
-if (attempts === undefined) attempts = 0;
-
-return new Promise(function(resolve, reject) {
-if (attempts > 30) {
-reject(new Error('Generation timeout (30 attempts)'));
-return;
-}
-
-fetch('https://cloud.leonardo.ai/api/rest/v1/generations/' + generationId, {
-headers: {
-'Authorization': 'Bearer ' + apiKey
-}
-})
-.then(function(res) { return res.json(); })
-.then(function(data) {
-var status = data.generations_by_pk.status;
-console.log('Status:', status, 'Attempt:', attempts);
-
-if (status === 'COMPLETE') {
-resolve(data.generations_by_pk.generated_images[0].url);
-} else if (status === 'FAILED') {
-reject(new Error('Generation failed'));
-} else {
-setTimeout(function() {
-resolve(pollGenerationStatus(generationId, apiKey, attempts + 1));
-}, 2000);
-}
-})
-.catch(function(error) {
-reject(error);
-});
-});
-}
-
-// === 💧 ВОДЯНОЙ ЗНАК ===
+// === 💧 ADD WATERMARK ===
 function addWatermark(imageUrl) {
 return new Promise(function(resolve) {
 var img = new Image();
 img.crossOrigin = 'anonymous';
-
 img.onload = function() {
 var canvas = document.createElement('canvas');
 canvas.width = img.width;
 canvas.height = img.height;
 var ctx = canvas.getContext('2d');
-
 ctx.drawImage(img, 0, 0);
-
 if (appState.addWatermark) {
 ctx.save();
 ctx.globalAlpha = 0.35;
@@ -609,31 +503,32 @@ ctx.textBaseline = 'bottom';
 ctx.fillText('OPG', canvas.width - 20, canvas.height - 20);
 ctx.restore();
 }
-
 resolve(canvas.toDataURL('image/png'));
 };
-
 img.onerror = function() { resolve(imageUrl); };
 img.src = imageUrl;
 });
 }
 
-// === ГЛАВНАЯ ФУНКЦИЯ ===
+// === ГЛАВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ===
 function handleGenerate() {
 if (!appState.uploadedImage) {
 showStatus('⚠️ Upload image first', 'warning');
 return;
 }
-
+var prompt = document.getElementById('promptInput').value.trim();
+if (!prompt) {
+showStatus('⚠️ Please enter a prompt', 'warning');
+document.getElementById('promptInput').focus();
+return;
+}
 if (!appState.walletConnected) {
 showStatus('⚠️ Connect wallet first', 'warning');
 return;
 }
-
 var btn = document.getElementById('generateBtn');
 var originalText = btn.innerHTML;
 btn.disabled = true;
-
 var selectedStyle = null;
 for (var i = 0; i < STYLES.length; i++) {
 if (STYLES[i].id === appState.selectedStyle) {
@@ -641,17 +536,11 @@ selectedStyle = STYLES[i];
 break;
 }
 }
-
-var customPrompt = document.getElementById('promptInput').value.trim();
-
-console.log('🎯 Starting transformation...');
+console.log('🎯 Starting generation via Vercel API...');
 console.log('Style:', selectedStyle.name);
-console.log('Prompt:', customPrompt);
-
-btn.innerHTML = '<span class="loading-spinner"></span> Transforming...';
-showStatus('🎨 AI is transforming your avatar... (30-60 seconds)', 'info');
-
-generateWithLeonardo(appState.uploadedImageBase64, selectedStyle, customPrompt)
+console.log('Prompt:', prompt);
+btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+generateViaAPI(prompt, selectedStyle)
 .then(function(imageUrl) {
 btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
 showStatus('💧 Applying watermark...', 'info');
@@ -659,30 +548,26 @@ return addWatermark(imageUrl);
 })
 .then(function(processedUrl) {
 btn.innerHTML = '<span class="loading-spinner"></span> Finalizing...';
-
 setTimeout(function() {
 var nftId = '#' + (Math.floor(Math.random() * 9000) + 1000).toString().padStart(4, '0');
 var txHash = '0x';
 for (var i = 0; i < 64; i++) {
 txHash += Math.floor(Math.random() * 16).toString(16);
 }
-
 appState.generatedData = {
 originalUrl: URL.createObjectURL(appState.uploadedImage),
 generatedUrl: processedUrl,
 nftId: nftId,
 txHash: txHash,
 style: appState.selectedStyle,
-prompt: customPrompt
+prompt: prompt
 };
-
 document.getElementById('originalImage').src = appState.generatedData.originalUrl;
 document.getElementById('generatedImage').src = appState.generatedData.generatedUrl;
 document.getElementById('nftId').textContent = nftId;
 document.getElementById('resultSection').classList.add('show');
 document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
-
-showStatus('✅ Avatar transformed successfully!', 'success');
+showStatus('✅ Avatar generated successfully!', 'success');
 btn.innerHTML = originalText;
 btn.disabled = false;
 }, 500);
@@ -695,45 +580,32 @@ btn.disabled = false;
 });
 }
 
-// === СКАЧИВАНИЕ ===
 function handleDownload() {
 if (!appState.generatedData) return;
-
 var link = document.createElement('a');
 link.download = 'gradient-avatar-' + appState.generatedData.nftId + '.png';
 link.href = appState.generatedData.generatedUrl;
 document.body.appendChild(link);
 link.click();
 document.body.removeChild(link);
-
 showStatus('📥 Download started!', 'success', 'mintStatus');
 }
 
-// === КОПИРОВАНИЕ ХЕША ===
 function handleCopyHash() {
 if (!appState.generatedData) return;
-
 navigator.clipboard.writeText(appState.generatedData.txHash)
-.then(function() {
-showStatus('🔗 Hash copied!', 'success', 'mintStatus');
-})
-.catch(function() {
-showStatus('❌ Copy failed', 'error', 'mintStatus');
-});
+.then(function() { showStatus('🔗 Hash copied!', 'success', 'mintStatus'); })
+.catch(function() { showStatus('❌ Copy failed', 'error', 'mintStatus'); });
 }
 
-// === ПОДКЛЮЧЕНИЕ КОШЕЛЬКА ===
 function connectWallet() {
 var btn = document.getElementById('connectWalletBtn');
-
 if (typeof window.ethereum === 'undefined') {
 showStatus('❌ Install MetaMask', 'error');
 window.open('https://metamask.io', '_blank');
 return;
 }
-
 showStatus('Connecting...', 'info');
-
 window.ethereum.request({ method: 'eth_requestAccounts' })
 .then(function(accounts) {
 return window.ethereum.request({ method: 'eth_chainId' });
@@ -758,15 +630,13 @@ showStatus('❌ Connection failed', 'error');
 });
 }
 
-// === СТАТУС ===
 function showStatus(message, type, elementId) {
 elementId = elementId || 'statusMessage';
 var el = document.getElementById(elementId);
 el.innerHTML = message;
 el.className = 'status-message status-' + type + ' show';
-
 if (type !== 'error') {
-setTimeout(function() { el.classList.remove('show'); }, 8000);
+setTimeout(function() { el.classList.remove('show'); }, 6000);
 }
 }
 </script>
