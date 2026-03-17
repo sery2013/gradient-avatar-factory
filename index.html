@@ -318,8 +318,8 @@
       <label class="section-title">Choose Style (18 styles)</label>
       <div class="style-grid" id="styleGrid"></div>
 
-      <label class="section-title">Custom Prompt (optional)</label>
-      <textarea id="promptInput" placeholder="Describe your avatar: cyberpunk warrior, neon lights, futuristic armor..."></textarea>
+      <label class="section-title">Custom Prompt (REQUIRED for AI generation)</label>
+      <textarea id="promptInput" placeholder="Example: cyberpunk frog character with neon lights, futuristic, digital art"></textarea>
 
       <div class="options-row" id="watermarkOption">
         <div class="checkbox" id="watermarkCheckbox"></div>
@@ -329,7 +329,7 @@
         </div>
       </div>
 
-      <button class="btn-generate" id="generateBtn">✨ Generate Avatar</button>
+      <button class="btn-generate" id="generateBtn">✨ Generate AI Avatar</button>
       <div id="statusMessage" class="status-message"></div>
     </div>
 
@@ -341,7 +341,7 @@
           <img id="originalImage" alt="Original">
         </div>
         <div class="result-card">
-          <div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Generated Avatar</div>
+          <div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">AI Generated Avatar</div>
           <img id="generatedImage" alt="Generated">
           <div style="color: #51CAD3; font-weight: 600; margin-top: 8px;" id="nftId">#0000</div>
         </div>
@@ -354,38 +354,34 @@
     </div>
 
     <footer>
-      <p>Powered by Canvas API • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
-      <p style="margin-top: 8px;">18 Unique Styles • Base Sepolia Testnet</p>
+      <p>Powered by <a href="https://pollinations.ai" target="_blank">Pollinations AI</a> • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
+      <p style="margin-top: 8px;">18 Unique Styles • Real AI Image Generation</p>
     </footer>
   </div>
 
   <script>
     // === КОНФИГУРАЦИЯ ===
     var STYLES = [
-      { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'] },
-      { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'] },
-      { id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'] },
-      { id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'] },
-      { id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'] },
-      { id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'] },
-      { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'] },
-      { id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'] },
-      { id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'] },
-      { id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'] },
-      { id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'] },
-      { id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'] },
-      { id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'] },
-      { id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'] },
-      { id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'] },
-      { id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'] },
-      { id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'] },
-      { id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'] }
+      { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk, neon lights, futuristic, high tech' },
+      { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime style, japanese animation, vibrant colors' },
+      { id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art, 8-bit, retro gaming' },
+      { id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist, clean, modern design' },
+      { id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon glow, electric, vibrant' },
+      { id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro, vintage, 80s aesthetic' },
+      { id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy, magical, mystical' },
+      { id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction, futuristic, space' },
+      { id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir, black and white, dramatic' },
+      { id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave, pastel, aesthetic' },
+      { id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature, organic, natural elements' },
+      { id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset, warm tones, golden hour' },
+      { id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean, waves, deep blue, aquatic' },
+      { id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire, flames, burning, intense' },
+      { id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy, stars, cosmic, nebula' },
+      { id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest, green, nature, peaceful' },
+      { id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic, ethereal, mystical' },
+      { id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden, luxury, elegant, metallic' }
     ];
 
-    // 🔑 Gemini API Key (обфускация Base64)
-    var GEMINI_API_KEY = atob('QUl6YXN5RHdnazJ3QVJzcXFQb1M1a3ZnLS1zbTdtSGVWQU9OY1ZaMA==');
-
-    // Состояние приложения
     var appState = {
       walletConnected: false,
       uploadedImage: null,
@@ -394,11 +390,11 @@
       generatedData: null
     };
 
-    // === ИНИЦИАЛИЗАЦИЯ ===
     document.addEventListener('DOMContentLoaded', function() {
       renderStyleGrid();
       setupEventListeners();
       console.log('✅ GradientAvatar Factory loaded!');
+      console.log('🤖 Using Pollinations AI for real image generation');
     });
 
     document.getElementById('siteLogo').addEventListener('click', function() {
@@ -463,102 +459,57 @@
       reader.onload = function(e) {
         document.getElementById('previewImage').src = e.target.result;
         document.getElementById('uploadZone').classList.add('has-image');
-        showStatus('✅ Image loaded!', 'success');
+        showStatus('✅ Image loaded! Now write a prompt and generate', 'success');
       };
       reader.readAsDataURL(file);
     }
 
-    // === 🎨 ГЕНЕРАЦИЯ AVATAR (CANVAS - 100% РАБОТАЕТ) ===
-    function generateAvatarCanvas(style, prompt) {
-      return new Promise(function(resolve) {
-        var canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        var ctx = canvas.getContext('2d');
+    // === 🎨 REAL AI GENERATION VIA POLLINATIONS ===
+    function generateRealAIImage(prompt, style) {
+      return new Promise(function(resolve, reject) {
+        // Pollinations.ai API - БЕСПЛАТНО, без ключа
+        var seed = Math.floor(Math.random() * 10000);
+        var width = 512;
+        var height = 512;
         
-        // 1. Градиент фона
-        var gradient = ctx.createLinearGradient(0, 0, 512, 512);
-        for (var i = 0; i < style.gradient.length; i++) {
-          gradient.addColorStop(i / (style.gradient.length - 1), style.gradient[i]);
-        }
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 512, 512);
+        // Формируем правильный URL
+        var encodedPrompt = encodeURIComponent(prompt + ', ' + style.prompt + ', high quality, detailed, digital art');
+        var imageUrl = 'https://image.pollinations.ai/prompt/' + encodedPrompt + '?width=' + width + '&height=' + height + '&seed=' + seed + '&nologo=true';
         
-        // 2. Добавляем шум/звёзды
-        for (var j = 0; j < 5000; j++) {
-          var x = Math.random() * 512;
-          var y = Math.random() * 512;
-          var size = Math.random() * 3 + 1;
-          var alpha = Math.random() * 0.3 + 0.1;
-          ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
-          ctx.fillRect(x, y, size, size);
-        }
+        console.log('🎨 Generating AI image...');
+        console.log('URL:', imageUrl);
+        console.log('Prompt:', prompt);
         
-        // 3. Геометрические фигуры
-        for (var k = 0; k < 15; k++) {
-          var cx = Math.random() * 512;
-          var cy = Math.random() * 512;
-          var r = Math.random() * 80 + 40;
-          ctx.beginPath();
-          ctx.arc(cx, cy, r, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-          ctx.fill();
-        }
+        showStatus('🤖 AI is generating your avatar... (15-30 seconds)', 'info');
         
-        // 4. Текст промпта
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 40px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        // Создаем Image объект
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
         
-        var text = prompt || style.name;
-        var words = text.split(' ');
-        var lines = [];
-        var cur = '';
+        var timeout = setTimeout(function() {
+          console.error('❌ Timeout after 30 seconds');
+          reject(new Error('Generation timeout. Please try again.'));
+        }, 30000);
         
-        for (var l = 0; l < words.length; l++) {
-          if (cur.length + words[l].length < 20) {
-            cur += ' ' + words[l];
-          } else {
-            if (cur) lines.push(cur.trim());
-            cur = words[l];
-          }
-        }
-        if (cur) lines.push(cur.trim());
+        img.onload = function() {
+          clearTimeout(timeout);
+          console.log('✅ Image generated successfully!');
+          console.log('Image size:', img.width, 'x', img.height);
+          resolve(imageUrl);
+        };
         
-        var startY = 256 - ((lines.length - 1) * 35);
-        for (var m = 0; m < lines.length; m++) {
-          ctx.fillText(lines[m], 256, startY + (m * 50));
-        }
+        img.onerror = function(e) {
+          clearTimeout(timeout);
+          console.error('❌ Failed to load image:', e);
+          reject(new Error('Failed to generate image. Please try again.'));
+        };
         
-        // 5. Подпись стиля
-        ctx.font = '22px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.fillText('Style: ' + style.name, 256, 420);
-        ctx.fillText('GradientAvatar Factory', 256, 455);
-        
-        // 6. Рамка
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.lineWidth = 8;
-        ctx.strokeRect(10, 10, 492, 492);
-        
-        // 7. Уголки
-        var cornerSize = 30;
-        ctx.fillStyle = 'rgba(81, 202, 211, 0.6)';
-        ctx.fillRect(10, 10, cornerSize, 4);
-        ctx.fillRect(10, 10, 4, cornerSize);
-        ctx.fillRect(502 - cornerSize, 10, cornerSize, 4);
-        ctx.fillRect(502, 10, 4, cornerSize);
-        ctx.fillRect(10, 502 - cornerSize, cornerSize, 4);
-        ctx.fillRect(10, 502, 4, cornerSize);
-        ctx.fillRect(502 - cornerSize, 502, cornerSize, 4);
-        ctx.fillRect(502, 502 - cornerSize, 4, cornerSize);
-        
-        resolve(canvas.toDataURL('image/png'));
+        // Загружаем изображение
+        img.src = imageUrl;
       });
     }
 
-    // === 💧 ДОБАВИТЬ ВОДЯНОЙ ЗНАК ===
+    // === 💧 ADD WATERMARK ===
     function addWatermark(imageUrl) {
       return new Promise(function(resolve) {
         var img = new Image();
@@ -572,14 +523,16 @@
           
           ctx.drawImage(img, 0, 0);
           
-          ctx.save();
-          ctx.globalAlpha = 0.35;
-          ctx.fillStyle = '#51CAD3';
-          ctx.font = 'bold 48px Inter, sans-serif';
-          ctx.textAlign = 'right';
-          ctx.textBaseline = 'bottom';
-          ctx.fillText('OPG', canvas.width - 20, canvas.height - 20);
-          ctx.restore();
+          if (appState.addWatermark) {
+            ctx.save();
+            ctx.globalAlpha = 0.35;
+            ctx.fillStyle = '#51CAD3';
+            ctx.font = 'bold 48px Inter, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('OPG', canvas.width - 20, canvas.height - 20);
+            ctx.restore();
+          }
           
           resolve(canvas.toDataURL('image/png'));
         };
@@ -592,9 +545,17 @@
     // === ГЛАВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ===
     function handleGenerate() {
       if (!appState.uploadedImage) { 
-        showStatus('⚠️ Upload image first', 'warning'); 
+        showStatus('⚠️ Please upload an image first', 'warning'); 
         return; 
       }
+      
+      var prompt = document.getElementById('promptInput').value.trim();
+      if (!prompt) {
+        showStatus('⚠️ Please enter a prompt (e.g., "cyberpunk frog character with neon lights")', 'warning');
+        document.getElementById('promptInput').focus();
+        return;
+      }
+      
       if (!appState.walletConnected) { 
         showStatus('⚠️ Connect wallet first', 'warning'); 
         return; 
@@ -604,38 +565,30 @@
       var originalText = btn.innerHTML;
       btn.disabled = true;
       
-      console.log('🎯 Starting generation...');
-      
-      // Этап 1
-      btn.innerHTML = '<span class="loading-spinner"></span> Generating (1/3)...';
-      showStatus('🎨 Creating avatar...', 'info');
-      
-      var style = null;
+      // Находим стиль
+      var selectedStyle = null;
       for (var i = 0; i < STYLES.length; i++) {
         if (STYLES[i].id === appState.selectedStyle) {
-          style = STYLES[i];
+          selectedStyle = STYLES[i];
           break;
         }
       }
       
-      var prompt = document.getElementById('promptInput').value.trim();
+      console.log('🎯 Starting AI generation...');
+      console.log('Style:', selectedStyle.name);
+      console.log('Prompt:', prompt);
       
-      // Генерируем на Canvas (ВСЕГДА РАБОТАЕТ)
-      generateAvatarCanvas(style, prompt)
+      btn.innerHTML = '<span class="loading-spinner"></span> Generating AI Image...';
+      
+      // Генерируем реальное AI изображение
+      generateRealAIImage(prompt, selectedStyle)
         .then(function(imageUrl) {
-          // Этап 2
-          btn.innerHTML = '<span class="loading-spinner"></span> Processing (2/3)...';
-          showStatus('💧 Applying effects...', 'info');
-          
-          if (appState.addWatermark) {
-            return addWatermark(imageUrl);
-          }
-          return imageUrl;
+          btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+          showStatus('💧 Applying watermark...', 'info');
+          return addWatermark(imageUrl);
         })
-        .then(function(processed) {
-          // Этап 3
-          btn.innerHTML = '<span class="loading-spinner"></span> Finalizing (3/3)...';
-          showStatus('✨ Almost done...', 'info');
+        .then(function(processedUrl) {
+          btn.innerHTML = '<span class="loading-spinner"></span> Finalizing...';
           
           setTimeout(function() {
             var nftId = '#' + (Math.floor(Math.random() * 9000) + 1000).toString().padStart(4, '0');
@@ -646,10 +599,11 @@
             
             appState.generatedData = {
               originalUrl: URL.createObjectURL(appState.uploadedImage),
-              generatedUrl: processed,
+              generatedUrl: processedUrl,
               nftId: nftId,
               txHash: txHash,
-              style: appState.selectedStyle
+              style: appState.selectedStyle,
+              prompt: prompt
             };
             
             document.getElementById('originalImage').src = appState.generatedData.originalUrl;
@@ -658,14 +612,14 @@
             document.getElementById('resultSection').classList.add('show');
             document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
             
-            showStatus('✅ Avatar generated successfully!', 'success');
+            showStatus('✅ AI Avatar generated successfully!', 'success');
             btn.innerHTML = originalText;
             btn.disabled = false;
           }, 500);
         })
         .catch(function(error) {
           console.error('Generation error:', error);
-          showStatus('❌ ' + (error.message || 'Failed. Try again.'), 'error');
+          showStatus('❌ ' + error.message, 'error');
           btn.innerHTML = originalText;
           btn.disabled = false;
         });
@@ -730,7 +684,7 @@
       el.innerHTML = message;
       el.className = 'status-message status-' + type + ' show';
       if (type !== 'error') {
-        setTimeout(function() { el.classList.remove('show'); }, 5000);
+        setTimeout(function() { el.classList.remove('show'); }, 6000);
       }
     }
   </script>
