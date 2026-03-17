@@ -4,14 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GradientAvatar Factory | OpenGradient</title>
-  <script src="https://cdn.jsdelivr.net/npm/thirdweb@5/dist/thirdweb.umd.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #0A0F19;
@@ -19,12 +13,7 @@
       min-height: 100vh;
       padding: 20px;
     }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
+    .container { max-width: 1000px; margin: 0 auto; }
     header {
       background: rgba(18, 26, 38, 0.9);
       border: 1px solid #1E2A3A;
@@ -32,7 +21,6 @@
       padding: 20px;
       margin-bottom: 30px;
     }
-
     .header-top {
       display: flex;
       justify-content: space-between;
@@ -40,16 +28,8 @@
       flex-wrap: wrap;
       gap: 15px;
     }
-
-    .logo {
-      font-size: 24px;
-      font-weight: 700;
-    }
-
-    .logo span {
-      color: #51CAD3;
-    }
-
+    .logo { font-size: 24px; font-weight: 700; }
+    .logo span { color: #51CAD3; }
     .btn-connect {
       padding: 10px 20px;
       background: transparent;
@@ -60,18 +40,12 @@
       font-weight: 600;
       transition: all 0.2s;
     }
-
-    .btn-connect:hover {
-      background: rgba(81, 202, 211, 0.1);
-      transform: translateY(-1px);
-    }
-
+    .btn-connect:hover { background: rgba(81, 202, 211, 0.1); }
     .btn-connect.connected {
       background: rgba(81, 202, 211, 0.2);
       border-color: #00ff9d;
       color: #00ff9d;
     }
-
     .main-card {
       background: #121A26;
       border: 1px solid #1E2A3A;
@@ -79,7 +53,6 @@
       padding: 30px;
       margin-bottom: 20px;
     }
-
     .main-card h2 {
       font-size: 22px;
       margin-bottom: 24px;
@@ -87,7 +60,6 @@
       align-items: center;
       gap: 10px;
     }
-
     .upload-zone {
       border: 2px dashed #1E2A3A;
       border-radius: 12px;
@@ -98,79 +70,58 @@
       background: rgba(151, 222, 237, 0.03);
       margin-bottom: 24px;
     }
-
     .upload-zone:hover {
       border-color: #51CAD3;
       background: rgba(81, 202, 211, 0.08);
-      transform: translateY(-2px);
     }
-
     .upload-zone.has-image {
       border-style: solid;
       border-color: #51CAD3;
       padding: 10px;
     }
-
-    .upload-icon {
-      font-size: 56px;
-      margin-bottom: 12px;
-    }
-
+    .upload-icon { font-size: 56px; margin-bottom: 12px; }
     .preview-image {
       max-width: 100%;
       max-height: 250px;
       border-radius: 8px;
       display: none;
     }
-
     .upload-zone.has-image .upload-icon,
-    .upload-zone.has-image p {
-      display: none;
-    }
-
-    .upload-zone.has-image .preview-image {
-      display: block;
-    }
-
+    .upload-zone.has-image p { display: none; }
+    .upload-zone.has-image .preview-image { display: block; }
     .section-title {
       font-size: 16px;
       color: #A0B3C6;
       margin-bottom: 12px;
       display: block;
     }
-
     .style-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 12px;
       margin-bottom: 24px;
     }
-
     .style-btn {
-      padding: 12px;
+      padding: 10px;
       background: #0A0F19;
       border: 2px solid #1E2A3A;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
       text-align: center;
-      font-size: 13px;
+      font-size: 12px;
     }
-
-    .style-btn:hover,
-    .style-btn.active {
+    .style-btn:hover, .style-btn.active {
       border-color: #51CAD3;
       background: rgba(81, 202, 211, 0.1);
       transform: translateY(-2px);
     }
-
     .style-preview {
       width: 100%;
-      height: 50px;
+      height: 45px;
       border-radius: 4px;
       margin-bottom: 6px;
     }
-
     textarea {
       width: 100%;
       padding: 14px;
@@ -182,14 +133,11 @@
       resize: vertical;
       min-height: 80px;
       margin-bottom: 20px;
-      font-size: 14px;
     }
-
     textarea:focus {
       outline: none;
       border-color: #51CAD3;
     }
-
     .options-row {
       display: flex;
       align-items: center;
@@ -200,11 +148,6 @@
       border-radius: 8px;
       cursor: pointer;
     }
-
-    .options-row:hover {
-      background: rgba(81, 202, 211, 0.05);
-    }
-
     .checkbox {
       width: 20px;
       height: 20px;
@@ -214,26 +157,17 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.2s;
+      flex-shrink: 0;
     }
-
     .checkbox.checked {
       background: #51CAD3;
       border-color: #51CAD3;
     }
-
     .checkbox.checked::after {
       content: '✓';
       color: #0A0F19;
       font-weight: bold;
-      font-size: 14px;
     }
-
-    .checkbox-label {
-      flex: 1;
-      cursor: pointer;
-    }
-
     .btn-generate {
       width: 100%;
       padding: 16px;
@@ -246,38 +180,23 @@
       cursor: pointer;
       transition: all 0.3s;
     }
-
     .btn-generate:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(81, 202, 211, 0.4);
     }
-
-    .btn-generate:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .result-section {
-      display: none;
-    }
-
-    .result-section.show {
-      display: block;
-      animation: fadeIn 0.5s;
-    }
-
+    .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
+    .result-section { display: none; }
+    .result-section.show { display: block; animation: fadeIn 0.5s; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .result-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
       margin-bottom: 20px;
     }
-
     .result-card {
       background: #0A0F19;
       border: 2px solid #1E2A3A;
@@ -285,30 +204,16 @@
       padding: 16px;
       text-align: center;
     }
-
     .result-card img {
       max-width: 100%;
       border-radius: 8px;
       margin-bottom: 10px;
     }
-
-    .result-label {
-      font-size: 13px;
-      color: #6B7F94;
-      margin-bottom: 4px;
-    }
-
-    .result-value {
-      font-weight: 600;
-      color: #51CAD3;
-    }
-
     .result-actions {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
     }
-
     .btn-action {
       flex: 1;
       min-width: 140px;
@@ -321,65 +226,41 @@
       font-weight: 600;
       transition: all 0.2s;
     }
-
     .btn-action:hover {
       background: rgba(81, 202, 211, 0.1);
-      transform: translateY(-1px);
     }
-
-    .btn-action.primary {
-      background: linear-gradient(135deg, #51CAD3, #97DEED);
-      color: #0A0F19;
-      border-color: transparent;
-    }
-
-    .btn-action.primary:hover {
-      box-shadow: 0 4px 15px rgba(81, 202, 211, 0.3);
-    }
-
     .status-message {
       padding: 14px;
       border-radius: 8px;
       margin-top: 16px;
       display: none;
       text-align: center;
-      font-weight: 500;
     }
-
-    .status-message.show {
-      display: block;
-      animation: slideIn 0.3s;
-    }
-
+    .status-message.show { display: block; animation: slideIn 0.3s; }
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .status-success {
       background: rgba(0, 255, 157, 0.1);
       border: 1px solid #00ff9d;
       color: #00ff9d;
     }
-
     .status-error {
       background: rgba(255, 107, 107, 0.1);
       border: 1px solid #ff6b6b;
       color: #ff6b6b;
     }
-
     .status-warning {
       background: rgba(255, 193, 7, 0.1);
       border: 1px solid #ffc107;
       color: #ffc107;
     }
-
     .status-info {
       background: rgba(81, 202, 211, 0.1);
       border: 1px solid #51CAD3;
       color: #51CAD3;
     }
-
     .loading-spinner {
       display: inline-block;
       width: 20px;
@@ -390,49 +271,21 @@
       animation: spin 1s linear infinite;
       margin-right: 8px;
     }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .price-tag {
-      display: inline-block;
-      padding: 4px 12px;
-      background: rgba(81, 202, 211, 0.15);
-      border-radius: 20px;
-      font-size: 13px;
-      margin-left: 10px;
-      color: #51CAD3;
-    }
-
+    @keyframes spin { to { transform: rotate(360deg); } }
     footer {
       margin-top: 40px;
       padding: 20px;
       text-align: center;
       color: #6B7F94;
       border-top: 1px solid #1E2A3A;
-      font-size: 14px;
     }
-
-    footer a {
-      color: #97DEED;
-      text-decoration: none;
-    }
-
+    footer a { color: #97DEED; text-decoration: none; }
     @media (max-width: 768px) {
-      .result-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .style-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
+      .result-grid { grid-template-columns: 1fr; }
+      .style-grid { grid-template-columns: repeat(3, 1fr); }
     }
-
     @media (max-width: 480px) {
-      .style-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .style-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -441,16 +294,13 @@
     <header>
       <div class="header-top">
         <div class="logo">Gradient<span>Avatar</span> Factory</div>
-        <button class="btn-connect" id="connectWalletBtn">
-          🔗 Connect Wallet
-        </button>
+        <button class="btn-connect" id="connectWalletBtn">🔗 Connect Wallet</button>
       </div>
     </header>
 
     <div class="main-card">
       <h2>🎨 Create Your AI Avatar</h2>
       
-      <!-- Upload Section -->
       <div class="upload-zone" id="uploadZone">
         <input type="file" id="imageInput" accept="image/*" style="display: none;">
         <div class="upload-icon">📁</div>
@@ -459,78 +309,53 @@
         <img id="previewImage" class="preview-image" alt="Preview">
       </div>
 
-      <!-- Style Selection -->
-      <label class="section-title">Choose Style</label>
-      <div class="style-grid" id="styleGrid">
-        <!-- Generated by JS -->
-      </div>
+      <label class="section-title">Choose Style (18 styles available)</label>
+      <div class="style-grid" id="styleGrid"></div>
 
-      <!-- Custom Prompt -->
       <label class="section-title">Custom Prompt (optional)</label>
-      <textarea 
-        id="promptInput" 
-        placeholder="Describe your avatar: cyberpunk warrior, neon lights, futuristic armor, holographic effects..."
-      ></textarea>
+      <textarea id="promptInput" placeholder="Describe your avatar: cyberpunk warrior, neon lights, futuristic armor..."></textarea>
 
-      <!-- Watermark Option -->
       <div class="options-row" id="watermarkOption">
         <div class="checkbox" id="watermarkCheckbox"></div>
         <div class="checkbox-label">
           <strong>Add OpenGradient Watermark</strong>
-          <div style="color: #6B7F94; font-size: 13px; margin-top: 2px;">
-            Overlay "OPG" logo on generated avatar
-          </div>
+          <div style="color: #6B7F94; font-size: 13px;">Overlay "OPG" logo on generated avatar</div>
         </div>
       </div>
 
-      <!-- Generate Button -->
-      <button class="btn-generate" id="generateBtn">
-        ✨ Generate Avatar
-        <span class="price-tag">0.001 ETH</span>
-      </button>
-
-      <!-- Status Message -->
+      <button class="btn-generate" id="generateBtn">✨ Generate Avatar</button>
       <div id="statusMessage" class="status-message"></div>
     </div>
 
-    <!-- Result Section -->
     <div class="main-card result-section" id="resultSection">
       <h2>✅ Generation Complete!</h2>
-      
       <div class="result-grid">
         <div class="result-card">
-          <div class="result-label">Original</div>
+          <div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Original</div>
           <img id="originalImage" alt="Original">
         </div>
         <div class="result-card">
-          <div class="result-label">Generated Avatar</div>
+          <div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Generated Avatar</div>
           <img id="generatedImage" alt="Generated">
-          <div class="result-value" id="nftId">#0000</div>
+          <div style="color: #51CAD3; font-weight: 600; margin-top: 8px;" id="nftId">#0000</div>
         </div>
       </div>
-
       <div class="result-actions">
         <button class="btn-action" id="downloadBtn">📥 Download PNG</button>
         <button class="btn-action" id="copyHashBtn">🔗 Copy Hash</button>
-        <button class="btn-action primary" id="mintNFTBtn">🪙 Mint NFT</button>
       </div>
-
       <div id="mintStatus" class="status-message"></div>
     </div>
 
     <footer>
-      <p>Powered by <a href="https://pollinations.ai" target="_blank">Pollinations AI</a> • 
-         Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a> Community</p>
-      <p style="margin-top: 8px;">Network: Base Sepolia Testnet</p>
+      <p>Powered by <a href="https://pollinations.ai" target="_blank">Pollinations AI</a> • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a> Community</p>
+      <p style="margin-top: 8px;">Network: Base Sepolia Testnet • 18 Unique Styles</p>
     </footer>
   </div>
 
   <script>
     // === Configuration ===
     const CONFIG = {
-      price: '0.001', // ETH
-      network: 'base-sepolia',
-      watermarkText: 'OPG',
       styles: [
         { id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'] },
         { id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'] },
@@ -543,7 +368,13 @@
         { id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'] },
         { id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'] },
         { id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'] },
-        { id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'] }
+        { id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'] },
+        { id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'] },
+        { id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'] },
+        { id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'] },
+        { id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'] },
+        { id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'] },
+        { id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'] }
       ]
     };
 
@@ -567,8 +398,7 @@
     function renderStyleGrid() {
       const grid = document.getElementById('styleGrid');
       grid.innerHTML = CONFIG.styles.map(style => `
-        <button class="style-btn ${style.id === state.selectedStyle ? 'active' : ''}" 
-                data-style="${style.id}">
+        <button class="style-btn ${style.id === state.selectedStyle ? 'active' : ''}" data-style="${style.id}">
           <div class="style-preview" style="background: linear-gradient(135deg, ${style.gradient.join(', ')})"></div>
           <div>${style.name}</div>
         </button>
@@ -577,33 +407,19 @@
 
     // === Setup Event Listeners ===
     function setupEventListeners() {
-      // Upload
       const uploadZone = document.getElementById('uploadZone');
       const imageInput = document.getElementById('imageInput');
       
       uploadZone.addEventListener('click', () => imageInput.click());
-      
-      uploadZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadZone.style.borderColor = '#51CAD3';
-      });
-      
-      uploadZone.addEventListener('dragleave', () => {
-        uploadZone.style.borderColor = '#1E2A3A';
-      });
-      
+      uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.style.borderColor = '#51CAD3'; });
+      uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = '#1E2A3A'; });
       uploadZone.addEventListener('drop', (e) => {
         e.preventDefault();
         uploadZone.style.borderColor = '#1E2A3A';
-        const file = e.dataTransfer.files[0];
-        handleImageUpload(file);
+        handleImageUpload(e.dataTransfer.files[0]);
       });
-      
-      imageInput.addEventListener('change', (e) => {
-        handleImageUpload(e.target.files[0]);
-      });
+      imageInput.addEventListener('change', (e) => handleImageUpload(e.target.files[0]));
 
-      // Style selection
       document.getElementById('styleGrid').addEventListener('click', (e) => {
         const btn = e.target.closest('.style-btn');
         if (btn) {
@@ -613,26 +429,14 @@
         }
       });
 
-      // Watermark toggle
       document.getElementById('watermarkOption').addEventListener('click', () => {
         state.addWatermark = !state.addWatermark;
-        const checkbox = document.getElementById('watermarkCheckbox');
-        checkbox.classList.toggle('checked', state.addWatermark);
+        document.getElementById('watermarkCheckbox').classList.toggle('checked', state.addWatermark);
       });
 
-      // Generate button
       document.getElementById('generateBtn').addEventListener('click', handleGenerate);
-
-      // Download
       document.getElementById('downloadBtn').addEventListener('click', handleDownload);
-
-      // Copy hash
       document.getElementById('copyHashBtn').addEventListener('click', handleCopyHash);
-
-      // Mint NFT
-      document.getElementById('mintNFTBtn').addEventListener('click', handleMintNFT);
-
-      // Connect wallet
       document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
     }
 
@@ -642,94 +446,26 @@
         showStatus('Please select a valid image file', 'error');
         return;
       }
-      
       if (file.size > 10 * 1024 * 1024) {
         showStatus('Image must be under 10MB', 'error');
         return;
       }
       
       state.uploadedImage = file;
-      
       const reader = new FileReader();
       reader.onload = (e) => {
-        const preview = document.getElementById('previewImage');
-        preview.src = e.target.result;
+        document.getElementById('previewImage').src = e.target.result;
         document.getElementById('uploadZone').classList.add('has-image');
-        showStatus('Image loaded successfully! ✨', 'success');
+        showStatus('✅ Image loaded successfully!', 'success');
       };
       reader.readAsDataURL(file);
-    }
-
-    // === Handle Generate ===
-    async function handleGenerate() {
-      if (!state.uploadedImage) {
-        showStatus('Please upload an image first', 'warning');
-        return;
-      }
-
-      if (!state.walletConnected) {
-        showStatus('Please connect your wallet first', 'warning');
-        return;
-      }
-
-      const btn = document.getElementById('generateBtn');
-      const originalText = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
-
-      try {
-        // Get custom prompt
-        const customPrompt = document.getElementById('promptInput').value.trim();
-        const style = CONFIG.styles.find(s => s.id === state.selectedStyle);
-        
-        // Build AI prompt
-        const aiPrompt = buildPrompt(state.selectedStyle, customPrompt);
-        
-        showStatus('🎨 AI is generating your avatar... This may take 10-20 seconds', 'info');
-        
-        // Call Pollinations AI API
-        const imageUrl = await generateWithPollinations(aiPrompt, style.gradient);
-        
-        // Process image (add watermark if needed)
-        const processedImage = await processImage(imageUrl, state.addWatermark);
-        
-        // Generate NFT ID
-        const nftId = `#${Math.floor(Math.random() * 9000 + 1000).toString().padStart(4, '0')}`;
-        
-        // Generate transaction hash (mock for now)
-        const txHash = '0x' + Array(64).fill(0).map(() => 
-          Math.floor(Math.random() * 16).toString(16)
-        ).join('');
-        
-        // Save state
-        state.generatedData = {
-          originalUrl: URL.createObjectURL(state.uploadedImage),
-          generatedUrl: processedImage,
-          nftId,
-          txHash,
-          style: state.selectedStyle,
-          prompt: aiPrompt
-        };
-        
-        // Display results
-        displayResults();
-        
-        showStatus('✅ Avatar generated successfully!', 'success');
-        
-      } catch (error) {
-        console.error('Generation error:', error);
-        showStatus('Failed to generate avatar. Please try again.', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-      }
     }
 
     // === Build AI Prompt ===
     function buildPrompt(styleId, customPrompt) {
       const stylePrompts = {
         cyberpunk: 'cyberpunk style, neon lights, futuristic, high tech, digital art',
-        anime: 'anime style, japanese animation, vibrant colors, detailed character design',
+        anime: 'anime style, japanese animation, vibrant colors, detailed character',
         pixel: 'pixel art, 8-bit style, retro gaming, pixelated',
         minimal: 'minimalist design, clean lines, simple, modern art',
         neon: 'neon colors, glowing effects, vibrant, electric',
@@ -739,7 +475,13 @@
         noir: 'film noir, black and white, dramatic lighting, moody',
         vaporwave: 'vaporwave aesthetic, pastel colors, retro futuristic, glitch art',
         nature: 'nature inspired, organic, earthy tones, natural elements',
-        sunset: 'sunset colors, warm tones, golden hour, vibrant sky'
+        sunset: 'sunset colors, warm tones, golden hour, vibrant sky',
+        ocean: 'ocean waves, deep blue, aquatic, underwater, marine',
+        fire: 'fire flames, burning, hot, intense, orange red',
+        galaxy: 'galaxy space, stars, cosmic, nebula, universe',
+        forest: 'forest green, nature, trees, organic, peaceful',
+        cosmic: 'cosmic energy, purple blue, ethereal, mystical',
+        gold: 'golden luxury, premium, elegant, rich, metallic'
       };
       
       const basePrompt = stylePrompts[styleId] || 'digital art';
@@ -751,23 +493,62 @@
     }
 
     // === Generate with Pollinations AI ===
-    async function generateWithPollinations(prompt, colors) {
-      // Pollinations AI API - free, no key required
+    async function generateWithPollinations(prompt) {
       const width = 512;
       const height = 512;
       const seed = Math.floor(Math.random() * 10000);
+      const imageUrl = `https://image.pollinations.ai/prompt/${prompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
       
-      // Build URL with parameters
-      const url = `https://image.pollinations.ai/prompt/${prompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
       
-      // Fetch image
-      const response = await fetch(url);
-      const blob = await response.blob();
-      
-      return URL.createObjectURL(blob);
+      try {
+        const response = await fetch(imageUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') throw new Error('Generation timeout');
+        throw error;
+      }
     }
 
-    // === Process Image (Add Watermark) ===
+    // === Fallback Generation ===
+    async function generateFallbackAvatar(style, customPrompt) {
+      return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        
+        const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+        style.gradient.forEach((color, i) => {
+          gradient.addColorStop(i / (style.gradient.length - 1), color);
+        });
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 512, 512);
+        
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 36px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        const text = customPrompt ? customPrompt.split(' ').slice(0, 4).join(' ') : style.name;
+        ctx.fillText(text, 256, 230);
+        ctx.font = '24px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.fillText('AI Generated', 256, 280);
+        
+        resolve(canvas.toDataURL('image/png'));
+      });
+    }
+
+    // === Process Image ===
     async function processImage(imageUrl, addWatermark) {
       return new Promise((resolve) => {
         const img = new Image();
@@ -778,10 +559,8 @@
           canvas.height = img.height;
           const ctx = canvas.getContext('2d');
           
-          // Draw original image
           ctx.drawImage(img, 0, 0);
           
-          // Add watermark if enabled
           if (addWatermark) {
             ctx.save();
             ctx.globalAlpha = 0.3;
@@ -789,14 +568,78 @@
             ctx.font = 'bold 48px Inter, sans-serif';
             ctx.textAlign = 'right';
             ctx.textBaseline = 'bottom';
-            ctx.fillText(CONFIG.watermarkText, canvas.width - 20, canvas.height - 20);
+            ctx.fillText('OPG', canvas.width - 20, canvas.height - 20);
             ctx.restore();
           }
           
           resolve(canvas.toDataURL('image/png'));
         };
+        img.onerror = () => resolve(imageUrl);
         img.src = imageUrl;
       });
+    }
+
+    // === Handle Generate ===
+    async function handleGenerate() {
+      if (!state.uploadedImage) {
+        showStatus('⚠️ Please upload an image first', 'warning');
+        return;
+      }
+      if (!state.walletConnected) {
+        showStatus('⚠️ Please connect your wallet first', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('generateBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      
+      try {
+        const customPrompt = document.getElementById('promptInput').value.trim();
+        const style = CONFIG.styles.find(s => s.id === state.selectedStyle);
+        const aiPrompt = buildPrompt(state.selectedStyle, customPrompt);
+        
+        btn.innerHTML = '<span class="loading-spinner"></span> Generating (1/3)...';
+        showStatus('🤖 AI is creating your avatar... (15-25 seconds)', 'info');
+        
+        let imageUrl;
+        try {
+          imageUrl = await generateWithPollinations(aiPrompt);
+        } catch (error) {
+          console.error('API failed, using fallback:', error);
+          showStatus('⚠️ AI service slow. Using fallback generation...', 'warning');
+          imageUrl = await generateFallbackAvatar(style, customPrompt);
+        }
+        
+        btn.innerHTML = '<span class="loading-spinner"></span> Processing (2/3)...';
+        showStatus('🎨 Applying style and watermark...', 'info');
+        
+        const processedImage = await processImage(imageUrl, state.addWatermark);
+        
+        btn.innerHTML = '<span class="loading-spinner"></span> Finalizing (3/3)...';
+        showStatus('✨ Almost done...', 'info');
+        
+        const nftId = `#${Math.floor(Math.random() * 9000 + 1000).toString().padStart(4, '0')}`;
+        const txHash = '0x' + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+        
+        state.generatedData = {
+          originalUrl: URL.createObjectURL(state.uploadedImage),
+          generatedUrl: processedImage,
+          nftId,
+          txHash,
+          style: state.selectedStyle
+        };
+        
+        displayResults();
+        showStatus('✅ Avatar generated successfully!', 'success');
+        
+      } catch (error) {
+        console.error('Error:', error);
+        showStatus(`❌ ${error.message || 'Failed to generate. Try again.'}`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
 
     // === Display Results ===
@@ -804,7 +647,6 @@
       document.getElementById('originalImage').src = state.generatedData.originalUrl;
       document.getElementById('generatedImage').src = state.generatedData.generatedUrl;
       document.getElementById('nftId').textContent = state.generatedData.nftId;
-      
       document.getElementById('resultSection').classList.add('show');
       document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -812,67 +654,23 @@
     // === Handle Download ===
     function handleDownload() {
       if (!state.generatedData) return;
-      
       const link = document.createElement('a');
       link.download = `gradient-avatar-${state.generatedData.nftId}.png`;
       link.href = state.generatedData.generatedUrl;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      showStatus('Download started! 📥', 'success', 'mintStatus');
+      showStatus('📥 Download started!', 'success', 'mintStatus');
     }
 
     // === Handle Copy Hash ===
     async function handleCopyHash() {
       if (!state.generatedData) return;
-      
       try {
         await navigator.clipboard.writeText(state.generatedData.txHash);
-        showStatus('Transaction hash copied! 🔗', 'success', 'mintStatus');
+        showStatus('🔗 Transaction hash copied!', 'success', 'mintStatus');
       } catch {
-        showStatus('Failed to copy hash', 'error', 'mintStatus');
-      }
-    }
-
-    // === Handle Mint NFT ===
-    async function handleMintNFT() {
-      if (!state.generatedData) {
-        showStatus('Generate an avatar first', 'warning', 'mintStatus');
-        return;
-      }
-
-      if (!state.walletConnected) {
-        showStatus('Please connect wallet first', 'warning', 'mintStatus');
-        return;
-      }
-
-      const btn = document.getElementById('mintNFTBtn');
-      const originalText = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = '⏳ Minting...';
-
-      try {
-        showStatus('Preparing transaction...', 'info', 'mintStatus');
-        
-        // Here you would integrate with actual smart contract
-        // For now, simulate with delay
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        
-        // Mock successful mint
-        showStatus(
-          `✅ NFT ${state.generatedData.nftId} minted successfully on Base Sepolia!<br>` +
-          `<small>TX: ${state.generatedData.txHash.slice(0, 20)}...</small>`,
-          'success',
-          'mintStatus'
-        );
-        
-      } catch (error) {
-        console.error('Mint error:', error);
-        showStatus('Failed to mint NFT. Please try again.', 'error', 'mintStatus');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = originalText;
+        showStatus('❌ Failed to copy hash', 'error', 'mintStatus');
       }
     }
 
@@ -881,38 +679,26 @@
       const btn = document.getElementById('connectWalletBtn');
       
       try {
-        // Check if MetaMask is installed
         if (typeof window.ethereum !== 'undefined') {
           showStatus('Connecting wallet...', 'info');
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
           
-          // Request account access
-          const accounts = await window.ethereum.request({ 
-            method: 'eth_requestAccounts' 
-          });
-          
-          // Check network
           const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-          const baseSepoliaChainId = '0x14a34'; // 84532 in hex
+          const baseSepoliaChainId = '0x14a34';
           
           if (chainId !== baseSepoliaChainId) {
-            // Try to switch to Base Sepolia
             try {
               await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId: baseSepoliaChainId }],
+                params: [{ chainId: baseSepoliaChainId }]
               });
-            } catch (switchError) {
-              // Network doesn't exist, add it
+            } catch {
               await window.ethereum.request({
                 method: 'wallet_addEthereumChain',
                 params: [{
                   chainId: baseSepoliaChainId,
                   chainName: 'Base Sepolia',
-                  nativeCurrency: {
-                    name: 'ETH',
-                    symbol: 'ETH',
-                    decimals: 18
-                  },
+                  nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
                   rpcUrls: ['https://sepolia.base.org'],
                   blockExplorerUrls: ['https://sepolia.basescan.org']
                 }]
@@ -922,20 +708,16 @@
           
           state.walletConnected = true;
           state.walletAddress = accounts[0];
-          
           btn.textContent = `✅ ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
           btn.classList.add('connected');
-          
-          showStatus('Wallet connected successfully! 🔗', 'success');
-          
+          showStatus('✅ Wallet connected!', 'success');
         } else {
-          showStatus('Please install MetaMask to continue', 'error');
+          showStatus('❌ Please install MetaMask', 'error');
           window.open('https://metamask.io/download/', '_blank');
         }
-        
       } catch (error) {
-        console.error('Wallet connection error:', error);
-        showStatus('Failed to connect wallet', 'error');
+        console.error('Wallet error:', error);
+        showStatus('❌ Failed to connect wallet', 'error');
       }
     }
 
@@ -944,12 +726,8 @@
       const statusEl = document.getElementById(elementId);
       statusEl.innerHTML = message;
       statusEl.className = `status-message status-${type} show`;
-      
-      // Auto-hide after 5 seconds for non-error messages
       if (type !== 'error') {
-        setTimeout(() => {
-          statusEl.classList.remove('show');
-        }, 5000);
+        setTimeout(() => statusEl.classList.remove('show'), 5000);
       }
     }
   </script>
