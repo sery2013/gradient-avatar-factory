@@ -6,22 +6,21 @@ export default async function handler(req) {
 
   try {
     const { prompt, style, checkId } = await req.json();
-    const apiKey = process.env.LEONARDO_API_KEY;
 
-    // ПРОВЕРКА СТАТУСА (Занимает 0.5 сек)
+    // ВСТАВЬТЕ ВАШ КЛЮЧ СЮДА НАПРЯМУЮ ДЛЯ ТЕСТА
+    const apiKey = "f5174bf5-a782-4460-a04e-586b1d048fc3"; 
+
     if (checkId) {
       const res = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${checkId}`, {
         headers: { 'Authorization': `Bearer ${apiKey}` }
       });
       const data = await res.json();
-      const gen = data.generations_by_pk;
       return new Response(JSON.stringify({ 
-        status: gen?.status || 'PENDING', 
-        imageUrl: gen?.generated_images?.[0]?.url 
+        status: data.generations_by_pk?.status || 'PENDING', 
+        imageUrl: data.generations_by_pk?.generated_images?.[0]?.url 
       }), { status: 200, headers });
     }
 
-    // СОЗДАНИЕ (Занимает 1 сек)
     const response = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
       method: 'POST',
       headers: {
@@ -29,14 +28,22 @@ export default async function handler(req) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        prompt: `${prompt}, ${style} style, high quality`,
+        prompt: `${prompt}, ${style} style`,
         modelId: "b24e0221-817d-459d-a0db-75394336d3c0",
         width: 512, height: 512, num_images: 1
       })
     });
 
     const data = await response.json();
-    if (!data.sdGenerationJob) throw new Error(data.error || 'Leonardo Error');
+    
+    // Если здесь ошибка, мы её увидим в консоли сайта
+    if (!data.sdGenerationJob) {
+        return new Response(JSON.stringify({ 
+            success: false, 
+            error: data.error || 'Leonardo API Error',
+            fullDetails: data // Пробросим весь ответ для отладки
+        }), { status: 400, headers });
+    }
 
     return new Response(JSON.stringify({ 
       success: true, 
