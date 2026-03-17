@@ -177,6 +177,7 @@ display: flex;
 align-items: center;
 justify-content: center;
 cursor: pointer;
+flex-shrink: 0;
 }
 .checkbox.checked {
 background: #51CAD3;
@@ -302,9 +303,7 @@ footer a { color: #97DEED; text-decoration: none; }
 <div class="container">
 <header>
 <div class="header-top">
-<div class="logo" id="siteLogo" onclick="location.reload()">
-🎨 Gradient<span>Avatar</span> Factory
-</div>
+<div class="logo" id="siteLogo">🎨 Gradient<span>Avatar</span> Factory</div>
 <button class="btn-connect" id="connectWalletBtn">🔗 Connect Wallet</button>
 </div>
 </header>
@@ -312,7 +311,7 @@ footer a { color: #97DEED; text-decoration: none; }
 <div class="main-card">
 <h2>🎨 Create Your AI Avatar</h2>
 
-<!-- Mode Selection -->
+<!-- Mode Tabs -->
 <div class="mode-tabs">
 <button class="mode-tab active" data-mode="text2img">📝 Text to Image</button>
 <button class="mode-tab" data-mode="img2img">🖼️ Image to Image</button>
@@ -353,7 +352,7 @@ footer a { color: #97DEED; text-decoration: none; }
 <img id="originalImage" alt="Original">
 </div>
 <div class="result-card">
-<div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Generated Avatar</div>
+<div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Generated</div>
 <img id="generatedImage" alt="Generated">
 <div style="color: #51CAD3; font-weight: 600; margin-top: 8px;" id="nftId">#0000</div>
 </div>
@@ -365,63 +364,95 @@ footer a { color: #97DEED; text-decoration: none; }
 </div>
 
 <footer>
-<p>Powered by Pollinations AI & Leonardo.ai • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
+<p>Powered by Leonardo.ai • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
 </footer>
 </div>
 
 <script>
+// === КОНФИГУРАЦИЯ ===
 var STYLES = [
-{ id: 'cyberpunk', name: 'Cyberpunk', prompt: 'cyberpunk neon futuristic' },
-{ id: 'anime', name: 'Anime', prompt: 'anime japanese animation' },
-{ id: 'pixel', name: 'Pixel Art', prompt: 'pixel art 8bit retro' },
-{ id: 'minimal', name: 'Minimal', prompt: 'minimalist clean modern' },
-{ id: 'neon', name: 'Neon', prompt: 'neon glow electric' },
-{ id: 'fantasy', name: 'Fantasy', prompt: 'fantasy magical mystical' },
-{ id: 'scifi', name: 'Sci-Fi', prompt: 'science fiction futuristic' },
-{ id: 'nature', name: 'Nature', prompt: 'nature organic earthy' }
+{ id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk neon futuristic' },
+{ id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime japanese animation' },
+{ id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art 8bit retro' },
+{ id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist clean modern' },
+{ id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon glow electric' },
+{ id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro vintage 80s' },
+{ id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy magical mystical' },
+{ id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction futuristic' },
+{ id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir black white' },
+{ id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave pastel' },
+{ id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature organic earthy' },
+{ id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset warm golden' },
+{ id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean waves deep blue' },
+{ id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire flames burning' },
+{ id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy stars cosmic' },
+{ id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest green nature' },
+{ id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic ethereal mystical' },
+{ id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden luxury elegant' }
 ];
 
 var appState = {
 mode: 'text2img',
 walletConnected: false,
 uploadedImage: null,
+uploadedImageBase64: null,
 selectedStyle: 'cyberpunk',
 addWatermark: false,
 generatedData: null
 };
 
+// === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', function() {
+console.log('✅ App loaded!');
 renderStyleGrid();
 setupEventListeners();
 });
 
+// Клик по логотипу
+document.getElementById('siteLogo').addEventListener('click', function() {
+location.reload();
+});
+
+// === РЕНДЕР СТИЛЕЙ ===
 function renderStyleGrid() {
 var grid = document.getElementById('styleGrid');
 var html = '';
 for (var i = 0; i < STYLES.length; i++) {
-var s = STYLES[i];
-var active = s.id === appState.selectedStyle ? 'active' : '';
-html += '<button class="style-btn ' + active + '" data-style="' + s.id + '">';
-html += '<div class="style-preview" style="background: linear-gradient(135deg, ' + s.gradient.join(', ') + ')"></div>';
-html += '<div>' + s.name + '</div></button>';
+var style = STYLES[i];
+var active = style.id === appState.selectedStyle ? 'active' : '';
+html += '<button class="style-btn ' + active + '" data-style="' + style.id + '">';
+html += '<div class="style-preview" style="background: linear-gradient(135deg, ' + style.gradient.join(', ') + ')"></div>';
+html += '<div>' + style.name + '</div></button>';
 }
 grid.innerHTML = html;
+console.log('✅ Styles rendered:', STYLES.length);
 }
 
+// === СОБЫТИЯ ===
 function setupEventListeners() {
-// Mode tabs
-document.querySelectorAll('.mode-tab').forEach(function(tab) {
-tab.addEventListener('click', function() {
-document.querySelectorAll('.mode-tab').forEach(function(t) { t.classList.remove('active'); });
+// Переключение режимов
+var modeTabs = document.querySelectorAll('.mode-tab');
+for (var i = 0; i < modeTabs.length; i++) {
+modeTabs[i].addEventListener('click', function() {
+for (var j = 0; j < modeTabs.length; j++) {
+modeTabs[j].classList.remove('active');
+}
 this.classList.add('active');
 appState.mode = this.dataset.mode;
-document.getElementById('uploadZone').classList.toggle('show', appState.mode === 'img2img');
+var uploadZone = document.getElementById('uploadZone');
+if (appState.mode === 'img2img') {
+uploadZone.classList.add('show');
+} else {
+uploadZone.classList.remove('show');
+}
+console.log('Mode:', appState.mode);
 });
-});
+}
 
-// Upload
+// Загрузка изображения
 var uploadZone = document.getElementById('uploadZone');
 var imageInput = document.getElementById('imageInput');
+
 uploadZone.addEventListener('click', function() { imageInput.click(); });
 uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); this.style.borderColor = '#51CAD3'; });
 uploadZone.addEventListener('dragleave', function() { this.style.borderColor = '#1E2A3A'; });
@@ -432,78 +463,154 @@ handleImageUpload(e.dataTransfer.files[0]);
 });
 imageInput.addEventListener('change', function(e) { handleImageUpload(e.target.files[0]); });
 
-// Style selection
+// Выбор стиля
 document.getElementById('styleGrid').addEventListener('click', function(e) {
 var btn = e.target.closest('.style-btn');
 if (btn) {
-document.querySelectorAll('.style-btn').forEach(function(b) { b.classList.remove('active'); });
+var buttons = document.querySelectorAll('.style-btn');
+for (var i = 0; i < buttons.length; i++) {
+buttons[i].classList.remove('active');
+}
 btn.classList.add('active');
 appState.selectedStyle = btn.dataset.style;
+console.log('Style:', appState.selectedStyle);
 }
 });
 
-// Watermark
+// Водяной знак
 document.getElementById('watermarkOption').addEventListener('click', function() {
 appState.addWatermark = !appState.addWatermark;
-document.getElementById('watermarkCheckbox').classList.toggle('checked', appState.addWatermark);
+var checkbox = document.getElementById('watermarkCheckbox');
+if (appState.addWatermark) {
+checkbox.classList.add('checked');
+} else {
+checkbox.classList.remove('checked');
+}
 });
 
-// Generate
+// Кнопки
 document.getElementById('generateBtn').addEventListener('click', handleGenerate);
 document.getElementById('downloadBtn').addEventListener('click', handleDownload);
 document.getElementById('copyHashBtn').addEventListener('click', handleCopyHash);
 document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
 }
 
+// === ЗАГРУЗКА ИЗОБРАЖЕНИЯ ===
 function handleImageUpload(file) {
-if (!file || !file.type.startsWith('image/')) { showStatus('Invalid image', 'error'); return; }
-if (file.size > 10 * 1024 * 1024) { showStatus('Image too large (max 10MB)', 'error'); return; }
+if (!file || !file.type.startsWith('image/')) {
+showStatus('Please select a valid image', 'error');
+return;
+}
+if (file.size > 10 * 1024 * 1024) {
+showStatus('Image must be under 10MB', 'error');
+return;
+}
 appState.uploadedImage = file;
 var reader = new FileReader();
 reader.onload = function(e) {
 document.getElementById('previewImage').src = e.target.result;
 document.getElementById('uploadZone').classList.add('has-image');
+appState.uploadedImageBase64 = e.target.result.split(',')[1];
 showStatus('✅ Image loaded!', 'success');
 };
 reader.readAsDataURL(file);
 }
 
+// === ГЕНЕРАЦИЯ (POLLINATIONS - БЕСПЛАТНО) ===
+function generateAIImage(prompt, style) {
+return new Promise(function(resolve, reject) {
+var seed = Math.floor(Math.random() * 10000);
+var fullPrompt = encodeURIComponent(prompt + ', ' + style.prompt + ', high quality, detailed');
+var imageUrl = 'https://image.pollinations.ai/prompt/' + fullPrompt + '?width=512&height=512&seed=' + seed + '&nologo=true';
+
+console.log('🎨 Generating:', fullPrompt);
+showStatus('🤖 AI is generating... (15-30 seconds)', 'info');
+
+var img = new Image();
+img.crossOrigin = 'anonymous';
+var timeout = setTimeout(function() {
+reject(new Error('Timeout. Please try again.'));
+}, 30000);
+
+img.onload = function() {
+clearTimeout(timeout);
+console.log('✅ Generated!');
+resolve(imageUrl);
+};
+img.onerror = function() {
+clearTimeout(timeout);
+reject(new Error('Failed to generate'));
+};
+img.src = imageUrl;
+});
+}
+
+// === ВОДЯНОЙ ЗНАК ===
+function addWatermark(imageUrl) {
+return new Promise(function(resolve) {
+var img = new Image();
+img.crossOrigin = 'anonymous';
+img.onload = function() {
+var canvas = document.createElement('canvas');
+canvas.width = img.width;
+canvas.height = img.height;
+var ctx = canvas.getContext('2d');
+ctx.drawImage(img, 0, 0);
+if (appState.addWatermark) {
+ctx.save();
+ctx.globalAlpha = 0.35;
+ctx.fillStyle = '#51CAD3';
+ctx.font = 'bold 48px Inter, sans-serif';
+ctx.textAlign = 'right';
+ctx.textBaseline = 'bottom';
+ctx.fillText('OPG', canvas.width - 20, canvas.height - 20);
+ctx.restore();
+}
+resolve(canvas.toDataURL('image/png'));
+};
+img.onerror = function() { resolve(imageUrl); };
+img.src = imageUrl;
+});
+}
+
+// === ГЛАВНАЯ ФУНКЦИЯ ===
 function handleGenerate() {
 var prompt = document.getElementById('promptInput').value.trim();
-if (!prompt) { showStatus('⚠️ Please enter a prompt', 'warning'); return; }
-if (!appState.walletConnected) { showStatus('⚠️ Connect wallet first', 'warning'); return; }
+if (!prompt) {
+showStatus('⚠️ Please enter a prompt', 'warning');
+return;
+}
+if (!appState.walletConnected) {
+showStatus('⚠️ Connect wallet first', 'warning');
+return;
+}
 if (appState.mode === 'img2img' && !appState.uploadedImage) {
-showStatus('⚠️ Upload image first', 'warning'); return;
+showStatus('⚠️ Upload image first', 'warning');
+return;
 }
 
 var btn = document.getElementById('generateBtn');
 var originalText = btn.innerHTML;
 btn.disabled = true;
-btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
 
-var style = null;
+var selectedStyle = null;
 for (var i = 0; i < STYLES.length; i++) {
-if (STYLES[i].id === appState.selectedStyle) { style = STYLES[i]; break; }
+if (STYLES[i].id === appState.selectedStyle) {
+selectedStyle = STYLES[i];
+break;
+}
 }
 
-showStatus('🤖 AI is generating... (15-30 seconds)', 'info');
+btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
 
-fetch('/api/generate', {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({
-prompt: prompt,
-style: style.prompt,
-mode: appState.mode,
-imageUrl: appState.uploadedImage ? null : ''
-})
-})
-.then(function(res) { return res.json(); })
-.then(function(data) {
-if (data.error) throw new Error(data.error);
-return addWatermark(data.imageUrl);
+generateAIImage(prompt, selectedStyle)
+.then(function(imageUrl) {
+btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+return addWatermark(imageUrl);
 })
 .then(function(processedUrl) {
+btn.innerHTML = '<span class="loading-spinner"></span> Finalizing...';
+setTimeout(function() {
 var nftId = '#' + (Math.floor(Math.random() * 9000) + 1000).toString().padStart(4, '0');
 var txHash = '0x' + Array(64).fill(0).map(function() { return Math.floor(Math.random() * 16).toString(16); }).join('');
 
@@ -517,6 +624,8 @@ txHash: txHash
 if (appState.mode === 'img2img') {
 document.getElementById('originalCard').style.display = 'block';
 document.getElementById('originalImage').src = appState.generatedData.originalUrl;
+} else {
+document.getElementById('originalCard').style.display = 'none';
 }
 
 document.getElementById('generatedImage').src = processedUrl;
@@ -527,38 +636,13 @@ document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
 showStatus('✅ Generated successfully!', 'success');
 btn.innerHTML = originalText;
 btn.disabled = false;
+}, 500);
 })
 .catch(function(error) {
 console.error('Error:', error);
 showStatus('❌ ' + error.message, 'error');
 btn.innerHTML = originalText;
 btn.disabled = false;
-});
-}
-
-function addWatermark(imageUrl) {
-return new Promise(function(resolve) {
-if (!appState.addWatermark) { resolve(imageUrl); return; }
-var img = new Image();
-img.crossOrigin = 'anonymous';
-img.onload = function() {
-var canvas = document.createElement('canvas');
-canvas.width = img.width;
-canvas.height = img.height;
-var ctx = canvas.getContext('2d');
-ctx.drawImage(img, 0, 0);
-ctx.save();
-ctx.globalAlpha = 0.35;
-ctx.fillStyle = '#51CAD3';
-ctx.font = 'bold 48px Inter, sans-serif';
-ctx.textAlign = 'right';
-ctx.textBaseline = 'bottom';
-ctx.fillText('OPG', canvas.width - 20, canvas.height - 20);
-ctx.restore();
-resolve(canvas.toDataURL('image/png'));
-};
-img.onerror = function() { resolve(imageUrl); };
-img.src = imageUrl;
 });
 }
 
@@ -589,7 +673,9 @@ return;
 }
 showStatus('Connecting...', 'info');
 window.ethereum.request({ method: 'eth_requestAccounts' })
-.then(function(accounts) { return window.ethereum.request({ method: 'eth_chainId' }); })
+.then(function(accounts) {
+return window.ethereum.request({ method: 'eth_chainId' });
+})
 .then(function(chainId) {
 if (chainId !== '0x14a34') {
 return window.ethereum.request({
@@ -610,11 +696,13 @@ showStatus('❌ Connection failed', 'error');
 });
 }
 
-function showStatus(msg, type) {
+function showStatus(message, type) {
 var el = document.getElementById('statusMessage');
-el.innerHTML = msg;
+el.innerHTML = message;
 el.className = 'status-message status-' + type + ' show';
-if (type !== 'error') setTimeout(function() { el.classList.remove('show'); }, 6000);
+if (type !== 'error') {
+setTimeout(function() { el.classList.remove('show'); }, 5000);
+}
 }
 </script>
 </body>
