@@ -38,7 +38,6 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 15px;
-      margin-bottom: 15px;
     }
 
     .logo {
@@ -130,6 +129,7 @@
       cursor: pointer;
       transition: all 0.2s;
       background: rgba(151, 222, 237, 0.03);
+      margin-bottom: 20px;
     }
 
     .upload-zone:hover {
@@ -140,6 +140,7 @@
     .upload-zone.has-image {
       border-style: solid;
       border-color: #51CAD3;
+      padding: 10px;
     }
 
     .upload-icon {
@@ -244,7 +245,7 @@
     .result-placeholder,
     .result-content {
       text-align: center;
-      padding: 60px 20px;
+      padding: 20px;
       color: #6B7F94;
     }
 
@@ -269,10 +270,12 @@
     .avatar-frame {
       position: relative;
       margin-bottom: 20px;
+      display: inline-block;
     }
 
     .avatar-frame img {
       max-width: 100%;
+      max-height: 400px;
       border-radius: 12px;
       border: 2px solid #51CAD3;
       box-shadow: 0 0 30px rgba(81, 202, 211, 0.3);
@@ -296,6 +299,7 @@
       gap: 10px;
       flex-wrap: wrap;
       justify-content: center;
+      margin-top: 20px;
     }
 
     .btn-action {
@@ -311,6 +315,7 @@
 
     .btn-action:hover {
       background: rgba(81, 202, 211, 0.1);
+      transform: translateY(-1px);
     }
 
     .status-message {
@@ -737,24 +742,48 @@
       }
       
       const btn = document.getElementById('generateBtn');
+      const originalText = btn.textContent;
       btn.disabled = true;
       btn.textContent = '⚙️ Generating...';
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Generate mock result
+      // Generate mock result with proper image
       const nftNum = Math.floor(Math.random() * 9000) + 1000;
       const nftId = `#${nftNum.toString().padStart(4, '0')}`;
       
-      const colors = {
-        cyberpunk: 'ff00ff',
-        anime: 'ff6b9d',
-        pixel: '00ff9d',
-        minimal: 'a0a0a0'
+      // Create canvas-based avatar
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      
+      // Background gradient based on style
+      const gradients = {
+        cyberpunk: ['#ff00ff', '#00ffff'],
+        anime: ['#ff6b9d', '#c445ff'],
+        pixel: ['#00ff9d', '#00b8ff'],
+        minimal: ['#a0a0a0', '#ffffff']
       };
       
-      const avatarUrl = `https://placehold.co/512x512/${colors[state.selectedStyle]}/ffffff?text=Avatar+${nftId}`;
+      const [color1, color2] = gradients[state.selectedStyle];
+      const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+      gradient.addColorStop(0, color1);
+      gradient.addColorStop(1, color2);
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 512, 512);
+      
+      // Add text
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 48px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`Avatar ${nftId}`, 256, 256);
+      
+      // Convert to data URL
+      const avatarUrl = canvas.toDataURL('image/png');
       
       state.generatedAvatar = {
         url: avatarUrl,
@@ -762,45 +791,78 @@
         proofHash: '0x' + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('')
       };
       
-      document.getElementById('generatedAvatar').src = avatarUrl;
+      // Display result
+      const avatarImg = document.getElementById('generatedAvatar');
+      avatarImg.src = avatarUrl;
+      avatarImg.alt = `Generated Avatar ${nftId}`;
       document.getElementById('nftBadge').textContent = nftId;
       
       document.getElementById('resultPlaceholder').classList.add('hide');
       document.getElementById('resultContent').classList.add('show');
       
       btn.disabled = false;
-      btn.textContent = '✨ Generate Avatar (~0.001 OPG)';
+      btn.textContent = originalText;
       
       showStatus('Avatar generated successfully! 🎉', 'success');
     });
 
-    // === Download ===
+    // === Download Button ===
     document.getElementById('downloadBtn').addEventListener('click', () => {
-      if (!state.generatedAvatar) return;
+      if (!state.generatedAvatar || !state.generatedAvatar.url) {
+        showStatus('No avatar to download', 'error');
+        return;
+      }
       
       const link = document.createElement('a');
       link.download = `gradient-avatar-${state.generatedAvatar.nftId}.png`;
       link.href = state.generatedAvatar.url;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       
       showStatus('Download started! 📥', 'success');
     });
 
-    // === Copy Proof ===
+    // === Copy Proof Button ===
     document.getElementById('copyProofBtn').addEventListener('click', async () => {
-      if (!state.generatedAvatar) return;
+      if (!state.generatedAvatar || !state.generatedAvatar.proofHash) {
+        showStatus('No proof to copy', 'error');
+        return;
+      }
       
       try {
         await navigator.clipboard.writeText(state.generatedAvatar.proofHash);
-        showStatus('Proof hash copied! 🔗', 'success');
-      } catch {
-        showStatus('Failed to copy', 'error');
+        showStatus('Proof hash copied to clipboard! 🔗', 'success');
+      } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = state.generatedAvatar.proofHash;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showStatus('Proof hash copied to clipboard! 🔗', 'success');
       }
     });
 
-    // === Mint NFT ===
+    // === Mint NFT Button ===
     document.getElementById('mintBtn').addEventListener('click', () => {
-      showStatus('Minting NFT... (mock)', 'success');
+      if (!state.generatedAvatar) {
+        showStatus('Generate an avatar first', 'warning');
+        return;
+      }
+      
+      if (!state.walletConnected) {
+        showStatus('Please connect wallet first', 'warning');
+        return;
+      }
+      
+      // Mock minting
+      showStatus('Minting NFT on Base Sepolia... 🪙', 'success');
+      
+      setTimeout(() => {
+        showStatus(`NFT ${state.generatedAvatar.nftId} minted successfully!`, 'success');
+      }, 2000);
     });
 
     // === Connect Wallet ===
@@ -859,12 +921,12 @@
       btn.addEventListener('click', () => {
         document.querySelectorAll('#tab-gallery .nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        // Mock gallery update
         showStatus('Filter applied: ' + btn.textContent, 'success');
       });
     });
 
     console.log('🎨 GradientAvatar Factory loaded!');
+    console.log('✅ All buttons active');
   </script>
 </body>
 </html>
