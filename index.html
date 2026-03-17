@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GradientAvatar Factory | Leonardo.ai</title>
+<title>GradientAvatar Factory | OpenGradient</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -28,8 +28,16 @@ align-items: center;
 flex-wrap: wrap;
 gap: 15px;
 }
-.logo { font-size: 24px; font-weight: 700; cursor: pointer; }
-.logo:hover { transform: scale(1.02); }
+.logo {
+font-size: 24px;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s;
+}
+.logo:hover {
+transform: scale(1.02);
+text-shadow: 0 0 20px rgba(81, 202, 211, 0.5);
+}
 .logo span { color: #51CAD3; }
 .btn-connect {
 padding: 10px 20px;
@@ -39,6 +47,7 @@ color: #51CAD3;
 border-radius: 8px;
 cursor: pointer;
 font-weight: 600;
+transition: all 0.2s;
 }
 .btn-connect:hover { background: rgba(81, 202, 211, 0.1); }
 .btn-connect.connected {
@@ -275,30 +284,12 @@ color: #6B7F94;
 border-top: 1px solid #1E2A3A;
 }
 footer a { color: #97DEED; text-decoration: none; }
-.mode-toggle {
-display: flex;
-gap: 10px;
-margin-bottom: 20px;
-}
-.mode-btn {
-flex: 1;
-padding: 12px;
-background: #0A0F19;
-border: 2px solid #1E2A3A;
-border-radius: 8px;
-color: #A0B3C6;
-cursor: pointer;
-font-weight: 600;
-transition: all 0.2s;
-}
-.mode-btn.active {
-border-color: #51CAD3;
-background: rgba(81, 202, 211, 0.1);
-color: #51CAD3;
-}
 @media (max-width: 768px) {
 .result-grid { grid-template-columns: 1fr; }
 .style-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 480px) {
+.style-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -306,62 +297,44 @@ color: #51CAD3;
 <div class="container">
 <header>
 <div class="header-top">
-<div class="logo" id="siteLogo" onclick="location.reload()">
+<div class="logo" id="siteLogo" title="Click to refresh">
 🎨 Gradient<span>Avatar</span> Factory
 </div>
 <button class="btn-connect" id="connectWalletBtn">🔗 Connect Wallet</button>
 </div>
 </header>
-
 <div class="main-card">
-<h2>🎨 Leonardo.ai Image Generator</h2>
-
-<!-- Mode Selection -->
-<div class="mode-toggle">
-<button class="mode-btn active" id="modeTextToImage" onclick="setMode('text2img')">
-📝 Text to Image
-</button>
-<button class="mode-btn" id="modeImgToImage" onclick="setMode('img2img')">
-🖼️ Image to Image
-</button>
-</div>
-
-<!-- Upload Section (for img2img mode) -->
-<div class="upload-zone" id="uploadZone" style="display: none;">
+<h2>🎨 Create Your AI Avatar</h2>
+<div class="upload-zone" id="uploadZone">
 <input type="file" id="imageInput" accept="image/*" style="display: none;">
 <div class="upload-icon">📁</div>
-<p><strong>Upload your image</strong></p>
+<p><strong>Upload your character photo</strong></p>
 <p style="color: #6B7F94; font-size: 14px; margin-top: 8px;">PNG, JPG up to 10MB</p>
 <img id="previewImage" class="preview-image" alt="Preview">
 </div>
-
-<label class="section-title">Choose Style (optional)</label>
+<label class="section-title">Choose Style (18 styles)</label>
 <div class="style-grid" id="styleGrid"></div>
-
-<label class="section-title">Prompt (REQUIRED)</label>
-<textarea id="promptInput" placeholder="Example: cyberpunk frog character with neon lights, futuristic armor, highly detailed"></textarea>
-
+<label class="section-title">Custom Prompt (optional)</label>
+<textarea id="promptInput" placeholder="Additional details: cyberpunk armor, neon lights, futuristic..."></textarea>
 <div class="options-row" id="watermarkOption">
 <div class="checkbox" id="watermarkCheckbox"></div>
 <div class="checkbox-label">
 <strong>Add OpenGradient Watermark</strong>
-<div style="color: #6B7F94; font-size: 13px;">Overlay "OPG" logo on generated image</div>
+<div style="color: #6B7F94; font-size: 13px;">Overlay "OPG" logo on generated avatar</div>
 </div>
 </div>
-
-<button class="btn-generate" id="generateBtn">✨ Generate Image</button>
+<button class="btn-generate" id="generateBtn">✨ Generate AI Avatar</button>
 <div id="statusMessage" class="status-message"></div>
 </div>
-
 <div class="main-card result-section" id="resultSection">
 <h2>✅ Generation Complete!</h2>
 <div class="result-grid">
-<div class="result-card" id="originalCard" style="display: none;">
+<div class="result-card">
 <div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Original</div>
 <img id="originalImage" alt="Original">
 </div>
 <div class="result-card">
-<div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Generated Image</div>
+<div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Generated Avatar</div>
 <img id="generatedImage" alt="Generated">
 <div style="color: #51CAD3; font-weight: 600; margin-top: 8px;" id="nftId">#0000</div>
 </div>
@@ -372,55 +345,59 @@ color: #51CAD3;
 </div>
 <div id="mintStatus" class="status-message"></div>
 </div>
-
 <footer>
 <p>Powered by <a href="https://leonardo.ai" target="_blank">Leonardo.ai</a> • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
-<p style="margin-top: 8px;">Text-to-Image & Image-to-Image • 18 Styles</p>
+<p style="margin-top: 8px;">18 Unique Styles • Base Sepolia Testnet</p>
 </footer>
 </div>
-
 <script>
-// === CONFIGURATION ===
+// === 18 СТИЛЕЙ ===
 var STYLES = [
-{ id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk, neon lights, futuristic, high tech, digital art' },
-{ id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime style, japanese animation, vibrant colors, detailed' },
-{ id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art, 8-bit, retro gaming, pixelated' },
-{ id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy art, magical, mystical, epic' },
-{ id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction, futuristic, space age' },
-{ id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir, black and white, dramatic' }
+{ id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk neon futuristic high tech' },
+{ id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime japanese animation vibrant' },
+{ id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art 8bit retro gaming' },
+{ id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist clean modern simple' },
+{ id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon glow electric vibrant' },
+{ id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro vintage 80s aesthetic' },
+{ id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy magical mystical epic' },
+{ id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction futuristic space' },
+{ id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir black white dramatic' },
+{ id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave pastel retro futuristic' },
+{ id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature organic earthy natural' },
+{ id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset warm golden hour sky' },
+{ id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean waves deep blue aquatic' },
+{ id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire flames burning intense' },
+{ id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy stars cosmic nebula universe' },
+{ id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest green nature trees peaceful' },
+{ id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic ethereal mystical space' },
+{ id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden luxury elegant metallic' }
 ];
 
 var appState = {
-mode: 'text2img', // 'text2img' or 'img2img'
 walletConnected: false,
 uploadedImage: null,
-uploadedImageBase64: null,
-selectedStyle: null,
+selectedStyle: 'cyberpunk',
 addWatermark: false,
 generatedData: null
 };
 
-// === INITIALIZATION ===
 document.addEventListener('DOMContentLoaded', function() {
 renderStyleGrid();
 setupEventListeners();
 console.log('✅ GradientAvatar Factory loaded!');
-console.log('🎨 Using Leonardo.ai API');
+console.log('🎨 Using Leonardo.ai via Vercel API');
 });
 
-function setMode(mode) {
-appState.mode = mode;
-document.getElementById('modeTextToImage').classList.toggle('active', mode === 'text2img');
-document.getElementById('modeImgToImage').classList.toggle('active', mode === 'img2img');
-document.getElementById('uploadZone').style.display = mode === 'img2img' ? 'block' : 'none';
-}
+document.getElementById('siteLogo').addEventListener('click', function() {
+location.reload();
+});
 
 function renderStyleGrid() {
 var grid = document.getElementById('styleGrid');
 var html = '';
 for (var i = 0; i < STYLES.length; i++) {
 var style = STYLES[i];
-var active = appState.selectedStyle === style.id ? 'active' : '';
+var active = style.id === appState.selectedStyle ? 'active' : '';
 html += '<button class="style-btn ' + active + '" data-style="' + style.id + '">';
 html += '<div class="style-preview" style="background: linear-gradient(135deg, ' + style.gradient.join(', ') + ')"></div>';
 html += '<div>' + style.name + '</div></button>';
@@ -429,10 +406,8 @@ grid.innerHTML = html;
 }
 
 function setupEventListeners() {
-// Upload
 var uploadZone = document.getElementById('uploadZone');
 var imageInput = document.getElementById('imageInput');
-
 uploadZone.addEventListener('click', function() { imageInput.click(); });
 uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.style.borderColor = '#51CAD3'; });
 uploadZone.addEventListener('dragleave', function() { uploadZone.style.borderColor = '#1E2A3A'; });
@@ -442,24 +417,21 @@ uploadZone.style.borderColor = '#1E2A3A';
 handleImageUpload(e.dataTransfer.files[0]);
 });
 imageInput.addEventListener('change', function(e) { handleImageUpload(e.target.files[0]); });
-
-// Style selection
 document.getElementById('styleGrid').addEventListener('click', function(e) {
 var btn = e.target.closest('.style-btn');
 if (btn) {
-document.querySelectorAll('.style-btn').forEach(function(b) { b.classList.remove('active'); });
+var buttons = document.querySelectorAll('.style-btn');
+for (var i = 0; i < buttons.length; i++) { buttons[i].classList.remove('active'); }
 btn.classList.add('active');
 appState.selectedStyle = btn.dataset.style;
 }
 });
-
-// Watermark
 document.getElementById('watermarkOption').addEventListener('click', function() {
 appState.addWatermark = !appState.addWatermark;
-document.getElementById('watermarkCheckbox').classList.toggle('checked', appState.addWatermark);
+var checkbox = document.getElementById('watermarkCheckbox');
+if (appState.addWatermark) { checkbox.classList.add('checked'); }
+else { checkbox.classList.remove('checked'); }
 });
-
-// Generate
 document.getElementById('generateBtn').addEventListener('click', handleGenerate);
 document.getElementById('downloadBtn').addEventListener('click', handleDownload);
 document.getElementById('copyHashBtn').addEventListener('click', handleCopyHash);
@@ -469,152 +441,49 @@ document.getElementById('connectWalletBtn').addEventListener('click', connectWal
 function handleImageUpload(file) {
 if (!file || !file.type.startsWith('image/')) { showStatus('Please select a valid image', 'error'); return; }
 if (file.size > 10 * 1024 * 1024) { showStatus('Image must be under 10MB', 'error'); return; }
-
 appState.uploadedImage = file;
 var reader = new FileReader();
 reader.onload = function(e) {
 document.getElementById('previewImage').src = e.target.result;
 document.getElementById('uploadZone').classList.add('has-image');
-// Save base64 without prefix
-appState.uploadedImageBase64 = e.target.result.split(',')[1];
-showStatus('✅ Image loaded! Ready for Image-to-Image', 'success');
+showStatus('✅ Image loaded! Ready to generate', 'success');
 };
 reader.readAsDataURL(file);
 }
 
-// === LEONARDO.AI API ===
-async function uploadImageToLeonardo(base64Image, filename) {
-console.log('📤 Uploading image to Leonardo...');
-showStatus('📤 Uploading image to Leonardo...', 'info');
+// === 🎨 AI GENERATION VIA VERCEL API ===
+function generateViaAPI(prompt, style) {
+return new Promise(function(resolve, reject) {
+console.log('🎨 Calling Vercel API...');
+showStatus('🤖 AI is generating your avatar... (30-60 seconds)', 'info');
 
-// Get API key
-var apiKey = localStorage.getItem('leonardo_api_key');
-if (!apiKey) {
-apiKey = prompt('Enter Leonardo.ai API key (get free at https://app.leonardo.ai/api-keys):');
-if (!apiKey) throw new Error('API key required');
-localStorage.setItem('leonardo_api_key', apiKey);
-}
-
-// Upload image
-var response = await fetch('https://cloud.leonardo.ai/api/rest/v1/uploads', {
+fetch('/api/generate', {
 method: 'POST',
-headers: {
-'Authorization': 'Bearer ' + apiKey,
-'Content-Type': 'application/json'
-},
+headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({
-extension: 'png',
-name: filename
-})
-});
-
-if (!response.ok) throw new Error('Upload failed: ' + response.status);
-
-var uploadData = await response.json();
-var uploadId = uploadData.id;
-var signedUrl = uploadData.signedUrl;
-
-// Upload to S3
-var uploadResponse = await fetch(signedUrl, {
-method: 'PUT',
-headers: { 'Content-Type': 'image/png' },
-body: atob(base64Image)
-});
-
-if (!uploadResponse.ok) throw new Error('S3 upload failed');
-
-// Confirm upload
-var confirmResponse = await fetch('https://cloud.leonardo.ai/api/rest/v1/uploads/' + uploadId + '/confirm', {
-method: 'POST',
-headers: {
-'Authorization': 'Bearer ' + apiKey,
-'Content-Type': 'application/json'
-}
-});
-
-if (!confirmResponse.ok) throw new Error('Confirm failed');
-
-var confirmData = await confirmResponse.json();
-console.log('✅ Image uploaded, ID:', confirmData.id);
-return confirmData.id;
-}
-
-async function generateWithLeonardo(prompt, uploadedImageId, stylePrompt) {
-console.log('🎨 Generating with Leonardo.ai...');
-showStatus('🎨 AI is generating... (30-60 seconds)', 'info');
-
-var apiKey = localStorage.getItem('leonardo_api_key');
-var fullPrompt = prompt;
-if (stylePrompt) fullPrompt += ', ' + stylePrompt;
-fullPrompt += ', high quality, detailed, masterpiece';
-
-var requestBody = {
-prompt: fullPrompt,
-negative_prompt: 'ugly, deformed, noisy, blurry, low quality, distorted, out of focus, bad anatomy, bad proportions',
+prompt: prompt + ', ' + style.prompt + ', high quality, detailed, digital art',
+style: style.name,
 width: 512,
-height: 512,
-num_images: 1,
-presetStyle: 'NONE',
-modelId: '6bef9f1b-29cb-40c7-b9df-32b51c1f67d3' // Leonardo Phoenix
-};
-
-// Add image-to-image parameters if uploaded image exists
-if (uploadedImageId) {
-requestBody.init_image_id = uploadedImageId;
-requestBody.init_strength = 0.7; // How much to change (0.5-0.8)
+height: 512
+})
+})
+.then(function(res) { return res.json(); })
+.then(function(data) {
+if (data.error) {
+reject(new Error(data.error));
+return;
 }
-
-console.log('Request:', JSON.stringify(requestBody, null, 2));
-
-// Create generation
-var response = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
-method: 'POST',
-headers: {
-'Authorization': 'Bearer ' + apiKey,
-'Content-Type': 'application/json'
-},
-body: JSON.stringify(requestBody)
+console.log('✅ Image generated via API!');
+resolve(data.imageUrl);
+})
+.catch(function(error) {
+console.error('API error:', error);
+reject(new Error('Failed to generate. Please try again.'));
 });
-
-if (!response.ok) {
-var error = await response.text();
-throw new Error('Generation failed: ' + response.status + ' - ' + error);
-}
-
-var data = await response.json();
-var generationId = data.sdGenerationJob.generationId;
-console.log('Generation ID:', generationId);
-
-// Poll for completion
-return await pollGenerationStatus(generationId, apiKey);
-}
-
-async function pollGenerationStatus(generationId, apiKey, attempts) {
-if (attempts === undefined) attempts = 0;
-if (attempts > 30) throw new Error('Generation timeout');
-
-await new Promise(function(resolve) { setTimeout(resolve, 2000); });
-
-var response = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations/' + generationId, {
-headers: { 'Authorization': 'Bearer ' + apiKey }
 });
-
-if (!response.ok) throw new Error('Status check failed');
-
-var data = await response.json();
-var status = data.generations_by_pk.status;
-console.log('Status:', status, 'Attempt:', attempts);
-
-if (status === 'COMPLETE') {
-return data.generations_by_pk.generated_images[0].url;
-} else if (status === 'FAILED') {
-throw new Error('Generation failed');
-} else {
-return await pollGenerationStatus(generationId, apiKey, attempts + 1);
-}
 }
 
-// === WATERMARK ===
+// === 💧 ADD WATERMARK ===
 function addWatermark(imageUrl) {
 return new Promise(function(resolve) {
 var img = new Image();
@@ -625,7 +494,6 @@ canvas.width = img.width;
 canvas.height = img.height;
 var ctx = canvas.getContext('2d');
 ctx.drawImage(img, 0, 0);
-
 if (appState.addWatermark) {
 ctx.save();
 ctx.globalAlpha = 0.35;
@@ -636,7 +504,6 @@ ctx.textBaseline = 'bottom';
 ctx.fillText('OPG', canvas.width - 20, canvas.height - 20);
 ctx.restore();
 }
-
 resolve(canvas.toDataURL('image/png'));
 };
 img.onerror = function() { resolve(imageUrl); };
@@ -644,88 +511,74 @@ img.src = imageUrl;
 });
 }
 
-// === MAIN GENERATION HANDLER ===
-async function handleGenerate() {
+// === ГЛАВНАЯ ФУНКЦИЯ ===
+function handleGenerate() {
+if (!appState.uploadedImage) {
+showStatus('⚠️ Upload image first', 'warning');
+return;
+}
 var prompt = document.getElementById('promptInput').value.trim();
 if (!prompt) {
 showStatus('⚠️ Please enter a prompt', 'warning');
 document.getElementById('promptInput').focus();
 return;
 }
-
 if (!appState.walletConnected) {
 showStatus('⚠️ Connect wallet first', 'warning');
 return;
 }
-
 var btn = document.getElementById('generateBtn');
 var originalText = btn.innerHTML;
 btn.disabled = true;
-
-try {
-// Get style prompt
-var stylePrompt = '';
-if (appState.selectedStyle) {
+var selectedStyle = null;
 for (var i = 0; i < STYLES.length; i++) {
 if (STYLES[i].id === appState.selectedStyle) {
-stylePrompt = STYLES[i].prompt;
+selectedStyle = STYLES[i];
 break;
 }
 }
-}
-
-var uploadedImageId = null;
-
-// If img2img mode and image uploaded
-if (appState.mode === 'img2img' && appState.uploadedImageBase64) {
-uploadedImageId = await uploadImageToLeonardo(appState.uploadedImageBase64, 'input-image.png');
-}
-
-// Generate
-var imageUrl = await generateWithLeonardo(prompt, uploadedImageId, stylePrompt);
-
-// Add watermark
+console.log('🎯 Starting generation via Vercel API...');
+console.log('Style:', selectedStyle.name);
+console.log('Prompt:', prompt);
+btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+generateViaAPI(prompt, selectedStyle)
+.then(function(imageUrl) {
 btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
 showStatus('💧 Applying watermark...', 'info');
-var processedUrl = await addWatermark(imageUrl);
-
-// Show result
+return addWatermark(imageUrl);
+})
+.then(function(processedUrl) {
 btn.innerHTML = '<span class="loading-spinner"></span> Finalizing...';
 setTimeout(function() {
 var nftId = '#' + (Math.floor(Math.random() * 9000) + 1000).toString().padStart(4, '0');
-var txHash = '0x' + Array(64).fill(0).map(function() { return Math.floor(Math.random() * 16).toString(16); }).join('');
-
+var txHash = '0x';
+for (var i = 0; i < 64; i++) {
+txHash += Math.floor(Math.random() * 16).toString(16);
+}
 appState.generatedData = {
-originalUrl: appState.uploadedImage ? URL.createObjectURL(appState.uploadedImage) : null,
+originalUrl: URL.createObjectURL(appState.uploadedImage),
 generatedUrl: processedUrl,
 nftId: nftId,
-txHash: txHash
+txHash: txHash,
+style: appState.selectedStyle,
+prompt: prompt
 };
-
-// Show results
-if (appState.mode === 'img2img' && appState.generatedData.originalUrl) {
-document.getElementById('originalCard').style.display = 'block';
 document.getElementById('originalImage').src = appState.generatedData.originalUrl;
-} else {
-document.getElementById('originalCard').style.display = 'none';
-}
-
 document.getElementById('generatedImage').src = appState.generatedData.generatedUrl;
 document.getElementById('nftId').textContent = nftId;
 document.getElementById('resultSection').classList.add('show');
 document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
-
-showStatus('✅ Image generated successfully!', 'success');
+showStatus('✅ Avatar generated successfully!', 'success');
 btn.innerHTML = originalText;
 btn.disabled = false;
 }, 500);
-
-} catch (error) {
+})
+.catch(function(error) {
 console.error('Generation error:', error);
 showStatus('❌ ' + error.message, 'error');
 btn.innerHTML = originalText;
 btn.disabled = false;
-}
+});
 }
 
 function handleDownload() {
@@ -753,7 +606,6 @@ showStatus('❌ Install MetaMask', 'error');
 window.open('https://metamask.io', '_blank');
 return;
 }
-
 showStatus('Connecting...', 'info');
 window.ethereum.request({ method: 'eth_requestAccounts' })
 .then(function(accounts) {
