@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GradientAvatar Factory | OpenGradient</title>
 <style>
-/* ВАШ ОРИГИНАЛЬНЫЙ CSS БЕЗ ИЗМЕНЕНИЙ */
+/* ВАШ ОРИГИНАЛЬНЫЙ CSS */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
 font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -26,27 +26,10 @@ margin-bottom: 30px;
 display: flex;
 justify-content: space-between;
 align-items: center;
-flex-wrap: wrap;
-gap: 15px;
 }
 .logo { font-size: 24px; font-weight: 700; cursor: pointer; }
-.logo:hover { transform: scale(1.02); }
 .logo span { color: #51CAD3; }
-.btn-connect {
-padding: 10px 20px;
-background: transparent;
-border: 1px solid #51CAD3;
-color: #51CAD3;
-border-radius: 8px;
-cursor: pointer;
-font-weight: 600;
-}
-.btn-connect:hover { background: rgba(81, 202, 211, 0.1); }
-.btn-connect.connected {
-background: rgba(81, 202, 211, 0.2);
-border-color: #00ff9d;
-color: #00ff9d;
-}
+
 .main-card {
 background: #121A26;
 border: 1px solid #1E2A3A;
@@ -76,6 +59,7 @@ color: #A0B3C6;
 cursor: pointer;
 font-weight: 600;
 transition: all 0.2s;
+text-align: center;
 }
 .mode-tab.active {
 border-color: #51CAD3;
@@ -94,31 +78,13 @@ margin-bottom: 24px;
 display: none;
 }
 .upload-zone.show { display: block; }
-.upload-zone:hover {
-border-color: #51CAD3;
-background: rgba(81, 202, 211, 0.08);
-}
-.upload-zone.has-image {
-border-style: solid;
-border-color: #51CAD3;
-padding: 10px;
-}
+.upload-zone.has-image { border-color: #51CAD3; padding: 10px; }
 .upload-icon { font-size: 56px; margin-bottom: 12px; }
-.preview-image {
-max-width: 100%;
-max-height: 250px;
-border-radius: 8px;
-display: none;
-}
-.upload-zone.has-image .upload-icon,
-.upload-zone.has-image p { display: none; }
+.preview-image { max-width: 100%; max-height: 250px; border-radius: 8px; display: none; }
+.upload-zone.has-image .upload-icon, .upload-zone.has-image p { display: none; }
 .upload-zone.has-image .preview-image { display: block; }
-.section-title {
-font-size: 16px;
-color: #A0B3C6;
-margin-bottom: 12px;
-display: block;
-}
+
+.section-title { font-size: 16px; color: #A0B3C6; margin-bottom: 12px; display: block; }
 .style-grid {
 display: grid;
 grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -134,18 +100,11 @@ cursor: pointer;
 transition: all 0.2s;
 text-align: center;
 font-size: 12px;
+color: white;
 }
-.style-btn:hover, .style-btn.active {
-border-color: #51CAD3;
-background: rgba(81, 202, 211, 0.1);
-transform: translateY(-2px);
-}
-.style-preview {
-width: 100%;
-height: 45px;
-border-radius: 4px;
-margin-bottom: 6px;
-}
+.style-btn.active { border-color: #51CAD3; background: rgba(81, 202, 211, 0.1); }
+.style-preview { width: 100%; height: 45px; border-radius: 4px; margin-bottom: 6px; }
+
 textarea {
 width: 100%;
 padding: 14px;
@@ -154,41 +113,10 @@ border: 1px solid #1E2A3A;
 border-radius: 8px;
 color: #FFFFFF;
 font-family: inherit;
-resize: vertical;
 min-height: 80px;
 margin-bottom: 20px;
 }
-textarea:focus { outline: none; border-color: #51CAD3; }
-.options-row {
-display: flex;
-align-items: center;
-gap: 10px;
-margin-bottom: 24px;
-padding: 14px;
-background: #0A0F19;
-border-radius: 8px;
-cursor: pointer;
-}
-.checkbox {
-width: 20px;
-height: 20px;
-border: 2px solid #1E2A3A;
-border-radius: 4px;
-display: flex;
-align-items: center;
-justify-content: center;
-cursor: pointer;
-flex-shrink: 0;
-}
-.checkbox.checked {
-background: #51CAD3;
-border-color: #51CAD3;
-}
-.checkbox.checked::after {
-content: '✓';
-color: #0A0F19;
-font-weight: bold;
-}
+
 .btn-generate {
 width: 100%;
 padding: 16px;
@@ -199,118 +127,45 @@ color: #0A0F19;
 font-weight: 700;
 font-size: 16px;
 cursor: pointer;
-transition: all 0.3s;
-}
-.btn-generate:hover:not(:disabled) {
-transform: translateY(-2px);
-box-shadow: 0 8px 25px rgba(81, 202, 211, 0.4);
+transition: 0.3s;
 }
 .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
-.result-section { display: none; }
-.result-section.show { display: block; animation: fadeIn 0.5s; }
-@keyframes fadeIn {
-from { opacity: 0; transform: translateY(20px); }
-to { opacity: 1; transform: translateY(0); }
-}
-.result-grid {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 20px;
-margin-bottom: 20px;
-}
-.result-card {
-background: #0A0F19;
-border: 2px solid #1E2A3A;
-border-radius: 12px;
-padding: 16px;
-text-align: center;
-}
-.result-card img {
-max-width: 100%;
-border-radius: 8px;
-margin-bottom: 10px;
-}
-.result-actions {
-display: flex;
-gap: 12px;
-flex-wrap: wrap;
-}
-.btn-action {
-flex: 1;
-min-width: 140px;
-padding: 12px 20px;
-background: transparent;
-border: 1px solid #51CAD3;
-color: #51CAD3;
-border-radius: 8px;
-cursor: pointer;
-font-weight: 600;
-transition: all 0.2s;
-}
-.btn-action:hover { background: rgba(81, 202, 211, 0.1); }
-.status-message {
-padding: 14px;
-border-radius: 8px;
-margin-top: 16px;
-display: none;
-text-align: center;
-}
-.status-message.show { display: block; animation: slideIn 0.3s; }
-@keyframes slideIn {
-from { opacity: 0; transform: translateY(-10px); }
-to { opacity: 1; transform: translateY(0); }
-}
-.status-success {
-background: rgba(0, 255, 157, 0.1);
-border: 1px solid #00ff9d;
-color: #00ff9d;
-}
-.status-error {
-background: rgba(255, 107, 107, 0.1);
-border: 1px solid #ff6b6b;
-color: #ff6b6b;
-}
-.status-info {
-background: rgba(81, 202, 211, 0.1);
-border: 1px solid #51CAD3;
-color: #51CAD3;
-}
+
+.result-section { display: none; margin-top: 20px; }
+.result-section.show { display: block; }
+.result-card { background: #0A0F19; border: 2px solid #1E2A3A; border-radius: 12px; padding: 16px; text-align: center; }
+.result-card img { max-width: 100%; border-radius: 8px; }
+
+.status-message { padding: 14px; border-radius: 8px; margin-top: 16px; display: none; text-align: center; }
+.status-message.show { display: block; }
+.status-success { background: rgba(0, 255, 157, 0.1); border: 1px solid #00ff9d; color: #00ff9d; }
+.status-error { background: rgba(255, 107, 107, 0.1); border: 1px solid #ff6b6b; color: #ff6b6b; }
+
 .loading-spinner {
 display: inline-block;
-width: 20px;
-height: 20px;
-border: 3px solid rgba(255,255,255,0.3);
+width: 18px;
+height: 18px;
+border: 2px solid rgba(255,255,255,0.3);
 border-radius: 50%;
-border-top-color: #fff;
+border-top-color: #0A0F19;
 animation: spin 1s linear infinite;
 margin-right: 8px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-footer {
-margin-top: 40px;
-padding: 20px;
-text-align: center;
-color: #6B7F94;
-border-top: 1px solid #1E2A3A;
-}
-footer a { color: #97DEED; text-decoration: none; }
-@media (max-width: 768px) {
-.result-grid { grid-template-columns: 1fr; }
-.style-grid { grid-template-columns: repeat(3, 1fr); }
-}
+footer { margin-top: 40px; text-align: center; color: #6B7F94; padding: 20px; border-top: 1px solid #1E2A3A; }
 </style>
 </head>
 <body>
 <div class="container">
 <header>
 <div class="header-top">
-<div class="logo" id="siteLogo">🎨 Gradient<span>Avatar</span> Factory</div>
-<button class="btn-connect" id="connectWalletBtn">🔗 Connect Wallet</button>
+<div class="logo" onclick="location.reload()">🎨 Gradient<span>Avatar</span> Factory</div>
+<div style="color: #51CAD3; font-size: 12px; border: 1px solid #1E2A3A; padding: 5px 10px; border-radius: 20px;">API Mode Active</div>
 </div>
 </header>
 
 <div class="main-card">
-<h2>🎨 Create Your AI Avatar</h2>
+<h2>🚀 AI Image Generator</h2>
 
 <div class="mode-tabs">
 <button class="mode-tab active" data-mode="text2img">📝 Text to Image</button>
@@ -320,159 +175,99 @@ footer a { color: #97DEED; text-decoration: none; }
 <div class="upload-zone" id="uploadZone">
 <input type="file" id="imageInput" accept="image/*" style="display: none;">
 <div class="upload-icon">📁</div>
-<p><strong>Upload your character photo</strong></p>
-<p style="color: #6B7F94; font-size: 14px;">PNG, JPG up to 10MB</p>
-<img id="previewImage" class="preview-image" alt="Preview">
+<p><strong>Upload reference photo</strong></p>
+<img id="previewImage" class="preview-image">
 </div>
 
-<label class="section-title">Choose Style</label>
+<label class="section-title">Select Style</label>
 <div class="style-grid" id="styleGrid"></div>
 
-<label class="section-title">Custom Prompt (REQUIRED)</label>
-<textarea id="promptInput" placeholder="Example: cyberpunk frog character with neon lights, futuristic armor"></textarea>
+<label class="section-title">Prompt</label>
+<textarea id="promptInput" placeholder="Describe what you want to see..."></textarea>
 
-<div class="options-row" id="watermarkOption">
-<div class="checkbox" id="watermarkCheckbox"></div>
-<div class="checkbox-label">
-<strong>Add OpenGradient Watermark</strong>
-<div style="color: #6B7F94; font-size: 13px;">Overlay "OPG" logo</div>
-</div>
-</div>
-
-<button class="btn-generate" id="generateBtn">✨ Generate Avatar</button>
+<button class="btn-generate" id="generateBtn">✨ Generate Now</button>
 <div id="statusMessage" class="status-message"></div>
 </div>
 
 <div class="main-card result-section" id="resultSection">
-<h2>✅ Generation Complete!</h2>
-<div class="result-grid">
-<div class="result-card" id="originalCard" style="display:none;">
-<div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Original</div>
-<img id="originalImage" alt="Original">
-</div>
 <div class="result-card">
-<div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Generated</div>
-<img id="generatedImage" alt="Generated">
-<div style="color: #51CAD3; font-weight: 600; margin-top: 8px;" id="nftId">#0000</div>
+<img id="generatedImage" alt="Result">
+<div style="margin-top: 15px;">
+<button class="btn-generate" style="width: auto; padding: 10px 30px;" onclick="downloadImg()">📥 Download PNG</button>
 </div>
-</div>
-<div class="result-actions">
-<button class="btn-action" id="downloadBtn">📥 Download PNG</button>
-<button class="btn-action" id="copyHashBtn">🔗 Copy Hash</button>
 </div>
 </div>
 
 <footer>
-<p>Powered by Leonardo.ai • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
+<p>Powered by OpenGradient AI • No Wallet Required</p>
 </footer>
 </div>
 
 <script>
-// === КОНФИГУРАЦИЯ И ЛОГИКА ===
+// Настройки стилей
 var STYLES = [
-{ id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk neon futuristic' },
-{ id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime japanese animation' },
-{ id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art 8bit retro' },
-{ id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist clean modern' },
-{ id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon glow electric' },
-{ id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro vintage 80s' },
-{ id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy magical mystical' },
-{ id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction futuristic' },
-{ id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir black white' },
-{ id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave pastel' },
-{ id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature organic earthy' },
-{ id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset warm golden' },
-{ id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean waves deep blue' },
-{ id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire flames burning' },
-{ id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy stars cosmic' },
-{ id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest green nature' },
-{ id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic ethereal mystical' },
-{ id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden luxury elegant' }
+{ id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'] },
+{ id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'] },
+{ id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'] },
+{ id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff'] },
+{ id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'] },
+{ id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'] }
 ];
 
-var appState = {
+var state = {
 mode: 'text2img',
-walletConnected: false,
-uploadedImageBase64: null,
 selectedStyle: 'cyberpunk',
-addWatermark: false,
-generatedData: null
+imageBase64: null
 };
 
+// Инициализация
 document.addEventListener('DOMContentLoaded', function() {
-renderStyleGrid();
-setupEventListeners();
+const grid = document.getElementById('styleGrid');
+STYLES.forEach(s => {
+const active = s.id === state.selectedStyle ? 'active' : '';
+grid.innerHTML += `
+<button class="style-btn ${active}" onclick="selectStyle('${s.id}')" id="btn-${s.id}">
+<div class="style-preview" style="background: linear-gradient(135deg, ${s.gradient.join(',')})"></div>
+${s.name}
+</button>`;
+});
 });
 
-function renderStyleGrid() {
-var grid = document.getElementById('styleGrid');
-var html = '';
-STYLES.forEach(style => {
-var active = style.id === appState.selectedStyle ? 'active' : '';
-html += `<button class="style-btn ${active}" data-style="${style.id}">
-<div class="style-preview" style="background: linear-gradient(135deg, ${style.gradient.join(', ')})"></div>
-<div>${style.name}</div></button>`;
-});
-grid.innerHTML = html;
+function selectStyle(id) {
+document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+document.getElementById('btn-' + id).classList.add('active');
+state.selectedStyle = id;
 }
 
-function setupEventListeners() {
 // Табы
 document.querySelectorAll('.mode-tab').forEach(tab => {
 tab.onclick = function() {
 document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
 this.classList.add('active');
-appState.mode = this.dataset.mode;
-document.getElementById('uploadZone').classList.toggle('show', appState.mode === 'img2img');
+state.mode = this.dataset.mode;
+document.getElementById('uploadZone').classList.toggle('show', state.mode === 'img2img');
 };
 });
 
-// Загрузка
-const uploadZone = document.getElementById('uploadZone');
+// Загрузка фото
 const imageInput = document.getElementById('imageInput');
-uploadZone.onclick = () => imageInput.click();
-imageInput.onchange = (e) => handleImageUpload(e.target.files[0]);
-
-// Стили
-document.getElementById('styleGrid').onclick = (e) => {
-const btn = e.target.closest('.style-btn');
-if (btn) {
-document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
-btn.classList.add('active');
-appState.selectedStyle = btn.dataset.style;
-}
-};
-
-// Чекбокс
-document.getElementById('watermarkOption').onclick = function() {
-appState.addWatermark = !appState.addWatermark;
-document.getElementById('watermarkCheckbox').classList.toggle('checked', appState.addWatermark);
-};
-
-document.getElementById('generateBtn').onclick = handleGenerate;
-document.getElementById('downloadBtn').onclick = handleDownload;
-document.getElementById('connectWalletBtn').onclick = connectWallet;
-}
-
-function handleImageUpload(file) {
-if (!file) return;
+document.getElementById('uploadZone').onclick = () => imageInput.click();
+imageInput.onchange = (e) => {
 const reader = new FileReader();
-reader.onload = (e) => {
-document.getElementById('previewImage').src = e.target.result;
-uploadZone.classList.add('has-image');
-appState.uploadedImageBase64 = e.target.result; // Храним полный base64 для превью и API
+reader.onload = (ev) => {
+state.imageBase64 = ev.target.result;
+document.getElementById('previewImage').src = ev.target.result;
+document.getElementById('uploadZone').classList.add('has-image');
 };
-reader.readAsDataURL(file);
-}
+reader.readAsDataURL(e.target.files[0]);
+};
 
-// === ОСНОВНАЯ ГЕНЕРАЦИЯ ЧЕРЕЗ API ===
-async function handleGenerate() {
+// ГЕНЕРАЦИЯ
+document.getElementById('generateBtn').onclick = async function() {
 const prompt = document.getElementById('promptInput').value.trim();
-if (!prompt) return showStatus('⚠️ Please enter a prompt', 'error');
-if (!appState.walletConnected) return showStatus('⚠️ Connect wallet first', 'error');
+if (!prompt) return showStatus('Enter prompt!', 'error');
 
-const btn = document.getElementById('generateBtn');
-const originalText = btn.innerHTML;
+const btn = this;
 btn.disabled = true;
 btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
 
@@ -482,82 +277,34 @@ method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({
 prompt: prompt,
-style: appState.selectedStyle,
-mode: appState.mode,
-imageUrl: appState.uploadedImageBase64
+style: state.selectedStyle,
+mode: state.mode,
+imageUrl: state.imageBase64
 })
 });
 
 const data = await response.json();
-
 if (data.success) {
-// Если выбран водяной знак - накладываем его
-let finalUrl = data.imageUrl;
-if (appState.addWatermark) {
-finalUrl = await applyWatermark(data.imageUrl);
-}
-
-appState.generatedData = {
-generatedUrl: finalUrl,
-nftId: '#' + Math.floor(1000 + Math.random() * 9000),
-txHash: '0x' + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('')
-};
-
-document.getElementById('generatedImage').src = finalUrl;
-document.getElementById('nftId').textContent = appState.generatedData.nftId;
+document.getElementById('generatedImage').src = data.imageUrl;
 document.getElementById('resultSection').classList.add('show');
 document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
-showStatus('✅ Done!', 'success');
+showStatus('Success!', 'success');
 } else {
-showStatus('❌ ' + (data.error || 'Generation failed'), 'error');
+showStatus('Error: ' + data.error, 'error');
 }
-} catch (err) {
-showStatus('❌ API Connection Error', 'error');
+} catch (e) {
+showStatus('Connection failed', 'error');
 } finally {
 btn.disabled = false;
-btn.innerHTML = originalText;
+btn.innerHTML = '✨ Generate Now';
 }
-}
-
-// Вспомогательная функция для водяного знака
-function applyWatermark(url) {
-return new Promise((resolve) => {
-const img = new Image();
-img.crossOrigin = "anonymous";
-img.onload = () => {
-const canvas = document.createElement('canvas');
-canvas.width = img.width; canvas.height = img.height;
-const ctx = canvas.getContext('2d');
-ctx.drawImage(img, 0, 0);
-ctx.globalAlpha = 0.4;
-ctx.fillStyle = "#51CAD3";
-ctx.font = "bold 40px Arial";
-ctx.fillText("OPG", canvas.width - 100, canvas.height - 40);
-resolve(canvas.toDataURL());
 };
-img.src = url;
-});
-}
 
-function handleDownload() {
+function downloadImg() {
 const a = document.createElement('a');
-a.href = appState.generatedData.generatedUrl;
-a.download = `avatar-${appState.generatedData.nftId}.png`;
+a.href = document.getElementById('generatedImage').src;
+a.download = 'ai-avatar.png';
 a.click();
-}
-
-function connectWallet() {
-if (typeof window.ethereum !== 'undefined') {
-window.ethereum.request({ method: 'eth_requestAccounts' }).then(() => {
-appState.walletConnected = true;
-const btn = document.getElementById('connectWalletBtn');
-btn.textContent = '✅ Connected';
-btn.classList.add('connected');
-showStatus('Wallet Connected!', 'success');
-});
-} else {
-alert('Please install MetaMask');
-}
 }
 
 function showStatus(msg, type) {
