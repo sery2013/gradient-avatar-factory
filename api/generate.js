@@ -1,24 +1,30 @@
-export default async function handler(req) {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/json'
-  };
+const fetch = require('node-fetch'); // Используем стандартный require
+
+module.exports = async (req, res) => {
+  // Настройка заголовков для обхода CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   try {
-    const { prompt, style, checkId } = await req.json();
-
-    // ВСТАВЬТЕ ВАШ КЛЮЧ СЮДА НАПРЯМУЮ ДЛЯ ТЕСТА
+    const { prompt, style, checkId } = req.body;
+    
+    // ВСТАВЬ ТВОЙ КЛЮЧ СЮДА
     const apiKey = "f5174bf5-a782-4460-a04e-586b1d048fc3"; 
 
     if (checkId) {
-      const res = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${checkId}`, {
+      const check = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${checkId}`, {
         headers: { 'Authorization': `Bearer ${apiKey}` }
       });
-      const data = await res.json();
-      return new Response(JSON.stringify({ 
+      const data = await check.json();
+      return res.status(200).json({ 
         status: data.generations_by_pk?.status || 'PENDING', 
         imageUrl: data.generations_by_pk?.generated_images?.[0]?.url 
-      }), { status: 200, headers });
+      });
     }
 
     const response = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
@@ -36,21 +42,13 @@ export default async function handler(req) {
 
     const data = await response.json();
     
-    // Если здесь ошибка, мы её увидим в консоли сайта
-    if (!data.sdGenerationJob) {
-        return new Response(JSON.stringify({ 
-            success: false, 
-            error: data.error || 'Leonardo API Error',
-            fullDetails: data // Пробросим весь ответ для отладки
-        }), { status: 400, headers });
+    if (data.sdGenerationJob) {
+      res.status(200).json({ success: true, generationId: data.sdGenerationJob.generationId });
+    } else {
+      res.status(400).json({ success: false, error: data.error || 'Leonardo Error' });
     }
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      generationId: data.sdGenerationJob.generationId 
-    }), { status: 200, headers });
-
   } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: error.message }), { status: 500, headers });
+    res.status(500).json({ success: false, error: error.message });
   }
-}
+};
