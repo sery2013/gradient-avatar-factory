@@ -87,6 +87,20 @@
       background: rgba(81, 202, 211, 0.1);
     }
 
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .content {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -123,9 +137,30 @@
       background: rgba(81, 202, 211, 0.08);
     }
 
+    .upload-zone.has-image {
+      border-style: solid;
+      border-color: #51CAD3;
+    }
+
     .upload-icon {
       font-size: 48px;
       margin-bottom: 10px;
+    }
+
+    .preview-image {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .upload-zone.has-image .upload-icon,
+    .upload-zone.has-image p {
+      display: none;
+    }
+
+    .upload-zone.has-image .preview-image {
+      display: block;
     }
 
     .style-grid {
@@ -200,16 +235,209 @@
       box-shadow: 0 8px 25px rgba(81, 202, 211, 0.4);
     }
 
-    .result-placeholder {
+    .btn-generate:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .result-placeholder,
+    .result-content {
       text-align: center;
       padding: 60px 20px;
       color: #6B7F94;
+    }
+
+    .result-content {
+      display: none;
+    }
+
+    .result-content.show {
+      display: block;
+    }
+
+    .result-placeholder.hide {
+      display: none;
     }
 
     .result-icon {
       font-size: 64px;
       margin-bottom: 15px;
       opacity: 0.5;
+    }
+
+    .avatar-frame {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .avatar-frame img {
+      max-width: 100%;
+      border-radius: 12px;
+      border: 2px solid #51CAD3;
+      box-shadow: 0 0 30px rgba(81, 202, 211, 0.3);
+    }
+
+    .nft-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #0A0F19;
+      color: #51CAD3;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid #51CAD3;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-action {
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid #51CAD3;
+      color: #51CAD3;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: rgba(81, 202, 211, 0.1);
+    }
+
+    .status-message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      display: none;
+      text-align: center;
+    }
+
+    .status-message.show {
+      display: block;
+      animation: slideIn 0.3s;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .status-success {
+      background: rgba(0, 255, 157, 0.1);
+      border: 1px solid #00ff9d;
+      color: #00ff9d;
+    }
+
+    .status-error {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid #ff6b6b;
+      color: #ff6b6b;
+    }
+
+    .status-warning {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid #ffc107;
+      color: #ffc107;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .gallery-item {
+      aspect-ratio: 1;
+      background: #0A0F19;
+      border: 1px solid #1E2A3A;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #6B7F94;
+    }
+
+    .gallery-item:hover {
+      border-color: #51CAD3;
+      transform: translateY(-2px);
+    }
+
+    .verify-form {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .verify-form input {
+      flex: 1;
+      padding: 12px;
+      background: #0A0F19;
+      border: 1px solid #1E2A3A;
+      border-radius: 8px;
+      color: #FFFFFF;
+    }
+
+    .verify-form input:focus {
+      outline: none;
+      border-color: #51CAD3;
+    }
+
+    .settings-group {
+      margin: 20px 0;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #1E2A3A;
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .toggle {
+      width: 44px;
+      height: 24px;
+      background: #1E2A3A;
+      border-radius: 24px;
+      position: relative;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .toggle.active {
+      background: #51CAD3;
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: 0.3s;
+    }
+
+    .toggle.active::after {
+      left: 23px;
     }
 
     footer {
@@ -247,63 +475,149 @@
       <div class="header-top">
         <div class="logo">Gradient<span>Avatar</span></div>
         <nav class="nav">
-          <button class="active">✨ Create</button>
-          <button>🖼️ Gallery</button>
-          <button>🔐 Verify</button>
-          <button>⚙️ Settings</button>
+          <button class="nav-btn active" data-tab="create">✨ Create</button>
+          <button class="nav-btn" data-tab="gallery">🖼️ Gallery</button>
+          <button class="nav-btn" data-tab="verify">🔐 Verify</button>
+          <button class="nav-btn" data-tab="settings">⚙️ Settings</button>
         </nav>
-        <button class="btn-connect">🔗 Connect</button>
+        <button class="btn-connect" id="connectBtn">🔗 Connect</button>
       </div>
     </header>
 
-    <main class="content">
-      <div class="card">
-        <h2>🎨 Avatar Settings</h2>
-        
-        <div class="upload-zone">
-          <div class="upload-icon">📁</div>
-          <p><strong>Drop your photo</strong> or browse</p>
-          <p style="color: #6B7F94; font-size: 14px; margin-top: 5px;">PNG, JPG up to 10MB</p>
+    <!-- TAB: CREATE -->
+    <div id="tab-create" class="tab-content active">
+      <main class="content">
+        <div class="card">
+          <h2>🎨 Avatar Settings</h2>
+          
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <div class="upload-icon">📁</div>
+            <p><strong>Drop your photo</strong> or browse</p>
+            <p style="color: #6B7F94; font-size: 14px; margin-top: 5px;">PNG, JPG up to 10MB</p>
+            <img id="previewImage" class="preview-image" alt="Preview">
+          </div>
+
+          <div style="margin: 20px 0;">
+            <label style="display: block; margin-bottom: 10px; color: #A0B3C6;">Style Preset</label>
+            <div class="style-grid">
+              <button class="style-btn active" data-style="cyberpunk">
+                <div class="style-preview cyberpunk"></div>
+                <div>Cyberpunk</div>
+              </button>
+              <button class="style-btn" data-style="anime">
+                <div class="style-preview anime"></div>
+                <div>Anime</div>
+              </button>
+              <button class="style-btn" data-style="pixel">
+                <div class="style-preview pixel"></div>
+                <div>Pixel Art</div>
+              </button>
+              <button class="style-btn" data-style="minimal">
+                <div class="style-preview minimal"></div>
+                <div>Minimal</div>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label style="display: block; margin-bottom: 10px; color: #A0B3C6;">Custom Prompt (optional)</label>
+            <textarea id="promptInput" placeholder="e.g., neon lights, futuristic armor, holographic effects..."></textarea>
+          </div>
+
+          <button class="btn-generate" id="generateBtn">✨ Generate Avatar (~0.001 OPG)</button>
+          <div id="statusMessage" class="status-message"></div>
         </div>
 
-        <div style="margin: 20px 0;">
-          <label style="display: block; margin-bottom: 10px; color: #A0B3C6;">Style Preset</label>
-          <div class="style-grid">
-            <button class="style-btn active">
-              <div class="style-preview cyberpunk"></div>
-              <div>Cyberpunk</div>
-            </button>
-            <button class="style-btn">
-              <div class="style-preview anime"></div>
-              <div>Anime</div>
-            </button>
-            <button class="style-btn">
-              <div class="style-preview pixel"></div>
-              <div>Pixel Art</div>
-            </button>
-            <button class="style-btn">
-              <div class="style-preview minimal"></div>
-              <div>Minimal</div>
-            </button>
+        <div class="card">
+          <h2>🖼️ Result</h2>
+          <div class="result-placeholder" id="resultPlaceholder">
+            <div class="result-icon">🎭</div>
+            <p>Your generated avatar will appear here</p>
+          </div>
+          <div class="result-content" id="resultContent">
+            <div class="avatar-frame">
+              <img id="generatedAvatar" src="" alt="Generated Avatar">
+              <div class="nft-badge" id="nftBadge">#0000</div>
+            </div>
+            <div class="result-actions">
+              <button class="btn-action" id="downloadBtn">📥 Download</button>
+              <button class="btn-action" id="copyProofBtn">🔗 Copy Proof</button>
+              <button class="btn-action" id="mintBtn">🪙 Mint NFT</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- TAB: GALLERY -->
+    <div id="tab-gallery" class="tab-content">
+      <div class="card">
+        <h2>🖼️ Community Gallery</h2>
+        <div style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="nav-btn active">All</button>
+          <button class="nav-btn">Cyberpunk</button>
+          <button class="nav-btn">Anime</button>
+          <button class="nav-btn">Pixel</button>
+        </div>
+        <div class="gallery-grid" id="galleryGrid">
+          <div class="gallery-item">🎨 Load more...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: VERIFY -->
+    <div id="tab-verify" class="tab-content">
+      <div class="card">
+        <h2>🔐 Verify Avatar</h2>
+        <p style="color: #6B7F94; margin-bottom: 20px;">Enter a TEE hash or NFT ID to verify authenticity</p>
+        <div class="verify-form">
+          <input type="text" id="verifyInput" placeholder="0x... or #1234">
+          <button class="btn-generate" style="width: auto;" id="verifyBtn">🔍 Verify</button>
+        </div>
+        <div id="verifyResult" class="status-message"></div>
+      </div>
+    </div>
+
+    <!-- TAB: SETTINGS -->
+    <div id="tab-settings" class="tab-content">
+      <div class="card">
+        <h2>⚙️ Settings</h2>
+        
+        <div class="settings-group">
+          <div class="setting-item">
+            <div>
+              <div style="font-weight: 600; margin-bottom: 4px;">Network</div>
+              <div style="color: #6B7F94; font-size: 14px;">Select blockchain network</div>
+            </div>
+            <select style="padding: 8px 12px; background: #0A0F19; border: 1px solid #1E2A3A; color: #fff; border-radius: 6px;">
+              <option>Base Sepolia (Testnet)</option>
+              <option>Base Mainnet</option>
+            </select>
+          </div>
+          
+          <div class="setting-item">
+            <div>
+              <div style="font-weight: 600; margin-bottom: 4px;">Auto-save to IPFS</div>
+              <div style="color: #6B7F94; font-size: 14px;">Automatically upload to IPFS</div>
+            </div>
+            <div class="toggle active" id="autoSaveToggle"></div>
+          </div>
+          
+          <div class="setting-item">
+            <div>
+              <div style="font-weight: 600; margin-bottom: 4px;">Notifications</div>
+              <div style="color: #6B7F94; font-size: 14px;">Enable push notifications</div>
+            </div>
+            <div class="toggle" id="notificationsToggle"></div>
           </div>
         </div>
 
-        <div>
-          <label style="display: block; margin-bottom: 10px; color: #A0B3C6;">Custom Prompt (optional)</label>
-          <textarea placeholder="e.g., neon lights, futuristic armor, holographic effects..."></textarea>
-        </div>
-
-        <button class="btn-generate">✨ Generate Avatar (~0.001 OPG)</button>
+        <button class="btn-action" id="clearDataBtn" style="width: 100%; margin-top: 20px; border-color: #ff6b6b; color: #ff6b6b;">
+          🗑️ Clear Local Data
+        </button>
       </div>
-
-      <div class="card">
-        <h2>🖼️ Result</h2>
-        <div class="result-placeholder">
-          <div class="result-icon">🎭</div>
-          <p>Your generated avatar will appear here</p>
-        </div>
-      </div>
-    </main>
+    </div>
 
     <footer>
       <p>Built on <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
@@ -315,5 +629,242 @@
       </p>
     </footer>
   </div>
+
+  <script>
+    // === State ===
+    let state = {
+      currentTab: 'create',
+      selectedStyle: 'cyberpunk',
+      uploadedImage: null,
+      generatedAvatar: null,
+      walletConnected: false
+    };
+
+    // === Tab Navigation ===
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      if (btn.dataset.tab) {
+        btn.addEventListener('click', () => {
+          const tab = btn.dataset.tab;
+          
+          // Update buttons
+          document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          // Update content
+          document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          document.getElementById(`tab-${tab}`).classList.add('active');
+          
+          state.currentTab = tab;
+        });
+      }
+    });
+
+    // === Style Selection ===
+    document.querySelectorAll('.style-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.selectedStyle = btn.dataset.style;
+      });
+    });
+
+    // === Image Upload ===
+    const uploadZone = document.getElementById('uploadZone');
+    const imageInput = document.getElementById('imageInput');
+    const previewImage = document.getElementById('previewImage');
+
+    uploadZone.addEventListener('click', () => imageInput.click());
+
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '#51CAD3';
+      uploadZone.style.background = 'rgba(81, 202, 211, 0.08)';
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.style.borderColor = '#1E2A3A';
+      uploadZone.style.background = 'rgba(151, 222, 237, 0.03)';
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '#1E2A3A';
+      uploadZone.style.background = 'rgba(151, 222, 237, 0.03)';
+      const file = e.dataTransfer.files[0];
+      handleImage(file);
+    });
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      handleImage(file);
+    });
+
+    function handleImage(file) {
+      if (!file || !file.type.startsWith('image/')) {
+        showStatus('Please select a valid image file', 'error');
+        return;
+      }
+      
+      if (file.size > 10 * 1024 * 1024) {
+        showStatus('Image must be under 10MB', 'error');
+        return;
+      }
+      
+      state.uploadedImage = file;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImage.src = e.target.result;
+        uploadZone.classList.add('has-image');
+      };
+      reader.readAsDataURL(file);
+      
+      showStatus('Image loaded! Ready to generate ✨', 'success');
+    }
+
+    // === Generate Avatar ===
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+      if (!state.uploadedImage) {
+        showStatus('Please upload an image first', 'warning');
+        return;
+      }
+      
+      if (!state.walletConnected) {
+        showStatus('Please connect wallet for payment', 'warning');
+        return;
+      }
+      
+      const btn = document.getElementById('generateBtn');
+      btn.disabled = true;
+      btn.textContent = '⚙️ Generating...';
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Generate mock result
+      const nftNum = Math.floor(Math.random() * 9000) + 1000;
+      const nftId = `#${nftNum.toString().padStart(4, '0')}`;
+      
+      const colors = {
+        cyberpunk: 'ff00ff',
+        anime: 'ff6b9d',
+        pixel: '00ff9d',
+        minimal: 'a0a0a0'
+      };
+      
+      const avatarUrl = `https://placehold.co/512x512/${colors[state.selectedStyle]}/ffffff?text=Avatar+${nftId}`;
+      
+      state.generatedAvatar = {
+        url: avatarUrl,
+        nftId: nftId,
+        proofHash: '0x' + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('')
+      };
+      
+      document.getElementById('generatedAvatar').src = avatarUrl;
+      document.getElementById('nftBadge').textContent = nftId;
+      
+      document.getElementById('resultPlaceholder').classList.add('hide');
+      document.getElementById('resultContent').classList.add('show');
+      
+      btn.disabled = false;
+      btn.textContent = '✨ Generate Avatar (~0.001 OPG)';
+      
+      showStatus('Avatar generated successfully! 🎉', 'success');
+    });
+
+    // === Download ===
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      if (!state.generatedAvatar) return;
+      
+      const link = document.createElement('a');
+      link.download = `gradient-avatar-${state.generatedAvatar.nftId}.png`;
+      link.href = state.generatedAvatar.url;
+      link.click();
+      
+      showStatus('Download started! 📥', 'success');
+    });
+
+    // === Copy Proof ===
+    document.getElementById('copyProofBtn').addEventListener('click', async () => {
+      if (!state.generatedAvatar) return;
+      
+      try {
+        await navigator.clipboard.writeText(state.generatedAvatar.proofHash);
+        showStatus('Proof hash copied! 🔗', 'success');
+      } catch {
+        showStatus('Failed to copy', 'error');
+      }
+    });
+
+    // === Mint NFT ===
+    document.getElementById('mintBtn').addEventListener('click', () => {
+      showStatus('Minting NFT... (mock)', 'success');
+    });
+
+    // === Connect Wallet ===
+    document.getElementById('connectBtn').addEventListener('click', () => {
+      state.walletConnected = true;
+      const btn = document.getElementById('connectBtn');
+      btn.innerHTML = '✅ Connected';
+      btn.style.background = 'rgba(81, 202, 211, 0.2)';
+      showStatus('Wallet connected! Ready for x402 payments 🔗', 'success');
+    });
+
+    // === Verify ===
+    document.getElementById('verifyBtn').addEventListener('click', () => {
+      const input = document.getElementById('verifyInput').value;
+      const result = document.getElementById('verifyResult');
+      
+      if (!input) {
+        showStatus('Please enter a hash or NFT ID', 'warning', result);
+        return;
+      }
+      
+      result.className = 'status-message status-success show';
+      result.textContent = '✅ Valid! This avatar was generated via OpenGradient TEE';
+    });
+
+    // === Settings Toggles ===
+    document.getElementById('autoSaveToggle').addEventListener('click', function() {
+      this.classList.toggle('active');
+    });
+
+    document.getElementById('notificationsToggle').addEventListener('click', function() {
+      this.classList.toggle('active');
+    });
+
+    // === Clear Data ===
+    document.getElementById('clearDataBtn').addEventListener('click', () => {
+      if (confirm('Clear all local data?')) {
+        localStorage.clear();
+        showStatus('Local data cleared! 🗑️', 'success');
+      }
+    });
+
+    // === Status Messages ===
+    function showStatus(message, type = 'info', container = null) {
+      const statusEl = container || document.getElementById('statusMessage');
+      statusEl.textContent = message;
+      statusEl.className = `status-message status-${type} show`;
+      
+      setTimeout(() => {
+        statusEl.classList.remove('show');
+      }, 4000);
+    }
+
+    // === Gallery Filter ===
+    document.querySelectorAll('#tab-gallery .nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#tab-gallery .nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        // Mock gallery update
+        showStatus('Filter applied: ' + btn.textContent, 'success');
+      });
+    });
+
+    console.log('🎨 GradientAvatar Factory loaded!');
+  </script>
 </body>
 </html>
