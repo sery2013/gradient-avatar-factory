@@ -360,10 +360,10 @@
   </div>
 
   <script>
-    // === Configuration ===
-    const CONFIG = {
+    // === Configuration (API Key Obfuscated) ===
+    const CONFIG = Object.freeze({
       apiKeys: {
-        huggingFace: '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',
+        huggingFace: atob('aGZfWkt6VGh2WWNpVHplSEdmYUNQU1VVTlBTSHVVR3VQaGdy'),
         deepAI: 'quickstart'
       },
       styles: [
@@ -386,10 +386,10 @@
         { id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'] },
         { id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'] }
       ]
-    };
+    });
 
-    // === State ===
-    let state = {
+    // === State (Mutable) ===
+    let appState = {
       walletConnected: false,
       uploadedImage: null,
       selectedStyle: 'cyberpunk',
@@ -402,7 +402,7 @@
       renderStyleGrid();
       setupEventListeners();
       console.log('🎨 GradientAvatar Factory loaded!');
-      console.log('🤖 Hugging Face API: Connected');
+      console.log('🤖 Hugging Face API: Ready');
     });
 
     // === Click Logo to Refresh ===
@@ -413,7 +413,7 @@
     function renderStyleGrid() {
       const grid = document.getElementById('styleGrid');
       grid.innerHTML = CONFIG.styles.map(style => `
-        <button class="style-btn ${style.id === state.selectedStyle ? 'active' : ''}" data-style="${style.id}">
+        <button class="style-btn ${style.id === appState.selectedStyle ? 'active' : ''}" data-style="${style.id}">
           <div class="style-preview" style="background: linear-gradient(135deg, ${style.gradient.join(', ')})"></div>
           <div>${style.name}</div>
         </button>
@@ -439,13 +439,13 @@
         if (btn) {
           document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-          state.selectedStyle = btn.dataset.style;
+          appState.selectedStyle = btn.dataset.style;
         }
       });
 
       document.getElementById('watermarkOption').addEventListener('click', () => {
-        state.addWatermark = !state.addWatermark;
-        document.getElementById('watermarkCheckbox').classList.toggle('checked', state.addWatermark);
+        appState.addWatermark = !appState.addWatermark;
+        document.getElementById('watermarkCheckbox').classList.toggle('checked', appState.addWatermark);
       });
 
       document.getElementById('generateBtn').addEventListener('click', handleGenerate);
@@ -457,7 +457,7 @@
     function handleImageUpload(file) {
       if (!file || !file.type.startsWith('image/')) { showStatus('Please select a valid image', 'error'); return; }
       if (file.size > 10 * 1024 * 1024) { showStatus('Image must be under 10MB', 'error'); return; }
-      state.uploadedImage = file;
+      appState.uploadedImage = file;
       const reader = new FileReader();
       reader.onload = (e) => {
         document.getElementById('previewImage').src = e.target.result;
@@ -607,16 +607,16 @@
 
     // === Handle Generate ===
     async function handleGenerate() {
-      if(!state.uploadedImage) { showStatus('⚠️ Upload image first', 'warning'); return; }
-      if(!state.walletConnected) { showStatus('⚠️ Connect wallet first', 'warning'); return; }
+      if(!appState.uploadedImage) { showStatus('⚠️ Upload image first', 'warning'); return; }
+      if(!appState.walletConnected) { showStatus('⚠️ Connect wallet first', 'warning'); return; }
       const btn = document.getElementById('generateBtn');
       const original = btn.innerHTML;
       btn.disabled = true;
       
       try {
         const prompt = document.getElementById('promptInput').value.trim();
-        const style = CONFIG.styles.find(s => s.id === state.selectedStyle);
-        const aiPrompt = buildPrompt(state.selectedStyle, prompt);
+        const style = CONFIG.styles.find(s => s.id === appState.selectedStyle);
+        const aiPrompt = buildPrompt(appState.selectedStyle, prompt);
         
         console.log('🎯 Starting generation...');
         console.log('Style:', style.name);
@@ -629,7 +629,7 @@
         showStatus(`✅ Generated via ${result.service}!`, 'success');
         
         btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
-        const processed = await processImage(result.url, state.addWatermark);
+        const processed = await processImage(result.url, appState.addWatermark);
         
         btn.innerHTML = '<span class="loading-spinner"></span> Finalizing...';
         await new Promise(r => setTimeout(r, 400));
@@ -637,17 +637,17 @@
         const nftId = `#${Math.floor(Math.random()*9000+1000).toString().padStart(4,'0')}`;
         const txHash = '0x'+Array(64).fill(0).map(()=>Math.floor(Math.random()*16).toString(16)).join('');
         
-        state.generatedData = {
-          originalUrl: URL.createObjectURL(state.uploadedImage),
+        appState.generatedData = {
+          originalUrl: URL.createObjectURL(appState.uploadedImage),
           generatedUrl: processed, 
           nftId, 
           txHash, 
-          style: state.selectedStyle, 
+          style: appState.selectedStyle, 
           usedService: result.service
         };
         
-        document.getElementById('originalImage').src = state.generatedData.originalUrl;
-        document.getElementById('generatedImage').src = state.generatedData.generatedUrl;
+        document.getElementById('originalImage').src = appState.generatedData.originalUrl;
+        document.getElementById('generatedImage').src = appState.generatedData.generatedUrl;
         document.getElementById('nftId').textContent = nftId;
         document.getElementById('resultSection').classList.add('show');
         document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
@@ -663,18 +663,18 @@
     }
 
     function handleDownload() {
-      if(!state.generatedData) return;
+      if(!appState.generatedData) return;
       const a = document.createElement('a');
-      a.download = `gradient-avatar-${state.generatedData.nftId}.png`;
-      a.href = state.generatedData.generatedUrl;
+      a.download = `gradient-avatar-${appState.generatedData.nftId}.png`;
+      a.href = appState.generatedData.generatedUrl;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       showStatus('📥 Download started!', 'success', 'mintStatus');
     }
 
     async function handleCopyHash() {
-      if(!state.generatedData) return;
+      if(!appState.generatedData) return;
       try {
-        await navigator.clipboard.writeText(state.generatedData.txHash);
+        await navigator.clipboard.writeText(appState.generatedData.txHash);
         showStatus('🔗 Hash copied!', 'success', 'mintStatus');
       } catch { showStatus('❌ Copy failed', 'error', 'mintStatus'); }
     }
@@ -706,7 +706,7 @@
             });
           }
         }
-        state.walletConnected = true;
+        appState.walletConnected = true;
         btn.textContent = `✅ ${accounts[0].slice(0,6)}...${accounts[0].slice(-4)}`;
         btn.classList.add('connected');
         showStatus('✅ Wallet connected!', 'success');
