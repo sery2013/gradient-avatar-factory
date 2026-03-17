@@ -4,96 +4,120 @@ export const config = {
 };
 
 export default async function handler(req) {
-  // Разрешаем CORS
-  if (req.method === 'OPTIONS') {
-    return new Response('OK', {
-      status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
-    });
-  }
-
   if (req.method !== 'POST') {
-    return new Response(
-      JSON.stringify({ error: 'Method not allowed' }),
-      { status: 405, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response('Method not allowed', { status: 405 });
   }
 
   try {
-    const { prompt, style, width = 512, height = 512 } = await req.json();
+    const { prompt, style, imageBase64, width = 512, height = 512 } = await req.json();
 
-    if (!prompt) {
-      return new Response(
-        JSON.stringify({ error: 'Prompt is required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Получаем API ключ из переменных окружения
-    const apiKey = process.env.LEONARDO_API_KEY || process.env.HUGGINGFACE_API_KEY;
-
+    // Получаем ключ из переменных окружения Vercel
+    const apiKey = process.env.LEONARDO_API_KEY;
+    
     if (!apiKey) {
-      console.error('❌ API key not configured');
+      console.error('❌ API key not configured in environment variables');
       return new Response(
         JSON.stringify({ error: 'API key not configured' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+        { 
+          status: 500, 
+          headers: { 'Content-Type': 'application/json' }
+        }
       );
     }
 
-    console.log('🎨 Generating image via serverless API...');
-    console.log('Prompt:', prompt);
+    console.log('🎨 Starting generation via Leonardo.ai...');
     console.log('Style:', style);
+    console.log('Prompt:', prompt);
 
-    // Используем Pollinations AI (бесплатно, без ключа)
-    const seed = Math.floor(Math.random() * 10000);
-    const fullPrompt = encodeURIComponent(`${prompt}, ${style || 'digital art'}, high quality, detailed`);
-    const imageUrl = `https://image.pollinations.ai/prompt/${fullPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+    // Leonardo.ai API endpoint
+    const response = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        negative_prompt: 'ugly, deformed, noisy, blurry, low quality, distorted, out of focus, bad anatomy',
+        modelId: '6bef9f1b-29cb-40c7-b9df-32b51c1f67d3', // Leonardo Phoenix
+        width: width,
+        height: height,
+        num_images: 1,
+        init_strength: 0.7
+      })
+    });
 
-    // Скачиваем изображение
-    const imageResponse = await fetch(imageUrl);
-    if (!imageResponse.ok) {
-      throw new Error('Failed to fetch generated image');
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('Leonardo API error:', errorData);
+      return new Response(
+        JSON.stringify({ error: `Leonardo API error: ${response.status}` }),
+        { 
+          status: response.status, 
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
     }
 
-    const imageBlob = await imageResponse.blob();
-    const arrayBuffer = await imageBlob.arrayBuffer();
-    const base64Image = Buffer.from(arrayBuffer).toString('base64');
-    const contentType = imageResponse.headers.get('content-type') || 'image/png';
+    const data = await response.json();
+    const generationId = data.sdGenerationJob.generationId;
 
-    console.log('✅ Image generated successfully!');
+    // Polling for completion
+    const imageUrl = await pollGenerationStatus(generationId, apiKey);
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        image: `data:${contentType};base64,${base64Image}`,
-        prompt: prompt,
-        style: style,
-        seed: seed
+      JSON.stringify({ 
+        success: true, 
+        imageUrl: imageUrl,
+        generationId: generationId
       }),
       {
         status: 200,
-        headers: {
+        headers: { 
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
+          'Access-Control-Allow-Origin': '*'
+        }
       }
     );
 
   } catch (error) {
-    console.error('❌ Generation error:', error);
+    console.error('Generation error:', error);
     return new Response(
       JSON.stringify({ error: error.message || 'Generation failed' }),
-      {
-        status: 500,
-        headers: {
+      { 
+        status: 500, 
+        headers: { 
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
+          'Access-Control-Allow-Origin': '*'
+        }
       }
     );
+  }
+}
+
+async function pollGenerationStatus(generationId, apiKey, attempts = 0) {
+  if (attempts > 30) {
+    throw new Error('Generation timeout');
+  }
+
+  await new Promise(resolve => setTimeout(resolve, 2000));
+
+  const response = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${generationId}`, {
+    headers: {
+      'Authorization': `Bearer ${apiKey}`
+    }
+  });
+
+  const data = await response.json();
+  const status = data.generations_by_pk.status;
+
+  console.log('Status:', status, 'Attempt:', attempts);
+
+  if (status === 'COMPLETE') {
+    return data.generations_by_pk.generated_images[0].url;
+  } else if (status === 'FAILED') {
+    throw new Error('Generation failed');
+  } else {
+    return await pollGenerationStatus(generationId, apiKey, attempts + 1);
   }
 }
