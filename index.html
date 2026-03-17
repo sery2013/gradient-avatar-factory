@@ -354,7 +354,7 @@
     </div>
 
     <footer>
-      <p>Powered by Pollinations AI + Gemini • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
+      <p>Powered by Canvas API • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
       <p style="margin-top: 8px;">18 Unique Styles • Base Sepolia Testnet</p>
     </footer>
   </div>
@@ -382,10 +382,9 @@
       { id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'] }
     ];
 
-    // 🔑 API Ключ Gemini (Обфускация Base64)
-    // Замените строку ниже на ваш обфусцированный ключ
+    // 🔑 Gemini API Key (обфускация Base64)
     var GEMINI_API_KEY = atob('QUl6YXN5RHdnazJ3QVJzcXFQb1M1a3ZnLS1zbTdtSGVWQU9OY1ZaMA==');
-    
+
     // Состояние приложения
     var appState = {
       walletConnected: false,
@@ -400,7 +399,6 @@
       renderStyleGrid();
       setupEventListeners();
       console.log('✅ GradientAvatar Factory loaded!');
-      console.log('🤖 Gemini API: Ready');
     });
 
     document.getElementById('siteLogo').addEventListener('click', function() {
@@ -470,118 +468,46 @@
       reader.readAsDataURL(file);
     }
 
-    // === 🤖 GEMINI: Улучшение промпта ===
-    function enhancePromptWithGemini(basePrompt, style) {
-      return new Promise(function(resolve, reject) {
-        var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + GEMINI_API_KEY;
-        
-        var data = {
-          contents: [{
-            parts: [{
-              text: 'Enhance this image generation prompt for better AI art results. Style: ' + style + '. Original prompt: "' + basePrompt + '". Return ONLY the enhanced prompt, no explanations. Make it detailed and vivid for image generation.'
-            }]
-          }]
-        };
-        
-        fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-          if (data.candidates && data.candidates[0].content) {
-            var enhanced = data.candidates[0].content.parts[0].text;
-            console.log('✨ Gemini enhanced prompt:', enhanced);
-            resolve(enhanced);
-          } else {
-            resolve(basePrompt);
-          }
-        })
-        .catch(function(err) {
-          console.log('⚠️ Gemini failed, using original prompt');
-          resolve(basePrompt);
-        });
-      });
-    }
-
-    function buildPrompt(styleId, customPrompt) {
-      var prompts = {
-        cyberpunk: 'cyberpunk, neon lights, futuristic, digital art',
-        anime: 'anime style, japanese animation, vibrant colors',
-        pixel: 'pixel art, 8-bit, retro gaming',
-        minimal: 'minimalist, clean lines, modern',
-        neon: 'neon colors, glowing, electric',
-        retro: 'retro, vintage, 80s aesthetic',
-        fantasy: 'fantasy, magical, mystical',
-        scifi: 'science fiction, futuristic, space',
-        noir: 'film noir, black and white, dramatic',
-        vaporwave: 'vaporwave, pastel, retro futuristic',
-        nature: 'nature, organic, earthy',
-        sunset: 'sunset, warm tones, golden hour',
-        ocean: 'ocean, waves, deep blue',
-        fire: 'fire, flames, burning, intense',
-        galaxy: 'galaxy, stars, cosmic, nebula',
-        forest: 'forest, green, nature, peaceful',
-        cosmic: 'cosmic, purple, ethereal',
-        gold: 'golden, luxury, elegant, metallic'
-      };
-      var base = prompts[styleId] || 'digital art';
-      return customPrompt ? base + ', ' + customPrompt + ', high quality' : base + ', high quality, avatar';
-    }
-
-    // === 🎨 POLLINATIONS: Генерация изображения ===
-    function generateWithPollinations(prompt) {
-      return new Promise(function(resolve, reject) {
-        var seed = Math.floor(Math.random() * 10000);
-        var url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?width=512&height=512&seed=' + seed + '&nologo=true';
-        
-        console.log('🔄 Generating:', url);
-        
-        var img = new Image();
-        img.crossOrigin = 'anonymous';
-        
-        var timeout = setTimeout(function() {
-          reject(new Error('Timeout after 30 seconds'));
-        }, 30000);
-        
-        img.onload = function() {
-          clearTimeout(timeout);
-          console.log('✅ Image loaded from Pollinations');
-          resolve(url);
-        };
-        
-        img.onerror = function() {
-          clearTimeout(timeout);
-          reject(new Error('Failed to load image'));
-        };
-        
-        img.src = url;
-      });
-    }
-
-    function generateFallbackAvatar(style, prompt) {
+    // === 🎨 ГЕНЕРАЦИЯ AVATAR (CANVAS - 100% РАБОТАЕТ) ===
+    function generateAvatarCanvas(style, prompt) {
       return new Promise(function(resolve) {
         var canvas = document.createElement('canvas');
         canvas.width = 512;
         canvas.height = 512;
         var ctx = canvas.getContext('2d');
         
+        // 1. Градиент фона
         var gradient = ctx.createLinearGradient(0, 0, 512, 512);
         for (var i = 0; i < style.gradient.length; i++) {
           gradient.addColorStop(i / (style.gradient.length - 1), style.gradient[i]);
         }
-        
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 512, 512);
         
-        for (var j = 0; j < 3000; j++) {
-          ctx.fillStyle = 'rgba(255,255,255,' + (Math.random() * 0.15) + ')';
-          ctx.fillRect(Math.random() * 512, Math.random() * 512, 2, 2);
+        // 2. Добавляем шум/звёзды
+        for (var j = 0; j < 5000; j++) {
+          var x = Math.random() * 512;
+          var y = Math.random() * 512;
+          var size = Math.random() * 3 + 1;
+          var alpha = Math.random() * 0.3 + 0.1;
+          ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+          ctx.fillRect(x, y, size, size);
         }
         
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 36px Inter, sans-serif';
+        // 3. Геометрические фигуры
+        for (var k = 0; k < 15; k++) {
+          var cx = Math.random() * 512;
+          var cy = Math.random() * 512;
+          var r = Math.random() * 80 + 40;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+          ctx.fill();
+        }
+        
+        // 4. Текст промпта
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 40px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
@@ -590,30 +516,50 @@
         var lines = [];
         var cur = '';
         
-        for (var k = 0; k < words.length; k++) {
-          if (cur.length + words[k].length < 22) { cur += ' ' + words[k]; }
-          else { if (cur) lines.push(cur.trim()); cur = words[k]; }
+        for (var l = 0; l < words.length; l++) {
+          if (cur.length + words[l].length < 20) {
+            cur += ' ' + words[l];
+          } else {
+            if (cur) lines.push(cur.trim());
+            cur = words[l];
+          }
         }
         if (cur) lines.push(cur.trim());
         
-        var startY = 256 - ((lines.length - 1) * 28);
-        for (var l = 0; l < lines.length; l++) {
-          ctx.fillText(lines[l], 256, startY + (l * 45));
+        var startY = 256 - ((lines.length - 1) * 35);
+        for (var m = 0; m < lines.length; m++) {
+          ctx.fillText(lines[m], 256, startY + (m * 50));
         }
         
-        ctx.font = '20px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        // 5. Подпись стиля
+        ctx.font = '22px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         ctx.fillText('Style: ' + style.name, 256, 420);
+        ctx.fillText('GradientAvatar Factory', 256, 455);
         
-        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-        ctx.lineWidth = 6;
-        ctx.strokeRect(8, 8, 496, 496);
+        // 6. Рамка
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 8;
+        ctx.strokeRect(10, 10, 492, 492);
+        
+        // 7. Уголки
+        var cornerSize = 30;
+        ctx.fillStyle = 'rgba(81, 202, 211, 0.6)';
+        ctx.fillRect(10, 10, cornerSize, 4);
+        ctx.fillRect(10, 10, 4, cornerSize);
+        ctx.fillRect(502 - cornerSize, 10, cornerSize, 4);
+        ctx.fillRect(502, 10, 4, cornerSize);
+        ctx.fillRect(10, 502 - cornerSize, cornerSize, 4);
+        ctx.fillRect(10, 502, 4, cornerSize);
+        ctx.fillRect(502 - cornerSize, 502, cornerSize, 4);
+        ctx.fillRect(502, 502 - cornerSize, 4, cornerSize);
         
         resolve(canvas.toDataURL('image/png'));
       });
     }
 
-    function processImage(url, addWatermark) {
+    // === 💧 ДОБАВИТЬ ВОДЯНОЙ ЗНАК ===
+    function addWatermark(imageUrl) {
       return new Promise(function(resolve) {
         var img = new Image();
         img.crossOrigin = 'anonymous';
@@ -626,29 +572,33 @@
           
           ctx.drawImage(img, 0, 0);
           
-          if (addWatermark) {
-            ctx.save();
-            ctx.globalAlpha = 0.35;
-            ctx.fillStyle = '#51CAD3';
-            ctx.font = 'bold 44px Inter, sans-serif';
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'bottom';
-            ctx.fillText('OPG', canvas.width - 18, canvas.height - 18);
-            ctx.restore();
-          }
+          ctx.save();
+          ctx.globalAlpha = 0.35;
+          ctx.fillStyle = '#51CAD3';
+          ctx.font = 'bold 48px Inter, sans-serif';
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText('OPG', canvas.width - 20, canvas.height - 20);
+          ctx.restore();
           
           resolve(canvas.toDataURL('image/png'));
         };
         
-        img.onerror = function() { resolve(url); };
-        img.src = url;
+        img.onerror = function() { resolve(imageUrl); };
+        img.src = imageUrl;
       });
     }
 
     // === ГЛАВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ===
     function handleGenerate() {
-      if (!appState.uploadedImage) { showStatus('⚠️ Upload image first', 'warning'); return; }
-      if (!appState.walletConnected) { showStatus('⚠️ Connect wallet first', 'warning'); return; }
+      if (!appState.uploadedImage) { 
+        showStatus('⚠️ Upload image first', 'warning'); 
+        return; 
+      }
+      if (!appState.walletConnected) { 
+        showStatus('⚠️ Connect wallet first', 'warning'); 
+        return; 
+      }
 
       var btn = document.getElementById('generateBtn');
       var originalText = btn.innerHTML;
@@ -656,32 +606,36 @@
       
       console.log('🎯 Starting generation...');
       
-      btn.innerHTML = '<span class="loading-spinner"></span> Enhancing prompt...';
+      // Этап 1
+      btn.innerHTML = '<span class="loading-spinner"></span> Generating (1/3)...';
+      showStatus('🎨 Creating avatar...', 'info');
       
-      var prompt = document.getElementById('promptInput').value.trim();
       var style = null;
       for (var i = 0; i < STYLES.length; i++) {
-        if (STYLES[i].id === appState.selectedStyle) { style = STYLES[i]; break; }
+        if (STYLES[i].id === appState.selectedStyle) {
+          style = STYLES[i];
+          break;
+        }
       }
       
-      var basePrompt = buildPrompt(appState.selectedStyle, prompt);
+      var prompt = document.getElementById('promptInput').value.trim();
       
-      // Шаг 1: Улучшаем промпт через Gemini
-      enhancePromptWithGemini(basePrompt, style.name)
-        .then(function(enhancedPrompt) {
-          // Шаг 2: Генерируем изображение
-          btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
-          showStatus('🤖 Generating with Pollinations AI...', 'info');
-          return generateWithPollinations(enhancedPrompt);
-        })
+      // Генерируем на Canvas (ВСЕГДА РАБОТАЕТ)
+      generateAvatarCanvas(style, prompt)
         .then(function(imageUrl) {
-          console.log('✅ Pollinations success');
-          btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
-          showStatus('🎨 Applying watermark...', 'info');
-          return processImage(imageUrl, appState.addWatermark);
+          // Этап 2
+          btn.innerHTML = '<span class="loading-spinner"></span> Processing (2/3)...';
+          showStatus('💧 Applying effects...', 'info');
+          
+          if (appState.addWatermark) {
+            return addWatermark(imageUrl);
+          }
+          return imageUrl;
         })
         .then(function(processed) {
-          btn.innerHTML = '<span class="loading-spinner"></span> Finalizing...';
+          // Этап 3
+          btn.innerHTML = '<span class="loading-spinner"></span> Finalizing (3/3)...';
+          showStatus('✨ Almost done...', 'info');
           
           setTimeout(function() {
             var nftId = '#' + (Math.floor(Math.random() * 9000) + 1000).toString().padStart(4, '0');
