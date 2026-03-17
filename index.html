@@ -1,138 +1,571 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GradientAvatar Factory | AI Generation</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/components.css">
-    <link rel="stylesheet" href="styles/animations.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GradientAvatar Factory | OpenGradient</title>
+<style>
+/* ВАШ ОРИГИНАЛЬНЫЙ CSS БЕЗ ИЗМЕНЕНИЙ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+background: #0A0F19;
+color: #FFFFFF;
+min-height: 100vh;
+padding: 20px;
+}
+.container { max-width: 1000px; margin: 0 auto; }
+header {
+background: rgba(18, 26, 38, 0.9);
+border: 1px solid #1E2A3A;
+border-radius: 12px;
+padding: 20px;
+margin-bottom: 30px;
+}
+.header-top {
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
+gap: 15px;
+}
+.logo { font-size: 24px; font-weight: 700; cursor: pointer; }
+.logo:hover { transform: scale(1.02); }
+.logo span { color: #51CAD3; }
+.btn-connect {
+padding: 10px 20px;
+background: transparent;
+border: 1px solid #51CAD3;
+color: #51CAD3;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 600;
+}
+.btn-connect:hover { background: rgba(81, 202, 211, 0.1); }
+.btn-connect.connected {
+background: rgba(81, 202, 211, 0.2);
+border-color: #00ff9d;
+color: #00ff9d;
+}
+.main-card {
+background: #121A26;
+border: 1px solid #1E2A3A;
+border-radius: 16px;
+padding: 30px;
+margin-bottom: 20px;
+}
+.main-card h2 {
+font-size: 22px;
+margin-bottom: 24px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.mode-tabs {
+display: flex;
+gap: 10px;
+margin-bottom: 24px;
+}
+.mode-tab {
+flex: 1;
+padding: 12px;
+background: #0A0F19;
+border: 2px solid #1E2A3A;
+border-radius: 8px;
+color: #A0B3C6;
+cursor: pointer;
+font-weight: 600;
+transition: all 0.2s;
+}
+.mode-tab.active {
+border-color: #51CAD3;
+background: rgba(81, 202, 211, 0.1);
+color: #51CAD3;
+}
+.upload-zone {
+border: 2px dashed #1E2A3A;
+border-radius: 12px;
+padding: 50px 20px;
+text-align: center;
+cursor: pointer;
+transition: all 0.3s;
+background: rgba(151, 222, 237, 0.03);
+margin-bottom: 24px;
+display: none;
+}
+.upload-zone.show { display: block; }
+.upload-zone:hover {
+border-color: #51CAD3;
+background: rgba(81, 202, 211, 0.08);
+}
+.upload-zone.has-image {
+border-style: solid;
+border-color: #51CAD3;
+padding: 10px;
+}
+.upload-icon { font-size: 56px; margin-bottom: 12px; }
+.preview-image {
+max-width: 100%;
+max-height: 250px;
+border-radius: 8px;
+display: none;
+}
+.upload-zone.has-image .upload-icon,
+.upload-zone.has-image p { display: none; }
+.upload-zone.has-image .preview-image { display: block; }
+.section-title {
+font-size: 16px;
+color: #A0B3C6;
+margin-bottom: 12px;
+display: block;
+}
+.style-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+gap: 12px;
+margin-bottom: 24px;
+}
+.style-btn {
+padding: 10px;
+background: #0A0F19;
+border: 2px solid #1E2A3A;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s;
+text-align: center;
+font-size: 12px;
+}
+.style-btn:hover, .style-btn.active {
+border-color: #51CAD3;
+background: rgba(81, 202, 211, 0.1);
+transform: translateY(-2px);
+}
+.style-preview {
+width: 100%;
+height: 45px;
+border-radius: 4px;
+margin-bottom: 6px;
+}
+textarea {
+width: 100%;
+padding: 14px;
+background: #0A0F19;
+border: 1px solid #1E2A3A;
+border-radius: 8px;
+color: #FFFFFF;
+font-family: inherit;
+resize: vertical;
+min-height: 80px;
+margin-bottom: 20px;
+}
+textarea:focus { outline: none; border-color: #51CAD3; }
+.options-row {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 24px;
+padding: 14px;
+background: #0A0F19;
+border-radius: 8px;
+cursor: pointer;
+}
+.checkbox {
+width: 20px;
+height: 20px;
+border: 2px solid #1E2A3A;
+border-radius: 4px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+flex-shrink: 0;
+}
+.checkbox.checked {
+background: #51CAD3;
+border-color: #51CAD3;
+}
+.checkbox.checked::after {
+content: '✓';
+color: #0A0F19;
+font-weight: bold;
+}
+.btn-generate {
+width: 100%;
+padding: 16px;
+background: linear-gradient(135deg, #51CAD3, #97DEED);
+border: none;
+border-radius: 10px;
+color: #0A0F19;
+font-weight: 700;
+font-size: 16px;
+cursor: pointer;
+transition: all 0.3s;
+}
+.btn-generate:hover:not(:disabled) {
+transform: translateY(-2px);
+box-shadow: 0 8px 25px rgba(81, 202, 211, 0.4);
+}
+.btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
+.result-section { display: none; }
+.result-section.show { display: block; animation: fadeIn 0.5s; }
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.result-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
+margin-bottom: 20px;
+}
+.result-card {
+background: #0A0F19;
+border: 2px solid #1E2A3A;
+border-radius: 12px;
+padding: 16px;
+text-align: center;
+}
+.result-card img {
+max-width: 100%;
+border-radius: 8px;
+margin-bottom: 10px;
+}
+.result-actions {
+display: flex;
+gap: 12px;
+flex-wrap: wrap;
+}
+.btn-action {
+flex: 1;
+min-width: 140px;
+padding: 12px 20px;
+background: transparent;
+border: 1px solid #51CAD3;
+color: #51CAD3;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 600;
+transition: all 0.2s;
+}
+.btn-action:hover { background: rgba(81, 202, 211, 0.1); }
+.status-message {
+padding: 14px;
+border-radius: 8px;
+margin-top: 16px;
+display: none;
+text-align: center;
+}
+.status-message.show { display: block; animation: slideIn 0.3s; }
+@keyframes slideIn {
+from { opacity: 0; transform: translateY(-10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.status-success {
+background: rgba(0, 255, 157, 0.1);
+border: 1px solid #00ff9d;
+color: #00ff9d;
+}
+.status-error {
+background: rgba(255, 107, 107, 0.1);
+border: 1px solid #ff6b6b;
+color: #ff6b6b;
+}
+.status-info {
+background: rgba(81, 202, 211, 0.1);
+border: 1px solid #51CAD3;
+color: #51CAD3;
+}
+.loading-spinner {
+display: inline-block;
+width: 20px;
+height: 20px;
+border: 3px solid rgba(255,255,255,0.3);
+border-radius: 50%;
+border-top-color: #fff;
+animation: spin 1s linear infinite;
+margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+footer {
+margin-top: 40px;
+padding: 20px;
+text-align: center;
+color: #6B7F94;
+border-top: 1px solid #1E2A3A;
+}
+footer a { color: #97DEED; text-decoration: none; }
+@media (max-width: 768px) {
+.result-grid { grid-template-columns: 1fr; }
+.style-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="header-inner container">
-                <div class="logo">
-                    <img src="https://www.opengradient.ai/favicon.ico" alt="OG" class="logo-icon">
-                    <span>Gradient<span class="logo-accent">Avatar</span></span>
-                </div>
-                <nav class="nav">
-                    <button class="nav-btn active" data-tab="create">Create</button>
-                    <button class="nav-btn" data-tab="photo">Photo</button>
-                </nav>
-                <div class="header-actions">
-                    <div class="status-badge">
-                        <span class="status-dot online"></span>
-                        API Online
-                    </div>
-                </div>
-            </div>
-        </header>
+<div class="container">
+<header>
+<div class="header-top">
+<div class="logo" id="siteLogo">🎨 Gradient<span>Avatar</span> Factory</div>
+<button class="btn-connect" id="connectWalletBtn">🔗 Connect Wallet</button>
+</div>
+</header>
 
-        <main class="main-grid grid-2 container">
-            <section class="config-section card-glow">
-                <div class="section-header">
-                    <h2 class="section-title">Configuration</h2>
-                    <p class="section-subtitle">Define your avatar parameters</p>
-                </div>
+<div class="main-card">
+<h2>🎨 Create Your AI Avatar</h2>
 
-                <div class="tab-content">
-                    <div id="createTab" class="tab-panel active">
-                        <div class="input-group">
-                            <label for="avatarPrompt">Prompt Description</label>
-                            <textarea id="avatarPrompt" placeholder="e.g. A futuristic cyberpunk samurai with neon glowing eyes, detailed armor, synthwave color palette..."></textarea>
-                            <div class="input-hint">Describe character, mood, and environment</div>
-                        </div>
-                    </div>
+<div class="mode-tabs">
+<button class="mode-tab active" data-mode="text2img">📝 Text to Image</button>
+<button class="mode-tab" data-mode="img2img">🖼️ Image to Image</button>
+</div>
 
-                    <div id="photoTab" class="tab-panel">
-                        <div class="input-group">
-                            <label>Reference Image</label>
-                            <div id="uploadZone" class="upload-zone">
-                                <input type="file" id="imageInput" accept="image/*" hidden>
-                                <div class="upload-placeholder">
-                                    <div class="upload-icon">📸</div>
-                                    <p>Click or drag to upload photo</p>
-                                    <span>Supports JPG, PNG</span>
-                                </div>
-                                <img id="previewImage" class="preview-img" hidden>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="upload-zone" id="uploadZone">
+<input type="file" id="imageInput" accept="image/*" style="display: none;">
+<div class="upload-icon">📁</div>
+<p><strong>Upload your character photo</strong></p>
+<p style="color: #6B7F94; font-size: 14px;">PNG, JPG up to 10MB</p>
+<img id="previewImage" class="preview-image" alt="Preview">
+</div>
 
-                <div class="style-selection">
-                    <label>Art Style</label>
-                    <div class="style-grid">
-                        <button class="style-btn active" data-style="cyberpunk">
-                            <span class="style-name">Cyberpunk</span>
-                        </button>
-                        <button class="style-btn" data-style="anime">
-                            <span class="style-name">Anime</span>
-                        </button>
-                        <button class="style-btn" data-style="pixel">
-                            <span class="style-name">Pixel Art</span>
-                        </button>
-                        <button class="style-btn" data-style="3d-render">
-                            <span class="style-name">3D Render</span>
-                        </button>
-                    </div>
-                </div>
+<label class="section-title">Choose Style</label>
+<div class="style-grid" id="styleGrid"></div>
 
-                <button id="generateBtn" class="btn-primary btn-glow">
-                    <span class="btn-text">Generate Avatar</span>
-                </button>
-            </section>
+<label class="section-title">Custom Prompt (REQUIRED)</label>
+<textarea id="promptInput" placeholder="Example: cyberpunk frog character with neon lights, futuristic armor"></textarea>
 
-            <section class="result-section card-glow">
-                <div class="section-header">
-                    <h2 class="section-title">Preview</h2>
-                    <p class="section-subtitle">Your AI generated masterpiece</p>
-                </div>
+<div class="options-row" id="watermarkOption">
+<div class="checkbox" id="watermarkCheckbox"></div>
+<div class="checkbox-label">
+<strong>Add OpenGradient Watermark</strong>
+<div style="color: #6B7F94; font-size: 13px;">Overlay "OPG" logo</div>
+</div>
+</div>
 
-                <div class="result-container">
-                    <div id="resultPlaceholder" class="result-placeholder">
-                        <div class="placeholder-animation">
-                            <div class="circle-pulse"></div>
-                        </div>
-                        <p>Waiting for generation...</p>
-                    </div>
+<button class="btn-generate" id="generateBtn">✨ Generate Avatar</button>
+<div id="statusMessage" class="status-message"></div>
+</div>
 
-                    <div id="resultContent" class="result-content" hidden>
-                        <div class="avatar-frame">
-                            <img id="generatedAvatar" src="" alt="AI Avatar">
-                            <div class="frame-glow"></div>
-                        </div>
-                        
-                        <div class="result-actions">
-                            <div class="nft-info">
-                                <span class="label">Avatar ID</span>
-                                <span id="nftId" class="value mono">#0000</span>
-                            </div>
-                            <button id="downloadBtn" class="btn-secondary">
-                                <span>Download PNG</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+<div class="main-card result-section" id="resultSection">
+<h2>✅ Generation Complete!</h2>
+<div class="result-grid">
+<div class="result-card" id="originalCard" style="display:none;">
+<div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Original</div>
+<img id="originalImage" alt="Original">
+</div>
+<div class="result-card">
+<div style="color: #6B7F94; font-size: 13px; margin-bottom: 8px;">Generated</div>
+<img id="generatedImage" alt="Generated">
+<div style="color: #51CAD3; font-weight: 600; margin-top: 8px;" id="nftId">#0000</div>
+</div>
+</div>
+<div class="result-actions">
+<button class="btn-action" id="downloadBtn">📥 Download PNG</button>
+<button class="btn-action" id="copyHashBtn">🔗 Copy Hash</button>
+</div>
+</div>
 
-        <footer class="footer container">
-            <div class="footer-inner">
-                <div class="footer-left">
-                    <p>© 2024 GradientAvatar Factory. Powered by Leonardo AI</p>
-                </div>
-                <div class="footer-right">
-                    <span class="footer-status">
-                        <span class="status-dot online"></span>
-                        Vercel Serverless Active
-                    </span>
-                </div>
-            </div>
-        </footer>
-    </div>
+<footer>
+<p>Powered by Leonardo.ai • Built for <a href="https://opengradient.ai" target="_blank">OpenGradient</a></p>
+</footer>
+</div>
 
-    <script type="module" src="scripts/app.js"></script>
+<script>
+// === КОНФИГУРАЦИЯ И ЛОГИКА ===
+var STYLES = [
+{ id: 'cyberpunk', name: 'Cyberpunk', gradient: ['#ff00ff', '#00ffff'], prompt: 'cyberpunk neon futuristic' },
+{ id: 'anime', name: 'Anime', gradient: ['#ff6b9d', '#c445ff'], prompt: 'anime japanese animation' },
+{ id: 'pixel', name: 'Pixel Art', gradient: ['#00ff9d', '#00b8ff'], prompt: 'pixel art 8bit retro' },
+{ id: 'minimal', name: 'Minimal', gradient: ['#a0a0a0', '#ffffff'], prompt: 'minimalist clean modern' },
+{ id: 'neon', name: 'Neon', gradient: ['#39ff14', '#ff00ff', '#00ffff'], prompt: 'neon glow electric' },
+{ id: 'retro', name: 'Retro', gradient: ['#ff6b6b', '#feca57'], prompt: 'retro vintage 80s' },
+{ id: 'fantasy', name: 'Fantasy', gradient: ['#5f27cd', '#341f97'], prompt: 'fantasy magical mystical' },
+{ id: 'scifi', name: 'Sci-Fi', gradient: ['#00d2d3', '#54a0ff'], prompt: 'science fiction futuristic' },
+{ id: 'noir', name: 'Noir', gradient: ['#2d3436', '#636e72'], prompt: 'film noir black white' },
+{ id: 'vaporwave', name: 'Vaporwave', gradient: ['#ff9ff3', '#54a0ff', '#feca57'], prompt: 'vaporwave pastel' },
+{ id: 'nature', name: 'Nature', gradient: ['#1dd1a1', '#10ac84'], prompt: 'nature organic earthy' },
+{ id: 'sunset', name: 'Sunset', gradient: ['#ff9f43', '#ee5a24', '#f368e0'], prompt: 'sunset warm golden' },
+{ id: 'ocean', name: 'Ocean', gradient: ['#2e86de', '#10ac84', '#54a0ff'], prompt: 'ocean waves deep blue' },
+{ id: 'fire', name: 'Fire', gradient: ['#ff6348', '#ffa502', '#ff7f50'], prompt: 'fire flames burning' },
+{ id: 'galaxy', name: 'Galaxy', gradient: ['#341f97', '#5f27cd', '#ff9ff3'], prompt: 'galaxy stars cosmic' },
+{ id: 'forest', name: 'Forest', gradient: ['#26de81', '#20bf6b', '#0fb9b1'], prompt: 'forest green nature' },
+{ id: 'cosmic', name: 'Cosmic', gradient: ['#fd79a8', '#a29bfe', '#74b9ff'], prompt: 'cosmic ethereal mystical' },
+{ id: 'gold', name: 'Gold', gradient: ['#ffd32a', '#f368e0', '#ff9f43'], prompt: 'golden luxury elegant' }
+];
+
+var appState = {
+mode: 'text2img',
+walletConnected: false,
+uploadedImageBase64: null,
+selectedStyle: 'cyberpunk',
+addWatermark: false,
+generatedData: null
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+renderStyleGrid();
+setupEventListeners();
+});
+
+function renderStyleGrid() {
+var grid = document.getElementById('styleGrid');
+var html = '';
+STYLES.forEach(style => {
+var active = style.id === appState.selectedStyle ? 'active' : '';
+html += `<button class="style-btn ${active}" data-style="${style.id}">
+<div class="style-preview" style="background: linear-gradient(135deg, ${style.gradient.join(', ')})"></div>
+<div>${style.name}</div></button>`;
+});
+grid.innerHTML = html;
+}
+
+function setupEventListeners() {
+// Табы
+document.querySelectorAll('.mode-tab').forEach(tab => {
+tab.onclick = function() {
+document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+this.classList.add('active');
+appState.mode = this.dataset.mode;
+document.getElementById('uploadZone').classList.toggle('show', appState.mode === 'img2img');
+};
+});
+
+// Загрузка
+const uploadZone = document.getElementById('uploadZone');
+const imageInput = document.getElementById('imageInput');
+uploadZone.onclick = () => imageInput.click();
+imageInput.onchange = (e) => handleImageUpload(e.target.files[0]);
+
+// Стили
+document.getElementById('styleGrid').onclick = (e) => {
+const btn = e.target.closest('.style-btn');
+if (btn) {
+document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+appState.selectedStyle = btn.dataset.style;
+}
+};
+
+// Чекбокс
+document.getElementById('watermarkOption').onclick = function() {
+appState.addWatermark = !appState.addWatermark;
+document.getElementById('watermarkCheckbox').classList.toggle('checked', appState.addWatermark);
+};
+
+document.getElementById('generateBtn').onclick = handleGenerate;
+document.getElementById('downloadBtn').onclick = handleDownload;
+document.getElementById('connectWalletBtn').onclick = connectWallet;
+}
+
+function handleImageUpload(file) {
+if (!file) return;
+const reader = new FileReader();
+reader.onload = (e) => {
+document.getElementById('previewImage').src = e.target.result;
+uploadZone.classList.add('has-image');
+appState.uploadedImageBase64 = e.target.result; // Храним полный base64 для превью и API
+};
+reader.readAsDataURL(file);
+}
+
+// === ОСНОВНАЯ ГЕНЕРАЦИЯ ЧЕРЕЗ API ===
+async function handleGenerate() {
+const prompt = document.getElementById('promptInput').value.trim();
+if (!prompt) return showStatus('⚠️ Please enter a prompt', 'error');
+if (!appState.walletConnected) return showStatus('⚠️ Connect wallet first', 'error');
+
+const btn = document.getElementById('generateBtn');
+const originalText = btn.innerHTML;
+btn.disabled = true;
+btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+
+try {
+const response = await fetch('/api/generate', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+prompt: prompt,
+style: appState.selectedStyle,
+mode: appState.mode,
+imageUrl: appState.uploadedImageBase64
+})
+});
+
+const data = await response.json();
+
+if (data.success) {
+// Если выбран водяной знак - накладываем его
+let finalUrl = data.imageUrl;
+if (appState.addWatermark) {
+finalUrl = await applyWatermark(data.imageUrl);
+}
+
+appState.generatedData = {
+generatedUrl: finalUrl,
+nftId: '#' + Math.floor(1000 + Math.random() * 9000),
+txHash: '0x' + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('')
+};
+
+document.getElementById('generatedImage').src = finalUrl;
+document.getElementById('nftId').textContent = appState.generatedData.nftId;
+document.getElementById('resultSection').classList.add('show');
+document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+showStatus('✅ Done!', 'success');
+} else {
+showStatus('❌ ' + (data.error || 'Generation failed'), 'error');
+}
+} catch (err) {
+showStatus('❌ API Connection Error', 'error');
+} finally {
+btn.disabled = false;
+btn.innerHTML = originalText;
+}
+}
+
+// Вспомогательная функция для водяного знака
+function applyWatermark(url) {
+return new Promise((resolve) => {
+const img = new Image();
+img.crossOrigin = "anonymous";
+img.onload = () => {
+const canvas = document.createElement('canvas');
+canvas.width = img.width; canvas.height = img.height;
+const ctx = canvas.getContext('2d');
+ctx.drawImage(img, 0, 0);
+ctx.globalAlpha = 0.4;
+ctx.fillStyle = "#51CAD3";
+ctx.font = "bold 40px Arial";
+ctx.fillText("OPG", canvas.width - 100, canvas.height - 40);
+resolve(canvas.toDataURL());
+};
+img.src = url;
+});
+}
+
+function handleDownload() {
+const a = document.createElement('a');
+a.href = appState.generatedData.generatedUrl;
+a.download = `avatar-${appState.generatedData.nftId}.png`;
+a.click();
+}
+
+function connectWallet() {
+if (typeof window.ethereum !== 'undefined') {
+window.ethereum.request({ method: 'eth_requestAccounts' }).then(() => {
+appState.walletConnected = true;
+const btn = document.getElementById('connectWalletBtn');
+btn.textContent = '✅ Connected';
+btn.classList.add('connected');
+showStatus('Wallet Connected!', 'success');
+});
+} else {
+alert('Please install MetaMask');
+}
+}
+
+function showStatus(msg, type) {
+const el = document.getElementById('statusMessage');
+el.innerHTML = msg;
+el.className = `status-message status-${type} show`;
+setTimeout(() => el.classList.remove('show'), 4000);
+}
+</script>
 </body>
 </html>
